@@ -103,7 +103,7 @@ class PantallaBienvenida extends StatelessWidget {
                           children: [
                             BotonActiva(
                               etiqueta: 'Iniciar sesión',
-                              icono: Icons.arrow_forward_rounded,
+                
                               variante: VarianteBoton.claro,
                               alPresionar: () => context.push('/inicio-sesion'),
                             ),

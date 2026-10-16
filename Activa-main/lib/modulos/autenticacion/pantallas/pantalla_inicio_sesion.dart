@@ -108,7 +108,6 @@ class _EstadoPantallaInicioSesion extends State<PantallaInicioSesion> {
             const SizedBox(height: 8),
             BotonActiva(
               etiqueta: 'Iniciar sesión',
-              icono: Icons.arrow_forward_rounded,
               alPresionar: _submit,
             ),
             const SizedBox(height: 12),

@@ -15,6 +15,18 @@ Instructor _ins(int id, String nom, String pat, String mat, String esp) =>
       especialidad: esp,
     );
 
+final alumnaSimulado = Alumno(
+  id: 2,
+  nombre: 'MARIA GUADALUPE',
+  apellidoPaterno: 'RODRIGUEZ',
+  apellidoMaterno: 'BARCENAS',
+  correo: '1225100380.mgrd@gmail.com',
+  telefono: '419 115 4531',
+  numeroControl: '1225100380',
+  grupo: 'GTID243',
+  carrera: 'Desarrollo de Software',
+);
+
 final alumnoSimulado = Alumno(
   id: 1,
   nombre: 'JOSE EMMANUEL',
@@ -26,6 +38,7 @@ final alumnoSimulado = Alumno(
   grupo: 'GTID235',
   carrera: 'Ingeniería en Desarrollo de Software',
 );
+
 
 const adminSimulado = Administrador(
   id: 100,

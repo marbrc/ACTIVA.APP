@@ -7,7 +7,7 @@ import 'package:provider/provider.dart';
 import '../../../nucleo/tema/tema_app.dart';
 import '../../../nucleo/componentes/aparicion_suave.dart';
 import '../../../datos/estado_app.dart';
-import '../componentes/tarjeta_taller.dart';
+import '../componentes/tarjeta_actividad.dart';
 
 // esta pantalla sí tiene estado porque cambia el texto buscado y el filtro
 class PantallaExplorar extends StatefulWidget {
@@ -47,18 +47,18 @@ class _EstadoPantallaExplorar extends State<PantallaExplorar> {
     super.dispose();
   }
 
-  // chip de filtro con estilo azul cuando está seleccionado
+  // chip de filtro con estilo azul marino cuando está seleccionado
   Widget _chip(String label, bool selected, VoidCallback onTap) => ChoiceChip(
         label: Text(label),
         selected: selected,
         // Quita la palomita de selección
         showCheckmark: false,
-        // Azul cuando está elegido
-        selectedColor: ColoresApp.primary,
+        // Azul marino cuando está elegido
+        selectedColor: ColoresApp.navy,
         // Blanco cuando no
         backgroundColor: Colors.white,
-        // Borde azul si está elegido, gris clarito si no
-        side: BorderSide(color: selected ? ColoresApp.primary : ColoresApp.line),
+        // Borde azul marino si está elegido, gris clarito si no
+        side: BorderSide(color: selected ? ColoresApp.navy : ColoresApp.line),
         labelStyle: TextStyle(
           color: selected ? Colors.white : ColoresApp.navy,
           fontWeight: FontWeight.w600,
@@ -89,17 +89,18 @@ class _EstadoPantallaExplorar extends State<PantallaExplorar> {
           children: [
             // Título de la pantalla
             Text(
-              'Explorar actividades',
-              style: TextStyle(fontFamily: FuentesApp.century, 
-                fontSize: 24,
+              'Actividades',
+              style: TextStyle(
+                fontFamily: FuentesApp.century,
+                fontSize: 26,
                 fontWeight: FontWeight.w700,
                 color: ColoresApp.navy,
               ),
             ),
-            // Subtítulo con cuántas actividades hay
-            Text(
-              '${lista.length} ${lista.length == 1 ? 'actividad' : 'actividades'} para ti',
-              style: const TextStyle(color: ColoresApp.muted, fontSize: 13),
+            // Subtítulo
+            const Text(
+              'Encuentra tu pasión, forma parte y vive la experiencia.',
+              style: TextStyle(color: ColoresApp.muted, fontSize: 13),
             ),
             const SizedBox(height: 14),
             // Buscador (el estilo viene del tema)
@@ -162,11 +163,11 @@ class _EstadoPantallaExplorar extends State<PantallaExplorar> {
                   : GridView.builder(
                       padding: const EdgeInsets.only(bottom: 16),
                       gridDelegate:
-                          const SliverGridDelegateWithMaxCrossAxisExtent(
-                        // Ancho máximo de cada tarjeta
-                        maxCrossAxisExtent: 220,
+                          const SliverGridDelegateWithFixedCrossAxisCount(
+                        // 2 tarjetas por fila
+                        crossAxisCount: 2,
                         // Alto fijo de cada tarjeta
-                        mainAxisExtent: 272,
+                        mainAxisExtent: 196,
                         // Espacio horizontal y vertical entre tarjetas
                         crossAxisSpacing: 12,
                         mainAxisSpacing: 12,
@@ -176,7 +177,7 @@ class _EstadoPantallaExplorar extends State<PantallaExplorar> {
                       itemBuilder: (_, i) => AparicionSuave(
                         delay: Duration(milliseconds: (i % 6) * 60),
                         dy: 18,
-                        child: TallerCard(lista[i]),
+                        child: TarjetaActividad(lista[i]),
                       ),
                     ),
             ),
