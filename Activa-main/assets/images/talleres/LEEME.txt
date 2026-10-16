@@ -1,0 +1,15 @@
+Pon aquí las fotos reales de cada club (formato .jpg, horizontal, ~1200x600 px).
+El nombre del archivo es el nombre de la actividad en minúsculas, sin acentos y con guion bajo:
+
+  voleibol.jpg
+  futbol_soccer.jpg
+  danza_folclorica.jpg
+  ajedrez.jpg
+  teatro.jpg
+  zumba.jpg
+  baloncesto.jpg
+  banda_de_guerra.jpg
+  tae_kwon_do.jpg
+  atletismo.jpg
+
+Si una foto no existe, la app muestra automáticamente el degradado con el ícono.
