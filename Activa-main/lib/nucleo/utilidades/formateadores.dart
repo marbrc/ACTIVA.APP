@@ -1,9 +1,20 @@
 const _meses = [
-  'enero', 'febrero', 'marzo', 'abril', 'mayo', 'junio',
-  'julio', 'agosto', 'septiembre', 'octubre', 'noviembre', 'diciembre'
+  'enero',
+  'febrero',
+  'marzo',
+  'abril',
+  'mayo',
+  'junio',
+  'julio',
+  'agosto',
+  'septiembre',
+  'octubre',
+  'noviembre',
+  'diciembre',
 ];
 
-String fechaLarga(DateTime d) => '${d.day} de ${_meses[d.month - 1]} de ${d.year}';
+String fechaLarga(DateTime d) =>
+    '${d.day} de ${_meses[d.month - 1]} de ${d.year}';
 
 String tiempoRelativo(DateTime d) {
   final diff = DateTime.now().difference(d);
@@ -21,7 +32,16 @@ String inicialesDe(String nombre) {
   final n = nombre.trim();
   return n.substring(0, n.length < 3 ? n.length : 3).toUpperCase();
 }
-const _dias = ['lunes', 'martes', 'miércoles', 'jueves', 'viernes', 'sábado', 'domingo'];
+
+const _dias = [
+  'lunes',
+  'martes',
+  'miércoles',
+  'jueves',
+  'viernes',
+  'sábado',
+  'domingo',
+];
 
 String diaNombre(DateTime d) => _dias[d.weekday - 1];
 

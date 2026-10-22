@@ -4,6 +4,7 @@
 // ===================================================================
 
 import 'package:flutter/material.dart';
+
 import '../tema/tema_app.dart';
 
 enum VarianteBoton { principal, claro, cristal, contorno }
@@ -35,7 +36,7 @@ class _EstadoBotonActiva extends State<BotonActiva> {
 
   @override
   Widget build(BuildContext context) {
-    final radio = BorderRadius.circular(16);
+    final radio = BorderRadius.circular(32);
     final abajo = _presionado && _habilitado;
 
     final Color fg;
@@ -80,7 +81,9 @@ class _EstadoBotonActiva extends State<BotonActiva> {
           borderRadius: radio,
           color: Colors.white.withValues(alpha: abajo ? 0.18 : 0.10),
           border: Border.all(
-              color: Colors.white.withValues(alpha: 0.35), width: 1.2),
+            color: Colors.white.withValues(alpha: 0.35),
+            width: 1.2,
+          ),
         );
       case VarianteBoton.contorno:
         fg = ColoresApp.primary;
@@ -88,7 +91,9 @@ class _EstadoBotonActiva extends State<BotonActiva> {
           borderRadius: radio,
           color: abajo ? ColoresApp.mist : Colors.transparent,
           border: Border.all(
-              color: ColoresApp.primary.withValues(alpha: 0.5), width: 1.4),
+            color: ColoresApp.primary.withValues(alpha: 0.5),
+            width: 1.4,
+          ),
         );
     }
 
@@ -105,7 +110,7 @@ class _EstadoBotonActiva extends State<BotonActiva> {
                 widget.etiqueta,
                 style: TextStyle(
                   fontFamily: FuentesApp.century,
-                  fontSize: 15,
+                  fontSize: 16.5,
                   fontWeight: FontWeight.w700,
                   color: fg,
                 ),
@@ -127,7 +132,7 @@ class _EstadoBotonActiva extends State<BotonActiva> {
         child: AnimatedContainer(
           duration: const Duration(milliseconds: 200),
           width: double.infinity,
-          height: 54,
+          height: 60,
           decoration: deco,
           child: Material(
             color: Colors.transparent,

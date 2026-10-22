@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
+
 import '../../../nucleo/tema/tema_app.dart';
 import '../../../nucleo/componentes/tarjeta_app.dart';
 import '../../../nucleo/componentes/estructura_subpantalla.dart';
@@ -17,21 +18,24 @@ class _Etiqueta extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => Container(
-        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
-        decoration: BoxDecoration(
-          color: color.withValues(alpha: 0.15),
-          borderRadius: BorderRadius.circular(10),
-        ),
-        child: Text(text,
-            style: TextStyle(fontSize: 10, fontWeight: FontWeight.bold, color: color)),
-      );
+    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+    decoration: BoxDecoration(
+      color: color.withValues(alpha: 0.15),
+      borderRadius: BorderRadius.circular(10),
+    ),
+    child: Text(
+      text,
+      style: TextStyle(fontSize: 10, fontWeight: FontWeight.bold, color: color),
+    ),
+  );
 }
 
 // ───────────────── Lista ─────────────────
 class PantallaActividadesAdmin extends StatefulWidget {
   const PantallaActividadesAdmin({super.key});
   @override
-  State<PantallaActividadesAdmin> createState() => _EstadoPantallaActividadesAdmin();
+  State<PantallaActividadesAdmin> createState() =>
+      _EstadoPantallaActividadesAdmin();
 }
 
 class _EstadoPantallaActividadesAdmin extends State<PantallaActividadesAdmin> {
@@ -69,11 +73,18 @@ class _EstadoPantallaActividadesAdmin extends State<PantallaActividadesAdmin> {
         child: ListView(
           padding: const EdgeInsets.fromLTRB(20, 16, 20, 90),
           children: [
-            const Text('Actividades',
-                style: TextStyle(
-                    fontSize: 26, fontWeight: FontWeight.w800, color: ColoresApp.navy)),
-            Text('${s.talleres.length} actividades registradas',
-                style: const TextStyle(color: Colors.black54, fontSize: 12)),
+            const Text(
+              'Actividades',
+              style: TextStyle(
+                fontSize: 26,
+                fontWeight: FontWeight.w800,
+                color: ColoresApp.navy,
+              ),
+            ),
+            Text(
+              '${s.talleres.length} actividades registradas',
+              style: const TextStyle(color: Colors.black54, fontSize: 12),
+            ),
             const SizedBox(height: 12),
             TextField(
               controller: _search,
@@ -88,7 +99,12 @@ class _EstadoPantallaActividadesAdmin extends State<PantallaActividadesAdmin> {
               scrollDirection: Axis.horizontal,
               child: Row(
                 children: [
-                  for (final (i, n) in ['Todas', 'Activas', 'Llenas', 'Inactivas'].indexed) ...[
+                  for (final (i, n) in [
+                    'Todas',
+                    'Activas',
+                    'Llenas',
+                    'Inactivas',
+                  ].indexed) ...[
                     ChoiceChip(
                       label: Text(n),
                       selected: _f == i,
@@ -118,28 +134,48 @@ class _EstadoPantallaActividadesAdmin extends State<PantallaActividadesAdmin> {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Text(t.nombre,
-                                style: const TextStyle(
-                                    fontWeight: FontWeight.bold, fontSize: 15)),
+                            Text(
+                              t.nombre,
+                              style: const TextStyle(
+                                fontWeight: FontWeight.bold,
+                                fontSize: 15,
+                              ),
+                            ),
                             const SizedBox(height: 4),
                             Wrap(
                               spacing: 6,
                               children: [
-                                _Etiqueta(t.categoria.etiqueta, ColoresApp.primary),
-                                _Etiqueta(t.activo ? 'Activa' : 'Inactiva',
-                                    t.activo ? ColoresApp.teal : Colors.black45),
-                                if (!t.hayCupo) const _Etiqueta('Cupo lleno', ColoresApp.danger),
+                                _Etiqueta(
+                                  t.categoria.etiqueta,
+                                  ColoresApp.primary,
+                                ),
+                                _Etiqueta(
+                                  t.activo ? 'Activa' : 'Inactiva',
+                                  t.activo ? ColoresApp.teal : Colors.black45,
+                                ),
+                                if (!t.hayCupo)
+                                  const _Etiqueta(
+                                    'Cupo lleno',
+                                    ColoresApp.danger,
+                                  ),
                               ],
                             ),
                             const SizedBox(height: 4),
                             Text(
-                                '${t.instructor.nombreCompleto} · ${t.inscritos}/${t.cupoMaximo}',
-                                style: const TextStyle(
-                                    color: Colors.black54, fontSize: 11)),
+                              '${t.instructor.nombreCompleto} · ${t.inscritos}/${t.cupoMaximo}',
+                              style: const TextStyle(
+                                color: Colors.black54,
+                                fontSize: 11,
+                              ),
+                            ),
                           ],
                         ),
                       ),
-                      const Icon(Icons.edit, color: ColoresApp.primary, size: 20),
+                      const Icon(
+                        Icons.edit,
+                        color: ColoresApp.primary,
+                        size: 20,
+                      ),
                     ],
                   ),
                 ),
@@ -156,10 +192,12 @@ class PantallaFormularioActividad extends StatefulWidget {
   const PantallaFormularioActividad({super.key, this.tallerId});
   final int? tallerId; // null = nueva
   @override
-  State<PantallaFormularioActividad> createState() => _EstadoPantallaFormularioActividad();
+  State<PantallaFormularioActividad> createState() =>
+      _EstadoPantallaFormularioActividad();
 }
 
-class _EstadoPantallaFormularioActividad extends State<PantallaFormularioActividad> {
+class _EstadoPantallaFormularioActividad
+    extends State<PantallaFormularioActividad> {
   final _form1 = GlobalKey<FormState>();
   final _form2 = GlobalKey<FormState>();
   late final Taller? _edit;
@@ -211,7 +249,9 @@ class _EstadoPantallaFormularioActividad extends State<PantallaFormularioActivid
 
   Future<void> _pick(bool inicio) async {
     final r = await showTimePicker(
-        context: context, initialTime: inicio ? _ini : _fin);
+      context: context,
+      initialTime: inicio ? _ini : _fin,
+    );
     if (r == null) return;
     setState(() {
       if (inicio) {
@@ -282,7 +322,8 @@ class _EstadoPantallaFormularioActividad extends State<PantallaFormularioActivid
           );
 
     // Solo validamos traslapes si es nueva o cambió horario, lugar o instructor
-    final cambio = base == null ||
+    final cambio =
+        base == null ||
         base.lugar != t.lugar ||
         base.instructor.id != t.instructor.id ||
         !_mismos(base.horarios, horarios);
@@ -294,165 +335,170 @@ class _EstadoPantallaFormularioActividad extends State<PantallaFormularioActivid
     s.guardarTaller(t);
     final msg = ScaffoldMessenger.of(context);
     context.pop();
-    msg.showSnackBar(avisoSnack(
-        content: Text(base == null ? 'Actividad creada' : 'Cambios guardados')));
+    msg.showSnackBar(
+      avisoSnack(
+        content: Text(base == null ? 'Actividad creada' : 'Cambios guardados'),
+      ),
+    );
   }
 
   Widget _label(String t) => Padding(
-        padding: const EdgeInsets.only(top: 16, bottom: 8),
-        child: Text(t, style: const TextStyle(fontWeight: FontWeight.bold)),
-      );
+    padding: const EdgeInsets.only(top: 16, bottom: 8),
+    child: Text(t, style: const TextStyle(fontWeight: FontWeight.bold)),
+  );
 
   Widget _stepOne(EstadoApp s) => Form(
-        key: _form1,
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            _label('Nombre de la actividad'),
-            TextFormField(
-              controller: _nombre,
-              textCapitalization: TextCapitalization.sentences,
-              decoration: const InputDecoration(prefixIcon: Icon(Icons.star)),
-              validator: (v) =>
-                  (v == null || v.trim().isEmpty) ? 'Campo requerido' : null,
-            ),
-            _label('Categoría'),
-            DropdownButtonFormField<String>(
-              value: _cat,
-              isExpanded: true,
-              decoration: const InputDecoration(prefixIcon: Icon(Icons.category)),
-              items: [
-                for (final c in s.categorias)
-                  DropdownMenuItem(value: c.clave, child: Text(c.nombre)),
-              ],
-              onChanged: (v) => setState(() => _cat = v),
-              validator: (v) => v == null ? 'Selecciona una categoría' : null,
-            ),
-            _label('Instructor'),
-            DropdownButtonFormField<int>(
-              value: _instId,
-              isExpanded: true,
-              decoration: const InputDecoration(prefixIcon: Icon(Icons.person)),
-              hint: const Text('Selecciona un instructor'),
-              items: [
-                for (final i in s.instructores)
-                  DropdownMenuItem(value: i.id, child: Text(i.nombreCompleto)),
-              ],
-              onChanged: (v) => setState(() => _instId = v),
-              validator: (v) => v == null ? 'Selecciona un instructor' : null,
-            ),
-            _label('Descripción'),
-            TextFormField(
-              controller: _desc,
-              maxLength: 200,
-              maxLines: 4,
-              decoration: const InputDecoration(),
-              validator: (v) =>
-                  (v == null || v.trim().isEmpty) ? 'Campo requerido' : null,
-            ),
-            const SizedBox(height: 12),
-            FilledButton(onPressed: _next, child: const Text('Continuar')),
-          ],
+    key: _form1,
+    child: Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        _label('Nombre de la actividad'),
+        TextFormField(
+          controller: _nombre,
+          textCapitalization: TextCapitalization.sentences,
+          decoration: const InputDecoration(prefixIcon: Icon(Icons.star)),
+          validator: (v) =>
+              (v == null || v.trim().isEmpty) ? 'Campo requerido' : null,
         ),
-      );
+        _label('Categoría'),
+        DropdownButtonFormField<String>(
+          initialValue: _cat,
+          isExpanded: true,
+          decoration: const InputDecoration(prefixIcon: Icon(Icons.category)),
+          items: [
+            for (final c in s.categorias)
+              DropdownMenuItem(value: c.clave, child: Text(c.nombre)),
+          ],
+          onChanged: (v) => setState(() => _cat = v),
+          validator: (v) => v == null ? 'Selecciona una categoría' : null,
+        ),
+        _label('Instructor'),
+        DropdownButtonFormField<int>(
+          initialValue: _instId,
+          isExpanded: true,
+          decoration: const InputDecoration(prefixIcon: Icon(Icons.person)),
+          hint: const Text('Selecciona un instructor'),
+          items: [
+            for (final i in s.instructores)
+              DropdownMenuItem(value: i.id, child: Text(i.nombreCompleto)),
+          ],
+          onChanged: (v) => setState(() => _instId = v),
+          validator: (v) => v == null ? 'Selecciona un instructor' : null,
+        ),
+        _label('Descripción'),
+        TextFormField(
+          controller: _desc,
+          maxLength: 200,
+          maxLines: 4,
+          decoration: const InputDecoration(),
+          validator: (v) =>
+              (v == null || v.trim().isEmpty) ? 'Campo requerido' : null,
+        ),
+        const SizedBox(height: 12),
+        FilledButton(onPressed: _next, child: const Text('Continuar')),
+      ],
+    ),
+  );
 
   Widget _stepTwo() => Form(
-        key: _form2,
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+    key: _form2,
+    child: Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        _label('Días de la semana'),
+        Wrap(
+          spacing: 8,
           children: [
-            _label('Días de la semana'),
-            Wrap(
-              spacing: 8,
-              children: [
-                for (final d in Dia.values)
-                  FilterChip(
-                    label: Text(d.corto),
-                    selected: _dias.contains(d),
-                    onSelected: (v) =>
-                        setState(() => v ? _dias.add(d) : _dias.remove(d)),
-                  ),
-              ],
-            ),
-            _label('Horario'),
-            Row(
-              children: [
-                Expanded(
-                  child: OutlinedButton.icon(
-                    style: OutlinedButton.styleFrom(
-                      minimumSize: const Size.fromHeight(52),
-                      shape: const StadiumBorder(),
-                    ),
-                    onPressed: () => _pick(true),
-                    icon: const Icon(Icons.access_time, size: 18),
-                    label: Text('Inicio ${_fmt(_ini)}'),
-                  ),
+            for (final d in Dia.values)
+              FilterChip(
+                label: Text(d.corto),
+                selected: _dias.contains(d),
+                onSelected: (v) =>
+                    setState(() => v ? _dias.add(d) : _dias.remove(d)),
+              ),
+          ],
+        ),
+        _label('Horario'),
+        Row(
+          children: [
+            Expanded(
+              child: OutlinedButton.icon(
+                style: OutlinedButton.styleFrom(
+                  minimumSize: const Size.fromHeight(52),
+                  shape: const StadiumBorder(),
                 ),
-                const SizedBox(width: 10),
-                Expanded(
-                  child: OutlinedButton.icon(
-                    style: OutlinedButton.styleFrom(
-                      minimumSize: const Size.fromHeight(52),
-                      shape: const StadiumBorder(),
-                    ),
-                    onPressed: () => _pick(false),
-                    icon: const Icon(Icons.access_time, size: 18),
-                    label: Text('Fin ${_fmt(_fin)}'),
-                  ),
+                onPressed: () => _pick(true),
+                icon: const Icon(Icons.access_time, size: 18),
+                label: Text('Inicio ${_fmt(_ini)}'),
+              ),
+            ),
+            const SizedBox(width: 10),
+            Expanded(
+              child: OutlinedButton.icon(
+                style: OutlinedButton.styleFrom(
+                  minimumSize: const Size.fromHeight(52),
+                  shape: const StadiumBorder(),
                 ),
-              ],
-            ),
-            _label('Lugar'),
-            TextFormField(
-              controller: _lugar,
-              decoration: const InputDecoration(prefixIcon: Icon(Icons.location_on)),
-              validator: (v) =>
-                  (v == null || v.trim().isEmpty) ? 'Campo requerido' : null,
-            ),
-            _label('Cupo máximo'),
-            TextFormField(
-              controller: _cupo,
-              keyboardType: TextInputType.number,
-              decoration: const InputDecoration(prefixIcon: Icon(Icons.groups)),
-              validator: (v) {
-                final n = int.tryParse(v ?? '');
-                if (n == null || n < 1) return 'Escribe un número válido';
-                final ins = _edit?.inscritos ?? 0;
-                if (n < ins) return 'Ya hay $ins inscritos';
-                return null;
-              },
-            ),
-            _label('Horas que otorga'),
-            TextFormField(
-              controller: _horas,
-              keyboardType: TextInputType.number,
-              decoration: const InputDecoration(prefixIcon: Icon(Icons.timer)),
-              validator: (v) {
-                final n = int.tryParse(v ?? '');
-                return (n == null || n < 1) ? 'Escribe un número válido' : null;
-              },
-            ),
-            SwitchListTile(
-              contentPadding: EdgeInsets.zero,
-              title: const Text('Activa y visible para los alumnos'),
-              value: _activo,
-              onChanged: (v) => setState(() => _activo = v),
-            ),
-            const SizedBox(height: 8),
-            FilledButton.icon(
-              onPressed: _save,
-              icon: const Icon(Icons.check),
-              label: const Text('Guardar actividad'),
-            ),
-            Center(
-              child: TextButton(
-                onPressed: () => setState(() => _step = 0),
-                child: const Text('Regresar'),
+                onPressed: () => _pick(false),
+                icon: const Icon(Icons.access_time, size: 18),
+                label: Text('Fin ${_fmt(_fin)}'),
               ),
             ),
           ],
         ),
-      );
+        _label('Lugar'),
+        TextFormField(
+          controller: _lugar,
+          decoration: const InputDecoration(
+            prefixIcon: Icon(Icons.location_on),
+          ),
+          validator: (v) =>
+              (v == null || v.trim().isEmpty) ? 'Campo requerido' : null,
+        ),
+        _label('Cupo máximo'),
+        TextFormField(
+          controller: _cupo,
+          keyboardType: TextInputType.number,
+          decoration: const InputDecoration(prefixIcon: Icon(Icons.groups)),
+          validator: (v) {
+            final n = int.tryParse(v ?? '');
+            if (n == null || n < 1) return 'Escribe un número válido';
+            final ins = _edit?.inscritos ?? 0;
+            if (n < ins) return 'Ya hay $ins inscritos';
+            return null;
+          },
+        ),
+        _label('Horas que otorga'),
+        TextFormField(
+          controller: _horas,
+          keyboardType: TextInputType.number,
+          decoration: const InputDecoration(prefixIcon: Icon(Icons.timer)),
+          validator: (v) {
+            final n = int.tryParse(v ?? '');
+            return (n == null || n < 1) ? 'Escribe un número válido' : null;
+          },
+        ),
+        SwitchListTile(
+          contentPadding: EdgeInsets.zero,
+          title: const Text('Activa y visible para los alumnos'),
+          value: _activo,
+          onChanged: (v) => setState(() => _activo = v),
+        ),
+        const SizedBox(height: 8),
+        FilledButton.icon(
+          onPressed: _save,
+          icon: const Icon(Icons.check),
+          label: const Text('Guardar actividad'),
+        ),
+        Center(
+          child: TextButton(
+            onPressed: () => setState(() => _step = 0),
+            child: const Text('Regresar'),
+          ),
+        ),
+      ],
+    ),
+  );
 
   @override
   Widget build(BuildContext context) {

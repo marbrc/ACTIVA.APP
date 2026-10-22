@@ -4,6 +4,7 @@
 // ===================================================================
 
 import 'package:flutter/material.dart';
+
 import '../tema/tema_app.dart';
 
 class LogoApp extends StatelessWidget {
@@ -42,7 +43,7 @@ class LogoApp extends StatelessWidget {
         fit: BoxFit.contain,
         filterQuality: FilterQuality.high,
         // Si por algo no carga la imagen, muestra un ícono
-        errorBuilder: (_, __, ___) => Icon(
+        errorBuilder: (_, _, _) => Icon(
           Icons.directions_run,
           size: size * 0.6,
           color: ColoresApp.primary,

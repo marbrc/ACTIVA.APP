@@ -16,7 +16,7 @@ class Inscripcion {
     this.estado = EstadoInscripcion.activa,
     required this.fechaInscripcion,
   });
-     Inscripcion copyWith({EstadoInscripcion? estado, Taller? taller}) =>
+  Inscripcion copyWith({EstadoInscripcion? estado, Taller? taller}) =>
       Inscripcion(
         folio: folio,
         alumno: alumno,

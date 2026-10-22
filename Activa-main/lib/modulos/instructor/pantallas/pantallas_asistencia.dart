@@ -2,6 +2,7 @@ import 'package:activa/modelos/enums.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
+
 import '../../../nucleo/tema/tema_app.dart';
 import '../../../nucleo/utilidades/formateadores.dart';
 import '../../../nucleo/componentes/tarjeta_app.dart';
@@ -36,50 +37,74 @@ class PantallaAsistenciaPestana extends StatelessWidget {
       child: ListView(
         padding: const EdgeInsets.all(20),
         children: [
-          const Text('Asistencia',
-              style: TextStyle(
-                  fontSize: 26, fontWeight: FontWeight.w800, color: ColoresApp.navy)),
+          const Text(
+            'Asistencia',
+            style: TextStyle(
+              fontSize: 26,
+              fontWeight: FontWeight.w800,
+              color: ColoresApp.navy,
+            ),
+          ),
           const SizedBox(height: 14),
           for (final t in s.misGrupos)
-            Builder(builder: (_) {
-              final f = t.sesionReciente();
-              final total = s.alumnosDe(t.id).length;
-              final marcados = s.asistenciaDe(t.id, f).length;
-              return Padding(
-                padding: const EdgeInsets.only(bottom: 14),
-                child: TarjetaApp(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(t.nombre,
+            Builder(
+              builder: (_) {
+                final f = t.sesionReciente();
+                final total = s.alumnosDe(t.id).length;
+                final marcados = s.asistenciaDe(t.id, f).length;
+                return Padding(
+                  padding: const EdgeInsets.only(bottom: 14),
+                  child: TarjetaApp(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          t.nombre,
                           style: const TextStyle(
-                              fontWeight: FontWeight.w800, fontSize: 18)),
-                      const SizedBox(height: 4),
-                      Text('Sesión: ${fechaConDia(f)} · ${t.horarioDe(f).horaInicio}',
-                          style: const TextStyle(color: Colors.black54, fontSize: 12)),
-                      Text('Lista tomada: $marcados de $total alumnos',
-                          style: TextStyle(
-                              fontSize: 12,
-                              fontWeight: FontWeight.bold,
-                              color: marcados == 0 ? ColoresApp.warning : ColoresApp.teal)),
-                      const SizedBox(height: 12),
-                      FilledButton.icon(
-                        onPressed: () => context.push(
-                            '/instructor/pasar-lista/${t.id}?fecha=${fechaIso(f)}'),
-                        icon: const Icon(Icons.check_circle, size: 18),
-                        label: Text(marcados == 0 ? 'Pasar lista' : 'Editar lista'),
-                      ),
-                      Center(
-                        child: TextButton(
-                          onPressed: () => _otraFecha(context, t),
-                          child: const Text('Otra fecha'),
+                            fontWeight: FontWeight.w800,
+                            fontSize: 18,
+                          ),
                         ),
-                      ),
-                    ],
+                        const SizedBox(height: 4),
+                        Text(
+                          'Sesión: ${fechaConDia(f)} · ${t.horarioDe(f).horaInicio}',
+                          style: const TextStyle(
+                            color: Colors.black54,
+                            fontSize: 12,
+                          ),
+                        ),
+                        Text(
+                          'Lista tomada: $marcados de $total alumnos',
+                          style: TextStyle(
+                            fontSize: 12,
+                            fontWeight: FontWeight.bold,
+                            color: marcados == 0
+                                ? ColoresApp.warning
+                                : ColoresApp.teal,
+                          ),
+                        ),
+                        const SizedBox(height: 12),
+                        FilledButton.icon(
+                          onPressed: () => context.push(
+                            '/instructor/pasar-lista/${t.id}?fecha=${fechaIso(f)}',
+                          ),
+                          icon: const Icon(Icons.check_circle, size: 18),
+                          label: Text(
+                            marcados == 0 ? 'Pasar lista' : 'Editar lista',
+                          ),
+                        ),
+                        Center(
+                          child: TextButton(
+                            onPressed: () => _otraFecha(context, t),
+                            child: const Text('Otra fecha'),
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
-                ),
-              );
-            }),
+                );
+              },
+            ),
         ],
       ),
     );
@@ -88,8 +113,11 @@ class PantallaAsistenciaPestana extends StatelessWidget {
 
 // ───────── Pasar lista ─────────
 class PantallaPasarLista extends StatefulWidget {
-  const PantallaPasarLista(
-      {super.key, required this.tallerId, required this.fecha});
+  const PantallaPasarLista({
+    super.key,
+    required this.tallerId,
+    required this.fecha,
+  });
   final int tallerId;
   final DateTime fecha;
   @override
@@ -98,16 +126,18 @@ class PantallaPasarLista extends StatefulWidget {
 
 class _EstadoPantallaPasarLista extends State<PantallaPasarLista> {
   // numControl -> presente. Si no está en el mapa = sin marcar.
-  late final Map<String, bool> _m =
-      context.read<EstadoApp>().asistenciaDe(widget.tallerId, widget.fecha);
+  late final Map<String, bool> _m = context.read<EstadoApp>().asistenciaDe(
+    widget.tallerId,
+    widget.fecha,
+  );
 
   void _set(String c, bool v) => setState(() {
-        if (_m[c] == v) {
-          _m.remove(c); // tocar de nuevo desmarca
-        } else {
-          _m[c] = v;
-        }
-      });
+    if (_m[c] == v) {
+      _m.remove(c); // tocar de nuevo desmarca
+    } else {
+      _m[c] = v;
+    }
+  });
 
   void _save() {
     final s = context.read<EstadoApp>();
@@ -141,14 +171,27 @@ class _EstadoPantallaPasarLista extends State<PantallaPasarLista> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(t.nombre,
-                          style: const TextStyle(
-                              fontWeight: FontWeight.w800, fontSize: 18)),
                       Text(
-                          '${fechaConDia(widget.fecha)} · ${h.horaInicio} – ${h.horaFin}',
-                          style: const TextStyle(color: Colors.black54, fontSize: 12)),
-                      Text('Cada asistencia suma ${t.horasPorSesion} h',
-                          style: const TextStyle(color: Colors.black45, fontSize: 11)),
+                        t.nombre,
+                        style: const TextStyle(
+                          fontWeight: FontWeight.w800,
+                          fontSize: 18,
+                        ),
+                      ),
+                      Text(
+                        '${fechaConDia(widget.fecha)} · ${h.horaInicio} – ${h.horaFin}',
+                        style: const TextStyle(
+                          color: Colors.black54,
+                          fontSize: 12,
+                        ),
+                      ),
+                      Text(
+                        'Cada asistencia suma ${t.horasPorSesion} h',
+                        style: const TextStyle(
+                          color: Colors.black45,
+                          fontSize: 11,
+                        ),
+                      ),
                       const SizedBox(height: 12),
                       Row(
                         children: [
@@ -167,34 +210,56 @@ class _EstadoPantallaPasarLista extends State<PantallaPasarLista> {
                   Padding(
                     padding: const EdgeInsets.only(bottom: 10),
                     child: TarjetaApp(
-                      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 14,
+                        vertical: 10,
+                      ),
                       child: Row(
                         children: [
                           CircleAvatar(
                             backgroundColor: ColoresApp.background,
-                            child: Text(iniciales(a.nombre, a.apellidoPaterno),
-                                style: const TextStyle(
-                                    color: ColoresApp.navy,
-                                    fontWeight: FontWeight.bold)),
+                            child: Text(
+                              iniciales(a.nombre, a.apellidoPaterno),
+                              style: const TextStyle(
+                                color: ColoresApp.navy,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
                           ),
                           const SizedBox(width: 12),
                           Expanded(
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                Text(a.nombreCompleto,
-                                    style: const TextStyle(fontWeight: FontWeight.bold)),
-                                Text(a.numeroControl,
-                                    style: const TextStyle(
-                                        color: Colors.black45, fontSize: 11)),
+                                Text(
+                                  a.nombreCompleto,
+                                  style: const TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                                Text(
+                                  a.numeroControl,
+                                  style: const TextStyle(
+                                    color: Colors.black45,
+                                    fontSize: 11,
+                                  ),
+                                ),
                               ],
                             ),
                           ),
-                          _Marca(Icons.check, _m[a.numeroControl] == true,
-                              ColoresApp.teal, () => _set(a.numeroControl, true)),
+                          _Marca(
+                            Icons.check,
+                            _m[a.numeroControl] == true,
+                            ColoresApp.teal,
+                            () => _set(a.numeroControl, true),
+                          ),
                           const SizedBox(width: 8),
-                          _Marca(Icons.close, _m[a.numeroControl] == false,
-                              ColoresApp.danger, () => _set(a.numeroControl, false)),
+                          _Marca(
+                            Icons.close,
+                            _m[a.numeroControl] == false,
+                            ColoresApp.danger,
+                            () => _set(a.numeroControl, false),
+                          ),
                         ],
                       ),
                     ),
@@ -236,22 +301,27 @@ class _Conteo extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => Expanded(
-        child: Container(
-          padding: const EdgeInsets.symmetric(vertical: 10),
-          decoration: BoxDecoration(
-            color: color.withValues(alpha: 0.12),
-            borderRadius: BorderRadius.circular(14),
+    child: Container(
+      padding: const EdgeInsets.symmetric(vertical: 10),
+      decoration: BoxDecoration(
+        color: color.withValues(alpha: 0.12),
+        borderRadius: BorderRadius.circular(14),
+      ),
+      child: Column(
+        children: [
+          Text(
+            '$value',
+            style: TextStyle(
+              fontSize: 22,
+              fontWeight: FontWeight.w800,
+              color: color,
+            ),
           ),
-          child: Column(
-            children: [
-              Text('$value',
-                  style: TextStyle(
-                      fontSize: 22, fontWeight: FontWeight.w800, color: color)),
-              Text(label, style: const TextStyle(fontSize: 11)),
-            ],
-          ),
-        ),
-      );
+          Text(label, style: const TextStyle(fontSize: 11)),
+        ],
+      ),
+    ),
+  );
 }
 
 class _Marca extends StatelessWidget {
@@ -263,17 +333,21 @@ class _Marca extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => InkWell(
-        customBorder: const CircleBorder(),
-        onTap: onTap,
-        child: Container(
-          width: 38,
-          height: 38,
-          decoration: BoxDecoration(
-            shape: BoxShape.circle,
-            color: active ? color : Colors.transparent,
-            border: Border.all(color: active ? color : Colors.black26),
-          ),
-          child: Icon(icon, size: 20, color: active ? Colors.white : Colors.black38),
-        ),
-      );
+    customBorder: const CircleBorder(),
+    onTap: onTap,
+    child: Container(
+      width: 38,
+      height: 38,
+      decoration: BoxDecoration(
+        shape: BoxShape.circle,
+        color: active ? color : Colors.transparent,
+        border: Border.all(color: active ? color : Colors.black26),
+      ),
+      child: Icon(
+        icon,
+        size: 20,
+        color: active ? Colors.white : Colors.black38,
+      ),
+    ),
+  );
 }

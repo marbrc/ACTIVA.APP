@@ -5,6 +5,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+
 import '../../../nucleo/tema/tema_app.dart';
 import '../../../nucleo/componentes/fondo_olas.dart';
 import '../../../nucleo/componentes/logo_app.dart';
@@ -78,7 +79,7 @@ class _EstadoPantallaCarga extends State<PantallaCarga>
                 const Spacer(flex: 3),
                 AnimatedBuilder(
                   animation: _c,
-                  builder: (_, __) => Column(
+                  builder: (_, _) => Column(
                     children: [
                       Text(
                         'Cargando tu experiencia…',
@@ -101,7 +102,9 @@ class _EstadoPantallaCarga extends State<PantallaCarga>
                       Text(
                         '${(Curves.easeInOut.transform(_c.value) * 100).round()}%',
                         style: const TextStyle(
-                            color: Colors.white70, fontSize: 11),
+                          color: Colors.white70,
+                          fontSize: 11,
+                        ),
                       ),
                     ],
                   ),

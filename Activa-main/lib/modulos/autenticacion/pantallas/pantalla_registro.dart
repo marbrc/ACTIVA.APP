@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+
 import '../../../nucleo/tema/tema_app.dart';
 import '../../../nucleo/utilidades/reglas_contrasena.dart';
 import '../../../nucleo/componentes/estructura_autenticacion.dart';
@@ -65,7 +66,9 @@ class _EstadoPantallaRegistro extends State<PantallaRegistro> {
   Widget build(BuildContext context) {
     return EstructuraAutenticacion(
       title: 'Crea tu cuenta',
-      subtitle: _step == 0 ? 'Paso 1 de 2 · Tus datos' : 'Paso 2 de 2 · Tu contraseña',
+      subtitle: _step == 0
+          ? 'Paso 1 de 2 · Tus datos'
+          : 'Paso 2 de 2 · Tu contraseña',
       onBack: () => _step == 1
           ? setState(() => _step = 0)
           : (context.canPop() ? context.pop() : context.go('/bienvenida')),
@@ -97,95 +100,120 @@ class _EstadoPantallaRegistro extends State<PantallaRegistro> {
   }
 
   Widget _stepOne() => Form(
-        key: _form1,
-        child: Column(
+    key: _form1,
+    child: Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const Text(
+          'Nombre completo',
+          style: TextStyle(fontWeight: FontWeight.bold),
+        ),
+        const SizedBox(height: 8),
+        TextFormField(
+          controller: _nombre,
+          textCapitalization: TextCapitalization.words,
+          decoration: const InputDecoration(prefixIcon: Icon(Icons.person)),
+          validator: _required,
+        ),
+        const SizedBox(height: 16),
+        Row(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text('Nombre completo', style: TextStyle(fontWeight: FontWeight.bold)),
-            const SizedBox(height: 8),
-            TextFormField(
-              controller: _nombre,
-              textCapitalization: TextCapitalization.words,
-              decoration: const InputDecoration(prefixIcon: Icon(Icons.person)),
-              validator: _required,
-            ),
-            const SizedBox(height: 16),
-            Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      const Text('Número de control', style: TextStyle(fontWeight: FontWeight.bold)),
-                      const SizedBox(height: 8),
-                      TextFormField(
-                        controller: _control,
-                        keyboardType: TextInputType.number,
-                        maxLength: 10,
-                        decoration: const InputDecoration(
-                            prefixIcon: Icon(Icons.school), counterText: ''),
-                        validator: (v) => RegExp(r'^\d{10}$').hasMatch(v ?? '')
-                            ? null
-                            : '10 dígitos',
-                      ),
-                    ],
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const Text(
+                    'Número de control',
+                    style: TextStyle(fontWeight: FontWeight.bold),
                   ),
-                ),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      const Text('Grupo', style: TextStyle(fontWeight: FontWeight.bold)),
-                      const SizedBox(height: 8),
-                      TextFormField(
-                        controller: _grupo,
-                        textCapitalization: TextCapitalization.characters,
-                        decoration: const InputDecoration(prefixIcon: Icon(Icons.groups)),
-                        validator: _required,
-                      ),
-                    ],
+                  const SizedBox(height: 8),
+                  TextFormField(
+                    controller: _control,
+                    keyboardType: TextInputType.number,
+                    maxLength: 10,
+                    decoration: const InputDecoration(
+                      prefixIcon: Icon(Icons.school),
+                      counterText: '',
+                    ),
+                    validator: (v) => RegExp(r'^\d{10}$').hasMatch(v ?? '')
+                        ? null
+                        : '10 dígitos',
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
-            const SizedBox(height: 16),
-            const Text('Correo institucional', style: TextStyle(fontWeight: FontWeight.bold)),
-            const SizedBox(height: 8),
-            TextFormField(
-              controller: _correo,
-              keyboardType: TextInputType.emailAddress,
-              decoration: const InputDecoration(
-                  prefixIcon: Icon(Icons.email), hintText: 'tucontrol@utng.edu.mx'),
-              validator: (v) => (v ?? '').trim().toLowerCase().endsWith('@utng.edu.mx')
-                  ? null
-                  : 'Usa tu correo @utng.edu.mx',
-            ),
-            const SizedBox(height: 16),
-            const Text('Carrera', style: TextStyle(fontWeight: FontWeight.bold)),
-            const SizedBox(height: 8),
-            DropdownButtonFormField<String>(
-              value: _carrera,
-              isExpanded: true,
-              decoration: const InputDecoration(prefixIcon: Icon(Icons.school_outlined)),
-              items: [
-                for (final c in _carreras) DropdownMenuItem(value: c, child: Text(c, overflow: TextOverflow.ellipsis)),
-              ],
-              onChanged: (v) => setState(() => _carrera = v),
-              validator: (v) => v == null ? 'Selecciona tu carrera' : null,
-            ),
-            const SizedBox(height: 28),
-            FilledButton(onPressed: _next, child: const Text('Continuar')),
-            Center(
-              child: TextButton(
-                onPressed: () => context.go('/inicio-sesion'),
-                child: const Text('¿Ya tienes cuenta? Inicia sesión'),
+            const SizedBox(width: 12),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const Text(
+                    'Grupo',
+                    style: TextStyle(fontWeight: FontWeight.bold),
+                  ),
+                  const SizedBox(height: 8),
+                  TextFormField(
+                    controller: _grupo,
+                    textCapitalization: TextCapitalization.characters,
+                    decoration: const InputDecoration(
+                      prefixIcon: Icon(Icons.groups),
+                    ),
+                    validator: _required,
+                  ),
+                ],
               ),
             ),
           ],
         ),
-      );
+        const SizedBox(height: 16),
+        const Text(
+          'Correo institucional',
+          style: TextStyle(fontWeight: FontWeight.bold),
+        ),
+        const SizedBox(height: 8),
+        TextFormField(
+          controller: _correo,
+          keyboardType: TextInputType.emailAddress,
+          decoration: const InputDecoration(
+            prefixIcon: Icon(Icons.email),
+            hintText: 'tucontrol@utng.edu.mx',
+          ),
+          validator: (v) =>
+              (v ?? '').trim().toLowerCase().endsWith('@utng.edu.mx')
+              ? null
+              : 'Usa tu correo @utng.edu.mx',
+        ),
+        const SizedBox(height: 16),
+        const Text('Carrera', style: TextStyle(fontWeight: FontWeight.bold)),
+        const SizedBox(height: 8),
+        DropdownButtonFormField<String>(
+          initialValue: _carrera,
+          isExpanded: true,
+          decoration: const InputDecoration(
+            prefixIcon: Icon(Icons.school_outlined),
+          ),
+          items: [
+            for (final c in _carreras)
+              DropdownMenuItem(
+                value: c,
+                child: Text(c, overflow: TextOverflow.ellipsis),
+              ),
+          ],
+          onChanged: (v) => setState(() => _carrera = v),
+          validator: (v) => v == null ? 'Selecciona tu carrera' : null,
+        ),
+        const SizedBox(height: 28),
+        FilledButton(onPressed: _next, child: const Text('Continuar')),
+        Center(
+          child: TextButton(
+            onPressed: () => context.go('/inicio-sesion'),
+            child: const Text('¿Ya tienes cuenta? Inicia sesión'),
+          ),
+        ),
+      ],
+    ),
+  );
 
   Widget _stepTwo() {
     final rules = ReglasContrasena(_pass.text);
@@ -194,7 +222,10 @@ class _EstadoPantallaRegistro extends State<PantallaRegistro> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text('Contraseña', style: TextStyle(fontWeight: FontWeight.bold)),
+          const Text(
+            'Contraseña',
+            style: TextStyle(fontWeight: FontWeight.bold),
+          ),
           const SizedBox(height: 8),
           TextFormField(
             controller: _pass,
@@ -207,8 +238,9 @@ class _EstadoPantallaRegistro extends State<PantallaRegistro> {
                 onPressed: () => setState(() => _obscure = !_obscure),
               ),
             ),
-            validator: (v) =>
-                ReglasContrasena(v ?? '').valid ? null : 'No cumple los requisitos',
+            validator: (v) => ReglasContrasena(v ?? '').valid
+                ? null
+                : 'No cumple los requisitos',
           ),
           const SizedBox(height: 8),
           Row(
@@ -219,7 +251,9 @@ class _EstadoPantallaRegistro extends State<PantallaRegistro> {
                     height: 4,
                     margin: EdgeInsets.only(right: i < 3 ? 6 : 0),
                     decoration: BoxDecoration(
-                      color: i < rules.score ? ColoresApp.teal : ColoresApp.background,
+                      color: i < rules.score
+                          ? ColoresApp.teal
+                          : ColoresApp.background,
                       borderRadius: BorderRadius.circular(4),
                     ),
                   ),
@@ -229,17 +263,25 @@ class _EstadoPantallaRegistro extends State<PantallaRegistro> {
           if (_pass.text.isNotEmpty)
             Padding(
               padding: const EdgeInsets.only(top: 4),
-              child: Text(rules.label,
-                  style: const TextStyle(color: ColoresApp.teal, fontSize: 12)),
+              child: Text(
+                rules.label,
+                style: const TextStyle(color: ColoresApp.teal, fontSize: 12),
+              ),
             ),
           const SizedBox(height: 16),
-          const Text('Confirmar contraseña', style: TextStyle(fontWeight: FontWeight.bold)),
+          const Text(
+            'Confirmar contraseña',
+            style: TextStyle(fontWeight: FontWeight.bold),
+          ),
           const SizedBox(height: 8),
           TextFormField(
             controller: _pass2,
             obscureText: _obscure,
-            decoration: const InputDecoration(prefixIcon: Icon(Icons.lock_outline)),
-            validator: (v) => v == _pass.text ? null : 'Las contraseñas no coinciden',
+            decoration: const InputDecoration(
+              prefixIcon: Icon(Icons.lock_outline),
+            ),
+            validator: (v) =>
+                v == _pass.text ? null : 'Las contraseñas no coinciden',
           ),
           const SizedBox(height: 16),
           _Requisito('Mínimo 8 caracteres', rules.minLength),
@@ -251,8 +293,9 @@ class _EstadoPantallaRegistro extends State<PantallaRegistro> {
             value: _terms,
             onChanged: (v) => setState(() => _terms = v ?? false),
             title: const Text(
-                'Acepto los términos de uso y el aviso de privacidad de ACTIVA.',
-                style: TextStyle(fontSize: 12)),
+              'Acepto los términos de uso y el aviso de privacidad de ACTIVA.',
+              style: TextStyle(fontSize: 12),
+            ),
           ),
           const SizedBox(height: 16),
           FilledButton(onPressed: _create, child: const Text('Crear cuenta')),
@@ -275,14 +318,17 @@ class _Requisito extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => Padding(
-        padding: const EdgeInsets.symmetric(vertical: 2),
-        child: Row(
-          children: [
-            Icon(Icons.check_circle,
-                size: 18, color: ok ? ColoresApp.teal : Colors.black26),
-            const SizedBox(width: 8),
-            Text(text, style: const TextStyle(fontSize: 13)),
-          ],
+    padding: const EdgeInsets.symmetric(vertical: 2),
+    child: Row(
+      children: [
+        Icon(
+          Icons.check_circle,
+          size: 18,
+          color: ok ? ColoresApp.teal : Colors.black26,
         ),
-      );
+        const SizedBox(width: 8),
+        Text(text, style: const TextStyle(fontSize: 13)),
+      ],
+    ),
+  );
 }

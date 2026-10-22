@@ -5,6 +5,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
+
 import '../../../nucleo/tema/tema_app.dart';
 import '../../../datos/estado_app.dart';
 import '../../../modelos/taller.dart';
@@ -36,7 +37,10 @@ class EtiquetaCupo extends StatelessWidget {
                 : 'Cupo lleno',
             overflow: TextOverflow.ellipsis,
             style: TextStyle(
-                color: color, fontSize: 11, fontWeight: FontWeight.w600),
+              color: color,
+              fontSize: 11,
+              fontWeight: FontWeight.w600,
+            ),
           ),
         ),
       ],
@@ -128,7 +132,10 @@ class TarjetaTaller extends StatelessWidget {
                 taller,
                 height: 110,
                 child: Positioned(
-                    top: 8, right: 8, child: BotonFavorito(taller.id)),
+                  top: 8,
+                  right: 8,
+                  child: BotonFavorito(taller.id),
+                ),
               ),
               Padding(
                 padding: const EdgeInsets.all(12),
@@ -141,15 +148,18 @@ class TarjetaTaller extends StatelessWidget {
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                       style: const TextStyle(
-                          fontWeight: FontWeight.w700,
-                          fontSize: 15,
-                          color: ColoresApp.ink),
+                        fontWeight: FontWeight.w700,
+                        fontSize: 15,
+                        color: ColoresApp.ink,
+                      ),
                     ),
                     const SizedBox(height: 6),
                     // Etiqueta de categoría con el color de esa categoría
                     Container(
                       padding: const EdgeInsets.symmetric(
-                          horizontal: 8, vertical: 2),
+                        horizontal: 8,
+                        vertical: 2,
+                      ),
                       decoration: BoxDecoration(
                         color: taller.categoria.color.withValues(alpha: 0.14),
                         borderRadius: BorderRadius.circular(10),
@@ -170,7 +180,9 @@ class TarjetaTaller extends StatelessWidget {
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                       style: const TextStyle(
-                          color: ColoresApp.muted, fontSize: 11),
+                        color: ColoresApp.muted,
+                        fontSize: 11,
+                      ),
                     ),
                     // Días y horario
                     Text(
@@ -178,7 +190,9 @@ class TarjetaTaller extends StatelessWidget {
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                       style: const TextStyle(
-                          color: ColoresApp.muted, fontSize: 11),
+                        color: ColoresApp.muted,
+                        fontSize: 11,
+                      ),
                     ),
                     const SizedBox(height: 4),
                     // Lugares disponibles

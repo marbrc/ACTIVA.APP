@@ -45,27 +45,24 @@ class Alumno extends Usuario {
     required this.carrera,
   }) : super(rol: Rol.alumno);
 
-    Alumno copyWith({
+  Alumno copyWith({
     String? nombre,
     String? apellidoPaterno,
     String? apellidoMaterno,
     String? telefono,
-  }) =>
-      Alumno(
-        id: id,
-        nombre: nombre ?? this.nombre,
-        apellidoPaterno: apellidoPaterno ?? this.apellidoPaterno,
-        apellidoMaterno: apellidoMaterno ?? this.apellidoMaterno,
-        correo: correo,
-        telefono: telefono ?? this.telefono,
-        foto: foto,
-        numeroControl: numeroControl,
-        grupo: grupo,
-        carrera: carrera,
-      );
+  }) => Alumno(
+    id: id,
+    nombre: nombre ?? this.nombre,
+    apellidoPaterno: apellidoPaterno ?? this.apellidoPaterno,
+    apellidoMaterno: apellidoMaterno ?? this.apellidoMaterno,
+    correo: correo,
+    telefono: telefono ?? this.telefono,
+    foto: foto,
+    numeroControl: numeroControl,
+    grupo: grupo,
+    carrera: carrera,
+  );
 }
-
-
 
 class Instructor extends Usuario {
   final String especialidad;

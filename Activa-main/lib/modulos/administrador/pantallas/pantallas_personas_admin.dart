@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
+
 import '../../../nucleo/tema/tema_app.dart';
 import '../../../nucleo/utilidades/formateadores.dart';
 import '../../../nucleo/componentes/tarjeta_app.dart';
@@ -46,11 +47,18 @@ class _EstadoPantallaAlumnosAdmin extends State<PantallaAlumnosAdmin> {
       child: ListView(
         padding: const EdgeInsets.all(20),
         children: [
-          const Text('Alumnos',
-              style: TextStyle(
-                  fontSize: 26, fontWeight: FontWeight.w800, color: ColoresApp.navy)),
-          Text('${s.todosAlumnos.length} alumnos registrados',
-              style: const TextStyle(color: Colors.black54, fontSize: 12)),
+          const Text(
+            'Alumnos',
+            style: TextStyle(
+              fontSize: 26,
+              fontWeight: FontWeight.w800,
+              color: ColoresApp.navy,
+            ),
+          ),
+          Text(
+            '${s.todosAlumnos.length} alumnos registrados',
+            style: const TextStyle(color: Colors.black54, fontSize: 12),
+          ),
           const SizedBox(height: 12),
           TextField(
             controller: _search,
@@ -65,7 +73,12 @@ class _EstadoPantallaAlumnosAdmin extends State<PantallaAlumnosAdmin> {
             scrollDirection: Axis.horizontal,
             child: Row(
               children: [
-                for (final (i, n) in ['Todos', 'Con 60 h', 'En proceso', 'Sin actividad'].indexed) ...[
+                for (final (i, n) in [
+                  'Todos',
+                  'Con 60 h',
+                  'En proceso',
+                  'Sin actividad',
+                ].indexed) ...[
                   ChoiceChip(
                     label: Text(n),
                     selected: _f == i,
@@ -83,54 +96,73 @@ class _EstadoPantallaAlumnosAdmin extends State<PantallaAlumnosAdmin> {
               child: Center(child: Text('No hay alumnos con ese filtro')),
             ),
           for (final a in lista)
-            Builder(builder: (_) {
-              final h = s.horasAlumno(a);
-              final completo = h >= metaHoras;
-              return Padding(
-                padding: const EdgeInsets.only(bottom: 10),
-                child: TarjetaApp(
-                  child: Row(
-                    children: [
-                      CircleAvatar(
-                        backgroundColor: ColoresApp.background,
-                        child: Text(iniciales(a.nombre, a.apellidoPaterno),
+            Builder(
+              builder: (_) {
+                final h = s.horasAlumno(a);
+                final completo = h >= metaHoras;
+                return Padding(
+                  padding: const EdgeInsets.only(bottom: 10),
+                  child: TarjetaApp(
+                    child: Row(
+                      children: [
+                        CircleAvatar(
+                          backgroundColor: ColoresApp.background,
+                          child: Text(
+                            iniciales(a.nombre, a.apellidoPaterno),
                             style: const TextStyle(
-                                color: ColoresApp.navy, fontWeight: FontWeight.bold)),
-                      ),
-                      const SizedBox(width: 12),
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(a.nombreCompleto,
-                                style: const TextStyle(fontWeight: FontWeight.bold)),
-                            Text(a.numeroControl,
-                                style: const TextStyle(
-                                    color: Colors.black45, fontSize: 11)),
-                            const SizedBox(height: 6),
-                            ClipRRect(
-                              borderRadius: BorderRadius.circular(6),
-                              child: LinearProgressIndicator(
-                                value: (h / metaHoras).clamp(0.0, 1.0),
-                                minHeight: 6,
-                                backgroundColor: ColoresApp.background,
-                                color: completo ? ColoresApp.teal : ColoresApp.primary,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                      const SizedBox(width: 12),
-                      Text('$h / $metaHoras h',
-                          style: TextStyle(
+                              color: ColoresApp.navy,
                               fontWeight: FontWeight.bold,
-                              fontSize: 12,
-                              color: completo ? ColoresApp.teal : Colors.black87)),
-                    ],
+                            ),
+                          ),
+                        ),
+                        const SizedBox(width: 12),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                a.nombreCompleto,
+                                style: const TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                              Text(
+                                a.numeroControl,
+                                style: const TextStyle(
+                                  color: Colors.black45,
+                                  fontSize: 11,
+                                ),
+                              ),
+                              const SizedBox(height: 6),
+                              ClipRRect(
+                                borderRadius: BorderRadius.circular(6),
+                                child: LinearProgressIndicator(
+                                  value: (h / metaHoras).clamp(0.0, 1.0),
+                                  minHeight: 6,
+                                  backgroundColor: ColoresApp.background,
+                                  color: completo
+                                      ? ColoresApp.teal
+                                      : ColoresApp.primary,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                        const SizedBox(width: 12),
+                        Text(
+                          '$h / $metaHoras h',
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 12,
+                            color: completo ? ColoresApp.teal : Colors.black87,
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
-                ),
-              );
-            }),
+                );
+              },
+            ),
         ],
       ),
     );
@@ -152,8 +184,10 @@ class PantallaInstructores extends StatelessWidget {
             child: ListView(
               padding: const EdgeInsets.all(20),
               children: [
-                Text('${s.instructores.length} instructores activos',
-                    style: const TextStyle(color: Colors.black54, fontSize: 12)),
+                Text(
+                  '${s.instructores.length} instructores activos',
+                  style: const TextStyle(color: Colors.black54, fontSize: 12),
+                ),
                 const SizedBox(height: 10),
                 for (final i in s.instructores)
                   Padding(
@@ -163,22 +197,32 @@ class PantallaInstructores extends StatelessWidget {
                         children: [
                           CircleAvatar(
                             backgroundColor: ColoresApp.background,
-                            child: Text(iniciales(i.nombre, i.apellidoPaterno),
-                                style: const TextStyle(
-                                    color: ColoresApp.navy,
-                                    fontWeight: FontWeight.bold)),
+                            child: Text(
+                              iniciales(i.nombre, i.apellidoPaterno),
+                              style: const TextStyle(
+                                color: ColoresApp.navy,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
                           ),
                           const SizedBox(width: 12),
                           Expanded(
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                Text(i.nombreCompleto,
-                                    style: const TextStyle(fontWeight: FontWeight.bold)),
                                 Text(
-                                    '${i.especialidad} · ${s.alumnosDeInstructor(i.id)} alumnos',
-                                    style: const TextStyle(
-                                        color: Colors.black54, fontSize: 11)),
+                                  i.nombreCompleto,
+                                  style: const TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                                Text(
+                                  '${i.especialidad} · ${s.alumnosDeInstructor(i.id)} alumnos',
+                                  style: const TextStyle(
+                                    color: Colors.black54,
+                                    fontSize: 11,
+                                  ),
+                                ),
                               ],
                             ),
                           ),
@@ -206,7 +250,8 @@ class PantallaInstructores extends StatelessWidget {
 class PantallaNuevoInstructor extends StatefulWidget {
   const PantallaNuevoInstructor({super.key});
   @override
-  State<PantallaNuevoInstructor> createState() => _EstadoPantallaNuevoInstructor();
+  State<PantallaNuevoInstructor> createState() =>
+      _EstadoPantallaNuevoInstructor();
 }
 
 class _EstadoPantallaNuevoInstructor extends State<PantallaNuevoInstructor> {
@@ -229,73 +274,80 @@ class _EstadoPantallaNuevoInstructor extends State<PantallaNuevoInstructor> {
       (v == null || v.trim().isEmpty) ? 'Campo requerido' : null;
 
   Widget _label(String t) => Padding(
-        padding: const EdgeInsets.only(top: 16, bottom: 8),
-        child: Text(t, style: const TextStyle(fontWeight: FontWeight.bold)),
-      );
+    padding: const EdgeInsets.only(top: 16, bottom: 8),
+    child: Text(t, style: const TextStyle(fontWeight: FontWeight.bold)),
+  );
 
   void _save() {
     if (!_form.currentState!.validate()) return;
     final msg = ScaffoldMessenger.of(context);
     context.read<EstadoApp>().agregarInstructor(
-          nombre: _nombre.text,
-          paterno: _pat.text,
-          materno: _mat.text,
-          correo: _correo.text,
-          especialidad: _esp.text,
-        );
+      nombre: _nombre.text,
+      paterno: _pat.text,
+      materno: _mat.text,
+      correo: _correo.text,
+      especialidad: _esp.text,
+    );
     context.pop();
     msg.showSnackBar(avisoSnack(content: Text('Instructor agregado')));
   }
 
   @override
   Widget build(BuildContext context) => EstructuraSubpantalla(
-        title: 'Agregar instructor',
-        fallback: '/admin/instructores',
-        child: Form(
-          key: _form,
-          child: ListView(
-            padding: const EdgeInsets.all(20),
-            children: [
-              _label('Nombre(s)'),
-              TextFormField(
-                controller: _nombre,
-                textCapitalization: TextCapitalization.words,
-                decoration: const InputDecoration(prefixIcon: Icon(Icons.person)),
-                validator: _req,
-              ),
-              _label('Apellido paterno'),
-              TextFormField(
-                controller: _pat,
-                textCapitalization: TextCapitalization.words,
-                decoration: const InputDecoration(prefixIcon: Icon(Icons.person_outline)),
-                validator: _req,
-              ),
-              _label('Apellido materno (opcional)'),
-              TextFormField(
-                controller: _mat,
-                textCapitalization: TextCapitalization.words,
-                decoration: const InputDecoration(prefixIcon: Icon(Icons.person_outline)),
-              ),
-              _label('Correo institucional'),
-              TextFormField(
-                controller: _correo,
-                keyboardType: TextInputType.emailAddress,
-                decoration: const InputDecoration(prefixIcon: Icon(Icons.email)),
-                validator: (v) =>
-                    (v ?? '').trim().toLowerCase().endsWith('@utng.edu.mx')
-                        ? null
-                        : 'Usa un correo @utng.edu.mx',
-              ),
-              _label('Especialidad'),
-              TextFormField(
-                controller: _esp,
-                decoration: const InputDecoration(prefixIcon: Icon(Icons.sports)),
-                validator: _req,
-              ),
-              const SizedBox(height: 24),
-              FilledButton(onPressed: _save, child: const Text('Guardar instructor')),
-            ],
+    title: 'Agregar instructor',
+    fallback: '/admin/instructores',
+    child: Form(
+      key: _form,
+      child: ListView(
+        padding: const EdgeInsets.all(20),
+        children: [
+          _label('Nombre(s)'),
+          TextFormField(
+            controller: _nombre,
+            textCapitalization: TextCapitalization.words,
+            decoration: const InputDecoration(prefixIcon: Icon(Icons.person)),
+            validator: _req,
           ),
-        ),
-      );
+          _label('Apellido paterno'),
+          TextFormField(
+            controller: _pat,
+            textCapitalization: TextCapitalization.words,
+            decoration: const InputDecoration(
+              prefixIcon: Icon(Icons.person_outline),
+            ),
+            validator: _req,
+          ),
+          _label('Apellido materno (opcional)'),
+          TextFormField(
+            controller: _mat,
+            textCapitalization: TextCapitalization.words,
+            decoration: const InputDecoration(
+              prefixIcon: Icon(Icons.person_outline),
+            ),
+          ),
+          _label('Correo institucional'),
+          TextFormField(
+            controller: _correo,
+            keyboardType: TextInputType.emailAddress,
+            decoration: const InputDecoration(prefixIcon: Icon(Icons.email)),
+            validator: (v) =>
+                (v ?? '').trim().toLowerCase().endsWith('@utng.edu.mx')
+                ? null
+                : 'Usa un correo @utng.edu.mx',
+          ),
+          _label('Especialidad'),
+          TextFormField(
+            controller: _esp,
+            decoration: const InputDecoration(prefixIcon: Icon(Icons.sports)),
+            validator: _req,
+          ),
+          const SizedBox(height: 24),
+          FilledButton(
+            onPressed: _save,
+            child: const Text('Guardar instructor'),
+          ),
+        ],
+      ),
+    ),
+  );
 }

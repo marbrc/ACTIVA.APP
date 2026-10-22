@@ -4,6 +4,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+
 import '../../../nucleo/tema/tema_app.dart';
 import '../../../nucleo/componentes/aparicion_suave.dart';
 import '../../../datos/estado_app.dart';
@@ -49,23 +50,23 @@ class _EstadoPantallaExplorar extends State<PantallaExplorar> {
 
   // chip de filtro con estilo azul marino cuando está seleccionado
   Widget _chip(String label, bool selected, VoidCallback onTap) => ChoiceChip(
-        label: Text(label),
-        selected: selected,
-        // Quita la palomita de selección
-        showCheckmark: false,
-        // Azul marino cuando está elegido
-        selectedColor: ColoresApp.navy,
-        // Blanco cuando no
-        backgroundColor: Colors.white,
-        // Borde azul marino si está elegido, gris clarito si no
-        side: BorderSide(color: selected ? ColoresApp.navy : ColoresApp.line),
-        labelStyle: TextStyle(
-          color: selected ? Colors.white : ColoresApp.navy,
-          fontWeight: FontWeight.w600,
-          fontSize: 13,
-        ),
-        onSelected: (_) => onTap(),
-      );
+    label: Text(label),
+    selected: selected,
+    // Quita la palomita de selección
+    showCheckmark: false,
+    // Azul marino cuando está elegido
+    selectedColor: ColoresApp.navy,
+    // Blanco cuando no
+    backgroundColor: Colors.white,
+    // Borde azul marino si está elegido, gris clarito si no
+    side: BorderSide(color: selected ? ColoresApp.navy : ColoresApp.line),
+    labelStyle: TextStyle(
+      color: selected ? Colors.white : ColoresApp.navy,
+      fontWeight: FontWeight.w600,
+      fontSize: 13,
+    ),
+    onSelected: (_) => onTap(),
+  );
 
   @override
   Widget build(BuildContext context) {
@@ -75,10 +76,12 @@ class _EstadoPantallaExplorar extends State<PantallaExplorar> {
     final q = _search.text.trim().toLowerCase();
     // Filtra: activa + categoría elegida + nombre que contenga lo buscado
     final lista = state.talleres
-        .where((t) =>
-            t.activo &&
-            (_cat == null || t.categoria.clave == _cat) &&
-            t.nombre.toLowerCase().contains(q))
+        .where(
+          (t) =>
+              t.activo &&
+              (_cat == null || t.categoria.clave == _cat) &&
+              t.nombre.toLowerCase().contains(q),
+        )
         .toList();
 
     return SafeArea(
@@ -131,12 +134,19 @@ class _EstadoPantallaExplorar extends State<PantallaExplorar> {
               child: Row(
                 children: [
                   // Chip "Todas"
-                  _chip('Todas', _cat == null, () => setState(() => _cat = null)),
+                  _chip(
+                    'Todas',
+                    _cat == null,
+                    () => setState(() => _cat = null),
+                  ),
                   // Un chip por cada categoría activa
                   for (final c in state.categorias) ...[
                     const SizedBox(width: 8),
-                    _chip(c.nombre, _cat == c.clave,
-                        () => setState(() => _cat = c.clave)),
+                    _chip(
+                      c.nombre,
+                      _cat == c.clave,
+                      () => setState(() => _cat = c.clave),
+                    ),
                   ],
                 ],
               ),
@@ -150,12 +160,16 @@ class _EstadoPantallaExplorar extends State<PantallaExplorar> {
                       child: Column(
                         mainAxisSize: MainAxisSize.min,
                         children: [
-                          Icon(Icons.search_off_rounded,
-                              size: 56,
-                              color: ColoresApp.primary.withValues(alpha: 0.4)),
+                          Icon(
+                            Icons.search_off_rounded,
+                            size: 56,
+                            color: ColoresApp.primary.withValues(alpha: 0.4),
+                          ),
                           const SizedBox(height: 10),
-                          const Text('No encontramos actividades',
-                              style: TextStyle(color: ColoresApp.muted)),
+                          const Text(
+                            'No encontramos actividades',
+                            style: TextStyle(color: ColoresApp.muted),
+                          ),
                         ],
                       ),
                     )
@@ -164,14 +178,14 @@ class _EstadoPantallaExplorar extends State<PantallaExplorar> {
                       padding: const EdgeInsets.only(bottom: 16),
                       gridDelegate:
                           const SliverGridDelegateWithFixedCrossAxisCount(
-                        // 2 tarjetas por fila
-                        crossAxisCount: 2,
-                        // Alto fijo de cada tarjeta
-                        mainAxisExtent: 196,
-                        // Espacio horizontal y vertical entre tarjetas
-                        crossAxisSpacing: 12,
-                        mainAxisSpacing: 12,
-                      ),
+                            // 2 tarjetas por fila
+                            crossAxisCount: 2,
+                            // Alto fijo de cada tarjeta
+                            mainAxisExtent: 196,
+                            // Espacio horizontal y vertical entre tarjetas
+                            crossAxisSpacing: 12,
+                            mainAxisSpacing: 12,
+                          ),
                       itemCount: lista.length,
                       // Cada tarjeta entra con un pequeño retraso distinto
                       itemBuilder: (_, i) => AparicionSuave(

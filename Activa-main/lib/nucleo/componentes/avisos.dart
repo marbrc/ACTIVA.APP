@@ -6,6 +6,7 @@
 // ===================================================================
 
 import 'package:flutter/material.dart';
+
 import '../servicios/sonidos.dart';
 import '../tema/tema_app.dart';
 
@@ -16,10 +17,23 @@ TipoToast _tipoDe(String texto) {
   final t = texto.toLowerCase();
   const error = ['incorrect', 'error', 'no se pudo', 'inválid', 'invalid'];
   const exito = [
-    'creada', 'creado', 'agregad', 'guardad', 'publicad',
-    'actualizad', 'generad', 'cambios', 'te diste de baja',
+    'creada',
+    'creado',
+    'agregad',
+    'guardad',
+    'publicad',
+    'actualizad',
+    'generad',
+    'cambios',
+    'te diste de baja',
   ];
-  const advertencia = ['acepta', 'próximamente', 'proximamente', 'simulad', 'requerid'];
+  const advertencia = [
+    'acepta',
+    'próximamente',
+    'proximamente',
+    'simulad',
+    'requerid',
+  ];
   if (error.any(t.contains)) return TipoToast.error;
   if (advertencia.any(t.contains)) return TipoToast.advertencia;
   if (exito.any(t.contains)) return TipoToast.exito;

@@ -7,6 +7,7 @@
 // ===================================================================
 
 import 'package:flutter/material.dart';
+
 import '../../../modelos/categoria.dart';
 import '../../../modelos/taller.dart';
 
@@ -56,7 +57,7 @@ class MiniaturaTaller extends StatelessWidget {
           height: size,
           fit: BoxFit.cover,
           // Si no hay foto, usa el degradado con ícono
-          errorBuilder: (_, __, ___) => Container(
+          errorBuilder: (_, _, _) => Container(
             decoration: BoxDecoration(
               gradient: LinearGradient(
                 colors: [c.color, Color.lerp(c.color, Colors.black, 0.25)!],
@@ -64,7 +65,11 @@ class MiniaturaTaller extends StatelessWidget {
                 end: Alignment.bottomRight,
               ),
             ),
-            child: Icon(iconoDe(c.icono), color: Colors.white, size: size * 0.5),
+            child: Icon(
+              iconoDe(c.icono),
+              color: Colors.white,
+              size: size * 0.5,
+            ),
           ),
         ),
       ),
@@ -92,7 +97,7 @@ class BannerTaller extends StatelessWidget {
           Image.asset(
             rutaFotoTaller(taller),
             fit: BoxFit.cover,
-            errorBuilder: (_, __, ___) => Container(
+            errorBuilder: (_, _, _) => Container(
               decoration: BoxDecoration(
                 gradient: LinearGradient(
                   colors: [c.color, Color.lerp(c.color, Colors.black, 0.3)!],
@@ -138,7 +143,7 @@ class BannerTaller extends StatelessWidget {
               ),
             ),
           ),
-          if (child != null) child!,
+          ?child,
         ],
       ),
     );
@@ -153,11 +158,11 @@ class _Circulo extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => Container(
-        width: size,
-        height: size,
-        decoration: BoxDecoration(
-          shape: BoxShape.circle,
-          color: Colors.white.withValues(alpha: alpha),
-        ),
-      );
+    width: size,
+    height: size,
+    decoration: BoxDecoration(
+      shape: BoxShape.circle,
+      color: Colors.white.withValues(alpha: alpha),
+    ),
+  );
 }

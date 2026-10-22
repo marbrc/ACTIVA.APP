@@ -1,6 +1,11 @@
+import '../../../nucleo/componentes/avatar_activa.dart';
+import '../../../modelos/enums.dart';
+import '../../../datos/sesion.dart';
+
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
+
 import '../../../nucleo/tema/tema_app.dart';
 import '../../../nucleo/utilidades/formateadores.dart';
 import '../../../nucleo/componentes/tarjeta_app.dart';
@@ -10,8 +15,9 @@ import '../componentes/miniatura_taller.dart';
 import '../../../nucleo/servicios/sonidos.dart';
 import '../../../nucleo/componentes/avisos.dart';
 
-void _soon(BuildContext c) => ScaffoldMessenger.of(c)
-    .showSnackBar(avisoSnack(content: Text('Próximamente')));
+void _soon(BuildContext c) =>
+    ScaffoldMessenger.of(c)
+        .showSnackBar(avisoSnack(content: Text('Próximamente')));
 
 // Estructura común de las sub-pantallas (flecha atrás + título)
 class _Sub extends StatelessWidget {
@@ -21,19 +27,23 @@ class _Sub extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => Scaffold(
-        appBar: AppBar(
-          backgroundColor: ColoresApp.background,
-          scrolledUnderElevation: 0,
-          leading: BackButton(
-              onPressed: () => context.canPop()
-                  ? context.pop()
-                  : context.go('/alumno/perfil')),
-          title: Text(title,
-              style: const TextStyle(
-                  fontWeight: FontWeight.w800, color: ColoresApp.navy)),
+    appBar: AppBar(
+      backgroundColor: ColoresApp.background,
+      scrolledUnderElevation: 0,
+      leading: BackButton(
+        onPressed: () =>
+            context.canPop() ? context.pop() : context.go('/alumno/perfil'),
+      ),
+      title: Text(
+        title,
+        style: const TextStyle(
+          fontWeight: FontWeight.w800,
+          color: ColoresApp.navy,
         ),
-        body: SafeArea(child: child),
-      );
+      ),
+    ),
+    body: SafeArea(child: child),
+  );
 }
 
 class _Linea extends StatelessWidget {
@@ -44,36 +54,48 @@ class _Linea extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => Padding(
-        padding: const EdgeInsets.symmetric(vertical: 10),
-        child: Row(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            SizedBox(
-                width: 100,
-                child: Text(label,
-                    style: const TextStyle(color: Colors.black45, fontSize: 12))),
-            Expanded(
-              child: chip
-                  ? Align(
-                      alignment: Alignment.centerLeft,
-                      child: Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 3),
-                        decoration: BoxDecoration(
-                          color: ColoresApp.teal.withValues(alpha: 0.18),
-                          borderRadius: BorderRadius.circular(10),
-                        ),
-                        child: Text(value,
-                            style: const TextStyle(
-                                color: ColoresApp.teal,
-                                fontWeight: FontWeight.bold,
-                                fontSize: 12)),
-                      ),
-                    )
-                  : Text(value, style: const TextStyle(fontWeight: FontWeight.bold)),
-            ),
-          ],
+    padding: const EdgeInsets.symmetric(vertical: 10),
+    child: Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        SizedBox(
+          width: 100,
+          child: Text(
+            label,
+            style: const TextStyle(color: Colors.black45, fontSize: 12),
+          ),
         ),
-      );
+        Expanded(
+          child: chip
+              ? Align(
+                  alignment: Alignment.centerLeft,
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 10,
+                      vertical: 3,
+                    ),
+                    decoration: BoxDecoration(
+                      color: ColoresApp.teal.withValues(alpha: 0.18),
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    child: Text(
+                      value,
+                      style: const TextStyle(
+                        color: ColoresApp.teal,
+                        fontWeight: FontWeight.bold,
+                        fontSize: 12,
+                      ),
+                    ),
+                  ),
+                )
+              : Text(
+                  value,
+                  style: const TextStyle(fontWeight: FontWeight.bold),
+                ),
+        ),
+      ],
+    ),
+  );
 }
 
 // ───────────────────────── Perfil ─────────────────────────
@@ -81,14 +103,14 @@ class PantallaPerfil extends StatelessWidget {
   const PantallaPerfil({super.key});
 
   Widget _item(IconData icon, String label, VoidCallback onTap) => ListTile(
-        leading: CircleAvatar(
-          backgroundColor: ColoresApp.background,
-          child: Icon(icon, color: ColoresApp.primary, size: 20),
-        ),
-        title: Text(label, style: const TextStyle(fontWeight: FontWeight.bold)),
-        trailing: const Icon(Icons.chevron_right, color: Colors.black38),
-        onTap: onTap,
-      );
+    leading: CircleAvatar(
+      backgroundColor: ColoresApp.background,
+      child: Icon(icon, color: ColoresApp.primary, size: 20),
+    ),
+    title: Text(label, style: const TextStyle(fontWeight: FontWeight.bold)),
+    trailing: const Icon(Icons.chevron_right, color: Colors.black38),
+    onTap: onTap,
+  );
 
   @override
   Widget build(BuildContext context) {
@@ -99,42 +121,72 @@ class PantallaPerfil extends StatelessWidget {
         children: [
           const SizedBox(height: 12),
           Center(
-            child: CircleAvatar(
-              radius: 46,
-              backgroundColor: ColoresApp.navy,
-              child: Text(inicialesDe(a.nombre),
-                  style: const TextStyle(
-                      color: Colors.white, fontSize: 28, fontWeight: FontWeight.bold)),
+            child: AvatarActiva(
+              rol: Rol.alumno,
+              iniciales: inicialesDe(a.nombre),
+              radio: 46,
+              borde: true,
             ),
           ),
           const SizedBox(height: 12),
-          Text(a.nombreCompleto,
-              textAlign: TextAlign.center,
-              style: const TextStyle(
-                  fontSize: 20, fontWeight: FontWeight.w800, color: ColoresApp.navy)),
-          Text('Número de Control: ${a.numeroControl}',
-              textAlign: TextAlign.center,
-              style: const TextStyle(color: Colors.black54, fontSize: 12)),
+          Text(
+            a.nombreCompleto,
+            textAlign: TextAlign.center,
+            style: const TextStyle(
+              fontSize: 20,
+              fontWeight: FontWeight.w800,
+              color: ColoresApp.navy,
+            ),
+          ),
+          Text(
+            'Número de Control: ${a.numeroControl}',
+            textAlign: TextAlign.center,
+            style: const TextStyle(color: Colors.black54, fontSize: 12),
+          ),
           const SizedBox(height: 20),
           TarjetaApp(
             padding: EdgeInsets.zero,
             child: Column(
-              children: ListTile.divideTiles(context: context, tiles: [
-                _item(Icons.school, 'Mis datos académicos',
-                    () => context.push('/perfil/academico')),
-                _item(Icons.calendar_today, 'Mis actividades',
-                    () => context.go('/alumno/actividades')),
-                _item(Icons.favorite, 'Mis favoritos',
-                    () => context.push('/perfil/favoritos')),
-                _item(Icons.description, 'Mis comprobantes',
-                    () => context.push('/perfil/comprobantes')),
-                _item(Icons.bar_chart, 'Mi progreso',
-                    () => context.push('/perfil/progreso')),
-                _item(Icons.edit, 'Editar perfil',
-                    () => context.push('/perfil/editar')),
-                _item(Icons.settings, 'Configuración',
-                    () => context.push('/perfil/configuracion')),
-              ]).toList(),
+              children: ListTile.divideTiles(
+                context: context,
+                tiles: [
+                  _item(
+                    Icons.school,
+                    'Mis datos académicos',
+                    () => context.push('/perfil/academico'),
+                  ),
+                  _item(
+                    Icons.calendar_today,
+                    'Mis actividades',
+                    () => context.go('/alumno/actividades'),
+                  ),
+                  _item(
+                    Icons.favorite,
+                    'Mis favoritos',
+                    () => context.push('/perfil/favoritos'),
+                  ),
+                  _item(
+                    Icons.description,
+                    'Mis comprobantes',
+                    () => context.push('/perfil/comprobantes'),
+                  ),
+                  _item(
+                    Icons.bar_chart,
+                    'Mi progreso',
+                    () => context.push('/perfil/progreso'),
+                  ),
+                  _item(
+                    Icons.edit,
+                    'Editar perfil',
+                    () => context.push('/perfil/editar'),
+                  ),
+                  _item(
+                    Icons.settings,
+                    'Configuración',
+                    () => context.push('/perfil/configuracion'),
+                  ),
+                ],
+              ).toList(),
             ),
           ),
           const SizedBox(height: 16),
@@ -147,7 +199,10 @@ class PantallaPerfil extends StatelessWidget {
             child: const Text('Ver panel de coordinador (demo)'),
           ),
           TextButton(
-            onPressed: () => context.go('/bienvenida'),
+            onPressed: () {
+              context.read<EstadoSesion>().cerrarSesion();
+              context.go('/bienvenida');
+            },
             child: const Text('Cerrar sesión'),
           ),
         ],
@@ -173,24 +228,30 @@ class PantallaDatosAcademicos extends StatelessWidget {
           TarjetaApp(
             child: Row(
               children: [
-                CircleAvatar(
-                  radius: 26,
-                  backgroundColor: ColoresApp.navy,
-                  child: Text(inicialesDe(a.nombre),
-                      style: const TextStyle(
-                          color: Colors.white, fontWeight: FontWeight.bold)),
+                AvatarActiva(
+                  rol: Rol.alumno,
+                  iniciales: inicialesDe(a.nombre),
+                  radio: 26,
                 ),
                 const SizedBox(width: 14),
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(a.nombreCompleto,
-                          style: const TextStyle(
-                              fontWeight: FontWeight.w800, fontSize: 16)),
-                      Text('Número de Control: ${a.numeroControl}',
-                          style: const TextStyle(
-                              color: Colors.black54, fontSize: 12)),
+                      Text(
+                        a.nombreCompleto,
+                        style: const TextStyle(
+                          fontWeight: FontWeight.w800,
+                          fontSize: 16,
+                        ),
+                      ),
+                      Text(
+                        'Número de Control: ${a.numeroControl}',
+                        style: const TextStyle(
+                          color: Colors.black54,
+                          fontSize: 12,
+                        ),
+                      ),
                     ],
                   ),
                 ),
@@ -201,8 +262,10 @@ class PantallaDatosAcademicos extends StatelessWidget {
           TarjetaApp(
             child: Column(
               children: [
-                const _Linea('Universidad',
-                    'Universidad Tecnológica del Norte de Guanajuato'),
+                const _Linea(
+                  'Universidad',
+                  'Universidad Tecnológica del Norte de Guanajuato',
+                ),
                 _Linea('Carrera', a.carrera),
                 _Linea('Grupo', a.grupo),
                 const _Linea('Periodo', periodoSimulado),
@@ -218,10 +281,15 @@ class PantallaDatosAcademicos extends StatelessWidget {
                 Row(
                   children: [
                     const Expanded(
-                        child: Text('Actividad paraescolar',
-                            style: TextStyle(fontWeight: FontWeight.bold))),
-                    Text('$h / $metaHoras horas',
-                        style: const TextStyle(fontWeight: FontWeight.bold)),
+                      child: Text(
+                        'Actividad paraescolar',
+                        style: TextStyle(fontWeight: FontWeight.bold),
+                      ),
+                    ),
+                    Text(
+                      '$h / $metaHoras horas',
+                      style: const TextStyle(fontWeight: FontWeight.bold),
+                    ),
                   ],
                 ),
                 const SizedBox(height: 10),
@@ -274,13 +342,22 @@ class _EstadoPantallaComprobantes extends State<PantallaComprobantes> {
     final h = s.horasRealizadas;
     final docs = <_Doc>[
       for (final i in s.misInscripciones)
-        _Doc(false, 'Comprobante de inscripción',
-            '${i.taller.nombre} · Folio ${i.folio}\nEmitido el ${fechaLarga(i.fechaInscripcion)}'),
-      _Doc(true, 'Constancia parcial de horas',
-          '$h de $metaHoras horas acumuladas\nActualizada hoy'),
-      _Doc(true, 'Constancia final de horas',
-          'Se habilita al completar las $metaHoras horas',
-          locked: h < metaHoras),
+        _Doc(
+          false,
+          'Comprobante de inscripción',
+          '${i.taller.nombre} · Folio ${i.folio}\nEmitido el ${fechaLarga(i.fechaInscripcion)}',
+        ),
+      _Doc(
+        true,
+        'Constancia parcial de horas',
+        '$h de $metaHoras horas acumuladas\nActualizada hoy',
+      ),
+      _Doc(
+        true,
+        'Constancia final de horas',
+        'Se habilita al completar las $metaHoras horas',
+        locked: h < metaHoras,
+      ),
     ];
     final visibles = docs
         .where((d) => _tab == 2 || (_tab == 1) == d.esHoras)
@@ -293,7 +370,11 @@ class _EstadoPantallaComprobantes extends State<PantallaComprobantes> {
         children: [
           Row(
             children: [
-              for (final (i, t) in ['Inscripciones', 'Horas', 'Todos'].indexed) ...[
+              for (final (i, t) in [
+                'Inscripciones',
+                'Horas',
+                'Todos',
+              ].indexed) ...[
                 ChoiceChip(
                   label: Text(t),
                   selected: _tab == i,
@@ -312,25 +393,35 @@ class _EstadoPantallaComprobantes extends State<PantallaComprobantes> {
                   children: [
                     CircleAvatar(
                       backgroundColor: ColoresApp.background,
-                      child: Icon(Icons.description,
-                          color: d.locked ? Colors.black26 : ColoresApp.primary),
+                      child: Icon(
+                        Icons.description,
+                        color: d.locked ? Colors.black26 : ColoresApp.primary,
+                      ),
                     ),
                     const SizedBox(width: 12),
                     Expanded(
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text(d.titulo,
-                              style: const TextStyle(fontWeight: FontWeight.bold)),
-                          Text(d.detalle,
-                              style: const TextStyle(
-                                  color: Colors.black54, fontSize: 11)),
+                          Text(
+                            d.titulo,
+                            style: const TextStyle(fontWeight: FontWeight.bold),
+                          ),
+                          Text(
+                            d.detalle,
+                            style: const TextStyle(
+                              color: Colors.black54,
+                              fontSize: 11,
+                            ),
+                          ),
                         ],
                       ),
                     ),
                     IconButton(
-                      icon: Icon(d.locked ? Icons.lock : Icons.download,
-                          color: d.locked ? Colors.black26 : ColoresApp.primary),
+                      icon: Icon(
+                        d.locked ? Icons.lock : Icons.download,
+                        color: d.locked ? Colors.black26 : ColoresApp.primary,
+                      ),
                       onPressed: d.locked ? null : () => _soon(context),
                     ),
                   ],
@@ -364,21 +455,28 @@ class _Estadistica extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => Expanded(
-        child: TarjetaApp(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Icon(icon, color: ColoresApp.primary),
-              const SizedBox(height: 8),
-              Text(value,
-                  style: const TextStyle(
-                      fontSize: 22, fontWeight: FontWeight.w800, color: ColoresApp.navy)),
-              Text(label,
-                  style: const TextStyle(color: Colors.black54, fontSize: 11)),
-            ],
+    child: TarjetaApp(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Icon(icon, color: ColoresApp.primary),
+          const SizedBox(height: 8),
+          Text(
+            value,
+            style: const TextStyle(
+              fontSize: 22,
+              fontWeight: FontWeight.w800,
+              color: ColoresApp.navy,
+            ),
           ),
-        ),
-      );
+          Text(
+            label,
+            style: const TextStyle(color: Colors.black54, fontSize: 11),
+          ),
+        ],
+      ),
+    ),
+  );
 }
 
 class PantallaProgreso extends StatelessWidget {
@@ -414,23 +512,34 @@ class PantallaProgreso extends StatelessWidget {
                       Column(
                         mainAxisSize: MainAxisSize.min,
                         children: [
-                          Text('$h',
-                              style: const TextStyle(
-                                  fontSize: 40,
-                                  fontWeight: FontWeight.w800,
-                                  color: ColoresApp.navy)),
-                          Text('de $metaHoras horas',
-                              style: const TextStyle(
-                                  color: Colors.black54, fontSize: 12)),
+                          Text(
+                            '$h',
+                            style: const TextStyle(
+                              fontSize: 40,
+                              fontWeight: FontWeight.w800,
+                              color: ColoresApp.navy,
+                            ),
+                          ),
+                          Text(
+                            'de $metaHoras horas',
+                            style: const TextStyle(
+                              color: Colors.black54,
+                              fontSize: 12,
+                            ),
+                          ),
                         ],
                       ),
                     ],
                   ),
                 ),
                 const SizedBox(height: 12),
-                Text('${(pct * 100).round()} % completado',
-                    style: const TextStyle(
-                        color: ColoresApp.primary, fontWeight: FontWeight.bold)),
+                Text(
+                  '${(pct * 100).round()} % completado',
+                  style: const TextStyle(
+                    color: ColoresApp.primary,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
                 const SizedBox(height: 4),
                 Text(
                   h >= metaHoras
@@ -444,11 +553,23 @@ class PantallaProgreso extends StatelessWidget {
           const SizedBox(height: 12),
           Row(
             children: [
-              _Estadistica(Icons.star, '${s.misInscripciones.length}', 'Actividades'),
+              _Estadistica(
+                Icons.star,
+                '${s.misInscripciones.length}',
+                'Actividades',
+              ),
               const SizedBox(width: 10),
-              const _Estadistica(Icons.access_time, '$horasMesSimulado h', 'Este mes'),
+              const _Estadistica(
+                Icons.access_time,
+                '$horasMesSimulado h',
+                'Este mes',
+              ),
               const SizedBox(width: 10),
-              const _Estadistica(Icons.check_circle, '$asistenciaSimulado %', 'Asistencia'),
+              const _Estadistica(
+                Icons.check_circle,
+                '$asistenciaSimulado %',
+                'Asistencia',
+              ),
             ],
           ),
           const SizedBox(height: 12),
@@ -456,8 +577,10 @@ class PantallaProgreso extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Text('Horas por actividad',
-                    style: TextStyle(fontWeight: FontWeight.bold)),
+                const Text(
+                  'Horas por actividad',
+                  style: TextStyle(fontWeight: FontWeight.bold),
+                ),
                 const SizedBox(height: 12),
                 for (final i in s.misInscripciones)
                   Padding(
@@ -470,13 +593,20 @@ class PantallaProgreso extends StatelessWidget {
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Text(i.taller.nombre,
-                                  style: const TextStyle(fontWeight: FontWeight.bold)),
+                              Text(
+                                i.taller.nombre,
+                                style: const TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
                               const SizedBox(height: 4),
                               ClipRRect(
                                 borderRadius: BorderRadius.circular(6),
                                 child: LinearProgressIndicator(
-                                  value: (s.horasDe(i.folio) / metaHoras).clamp(0.0, 1.0),
+                                  value: (s.horasDe(i.folio) / metaHoras).clamp(
+                                    0.0,
+                                    1.0,
+                                  ),
                                   minHeight: 6,
                                   backgroundColor: ColoresApp.background,
                                   color: ColoresApp.teal,
@@ -486,8 +616,10 @@ class PantallaProgreso extends StatelessWidget {
                           ),
                         ),
                         const SizedBox(width: 12),
-                        Text('${s.horasDe(i.folio)} h',
-                            style: const TextStyle(fontWeight: FontWeight.bold)),
+                        Text(
+                          '${s.horasDe(i.folio)} h',
+                          style: const TextStyle(fontWeight: FontWeight.bold),
+                        ),
                       ],
                     ),
                   ),
@@ -509,10 +641,12 @@ class PantallaEditarPerfil extends StatefulWidget {
 
 class _EstadoPantallaEditarPerfil extends State<PantallaEditarPerfil> {
   final _form = GlobalKey<FormState>();
-  late final _nombre =
-      TextEditingController(text: context.read<EstadoApp>().alumno.nombreCompleto);
-  late final _tel =
-      TextEditingController(text: context.read<EstadoApp>().alumno.telefono ?? '');
+  late final _nombre = TextEditingController(
+    text: context.read<EstadoApp>().alumno.nombreCompleto,
+  );
+  late final _tel = TextEditingController(
+    text: context.read<EstadoApp>().alumno.telefono ?? '',
+  );
 
   @override
   void dispose() {
@@ -530,15 +664,15 @@ class _EstadoPantallaEditarPerfil extends State<PantallaEditarPerfil> {
   }
 
   Widget _label(String t) => Padding(
-        padding: const EdgeInsets.only(top: 16, bottom: 8),
-        child: Text(t, style: const TextStyle(fontWeight: FontWeight.bold)),
-      );
+    padding: const EdgeInsets.only(top: 16, bottom: 8),
+    child: Text(t, style: const TextStyle(fontWeight: FontWeight.bold)),
+  );
 
   Widget _locked(IconData icon, String value) => TextFormField(
-        initialValue: value,
-        enabled: false,
-        decoration: InputDecoration(prefixIcon: Icon(icon)),
-      );
+    initialValue: value,
+    enabled: false,
+    decoration: InputDecoration(prefixIcon: Icon(icon)),
+  );
 
   @override
   Widget build(BuildContext context) {
@@ -554,21 +688,29 @@ class _EstadoPantallaEditarPerfil extends State<PantallaEditarPerfil> {
               child: CircleAvatar(
                 radius: 44,
                 backgroundColor: ColoresApp.navy,
-                child: Text(inicialesDe(a.nombre),
-                    style: const TextStyle(
-                        color: Colors.white, fontSize: 26, fontWeight: FontWeight.bold)),
+                child: Text(
+                  inicialesDe(a.nombre),
+                  style: const TextStyle(
+                    color: Colors.white,
+                    fontSize: 26,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
               ),
             ),
             Center(
               child: TextButton(
-                  onPressed: () => _soon(context), child: const Text('Cambiar foto')),
+                onPressed: () => _soon(context),
+                child: const Text('Cambiar foto'),
+              ),
             ),
             _label('Nombre completo'),
             TextFormField(
               controller: _nombre,
               textCapitalization: TextCapitalization.words,
               decoration: const InputDecoration(prefixIcon: Icon(Icons.person)),
-              validator: (v) => (v ?? '').trim().split(RegExp(r'\s+')).length >= 2
+              validator: (v) =>
+                  (v ?? '').trim().split(RegExp(r'\s+')).length >= 2
                   ? null
                   : 'Escribe nombre y apellido',
             ),
@@ -589,7 +731,10 @@ class _EstadoPantallaEditarPerfil extends State<PantallaEditarPerfil> {
             _label('Grupo'),
             _locked(Icons.groups, a.grupo),
             const SizedBox(height: 28),
-            FilledButton(onPressed: _save, child: const Text('Guardar cambios')),
+            FilledButton(
+              onPressed: _save,
+              child: const Text('Guardar cambios'),
+            ),
           ],
         ),
       ),
@@ -608,14 +753,16 @@ class _EstadoPantallaConfiguracion extends State<PantallaConfiguracion> {
   // TODO: persistir en backend (hoy no hay tabla de preferencias)
   bool _avisos = true, _horario = true, _recordatorios = true, _cupos = false;
 
-  Widget _sw(String t, IconData i, bool v, ValueChanged<bool> f) => SwitchListTile(
+  Widget _sw(String t, IconData i, bool v, ValueChanged<bool> f) =>
+      SwitchListTile(
         secondary: Icon(i, color: ColoresApp.primary),
         title: Text(t, style: const TextStyle(fontWeight: FontWeight.bold)),
         value: v,
         onChanged: (x) => setState(() => f(x)),
       );
 
-  Widget _nav(String t, IconData i, VoidCallback f, {String? trailing}) => ListTile(
+  Widget _nav(String t, IconData i, VoidCallback f, {String? trailing}) =>
+      ListTile(
         leading: Icon(i, color: ColoresApp.primary),
         title: Text(t, style: const TextStyle(fontWeight: FontWeight.bold)),
         trailing: Row(
@@ -630,11 +777,16 @@ class _EstadoPantallaConfiguracion extends State<PantallaConfiguracion> {
       );
 
   Widget _title(String t) => Padding(
-        padding: const EdgeInsets.fromLTRB(4, 16, 0, 8),
-        child: Text(t,
-            style: const TextStyle(
-                fontWeight: FontWeight.w800, color: ColoresApp.navy, fontSize: 16)),
-      );
+    padding: const EdgeInsets.fromLTRB(4, 16, 0, 8),
+    child: Text(
+      t,
+      style: const TextStyle(
+        fontWeight: FontWeight.w800,
+        color: ColoresApp.navy,
+        fontSize: 16,
+      ),
+    ),
+  );
 
   @override
   Widget build(BuildContext context) {
@@ -646,39 +798,89 @@ class _EstadoPantallaConfiguracion extends State<PantallaConfiguracion> {
           _title('Notificaciones'),
           TarjetaApp(
             padding: EdgeInsets.zero,
-            child: Column(children: [
-              _sw('Avisos de actividades', Icons.notifications, _avisos, (v) => _avisos = v),
-              _sw('Cambios de horario', Icons.access_time, _horario, (v) => _horario = v),
-              _sw('Recordatorios de clase', Icons.calendar_today, _recordatorios, (v) => _recordatorios = v),
-              _sw('Cupos disponibles', Icons.star, _cupos, (v) => _cupos = v),
-              _sw('Sonidos de la app', Icons.volume_up_rounded, Sonidos.activados, (v) => Sonidos.activados = v),
-            ]),
+            child: Column(
+              children: [
+                _sw(
+                  'Avisos de actividades',
+                  Icons.notifications,
+                  _avisos,
+                  (v) => _avisos = v,
+                ),
+                _sw(
+                  'Cambios de horario',
+                  Icons.access_time,
+                  _horario,
+                  (v) => _horario = v,
+                ),
+                _sw(
+                  'Recordatorios de clase',
+                  Icons.calendar_today,
+                  _recordatorios,
+                  (v) => _recordatorios = v,
+                ),
+                _sw('Cupos disponibles', Icons.star, _cupos, (v) => _cupos = v),
+                _sw(
+                  'Sonidos de la app',
+                  Icons.volume_up_rounded,
+                  Sonidos.activados,
+                  (v) => Sonidos.activados = v,
+                ),
+              ],
+            ),
           ),
           _title('Cuenta'),
           TarjetaApp(
             padding: EdgeInsets.zero,
-            child: Column(children: [
-              _nav('Cambiar contraseña', Icons.lock, () => context.push('/olvide-contrasena')),
-              _nav('Idioma', Icons.language, () => context.push('/perfil/idioma'), trailing: 'Español'),
-            ]),
+            child: Column(
+              children: [
+                _nav(
+                  'Cambiar contraseña',
+                  Icons.lock,
+                  () => context.push('/olvide-contrasena'),
+                ),
+                _nav(
+                  'Idioma',
+                  Icons.language,
+                  () => context.push('/perfil/idioma'),
+                  trailing: 'Español',
+                ),
+              ],
+            ),
           ),
           _title('Privacidad y ayuda'),
           TarjetaApp(
             padding: EdgeInsets.zero,
-            child: Column(children: [
-              _nav('Aviso de privacidad', Icons.shield, () => context.push('/perfil/privacidad')),
-              _nav('Ayuda y soporte', Icons.help_outline, () => context.push('/perfil/ayuda')),
-            ]),
+            child: Column(
+              children: [
+                _nav(
+                  'Aviso de privacidad',
+                  Icons.shield,
+                  () => context.push('/perfil/privacidad'),
+                ),
+                _nav(
+                  'Ayuda y soporte',
+                  Icons.help_outline,
+                  () => context.push('/perfil/ayuda'),
+                ),
+              ],
+            ),
           ),
           const SizedBox(height: 16),
           TextButton(
-            onPressed: () => context.go('/bienvenida'),
-            child: const Text('Cerrar sesión',
-                style: TextStyle(color: ColoresApp.danger)),
+            onPressed: () {
+              context.read<EstadoSesion>().cerrarSesion();
+              context.go('/bienvenida');
+            },
+            child: const Text(
+              'Cerrar sesión',
+              style: TextStyle(color: ColoresApp.danger),
+            ),
           ),
           const Center(
-            child: Text('ACTIVA · Versión 1.0',
-                style: TextStyle(color: Colors.black38, fontSize: 11)),
+            child: Text(
+              'ACTIVA · Versión 1.0',
+              style: TextStyle(color: Colors.black38, fontSize: 11),
+            ),
           ),
         ],
       ),

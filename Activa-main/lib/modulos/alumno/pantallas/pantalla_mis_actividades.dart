@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
+
 import '../../../nucleo/tema/tema_app.dart';
 import '../../../nucleo/componentes/tarjeta_app.dart';
 import '../../../datos/estado_app.dart';
@@ -12,17 +13,19 @@ import '../../../nucleo/componentes/avisos.dart';
 class PantallaMisActividades extends StatelessWidget {
   const PantallaMisActividades({super.key});
 
-   Future<void> _baja(BuildContext context, Inscripcion i) async {
+  Future<void> _baja(BuildContext context, Inscripcion i) async {
     final ok = await showDialog<bool>(
       context: context,
       builder: (dialogCtx) => AlertDialog(
         title: const Text('¿Darte de baja?'),
         content: Text(
-            'Dejarás de pertenecer a ${i.taller.nombre} y se liberará tu lugar.'),
+          'Dejarás de pertenecer a ${i.taller.nombre} y se liberará tu lugar.',
+        ),
         actions: [
           TextButton(
-              onPressed: () => Navigator.pop(dialogCtx, false),
-              child: const Text('Cancelar')),
+            onPressed: () => Navigator.pop(dialogCtx, false),
+            child: const Text('Cancelar'),
+          ),
           FilledButton(
             style: FilledButton.styleFrom(minimumSize: const Size(110, 44)),
             onPressed: () => Navigator.pop(dialogCtx, true),
@@ -34,10 +37,10 @@ class PantallaMisActividades extends StatelessWidget {
     if (ok == true && context.mounted) {
       context.read<EstadoApp>().cancelar(i.folio);
       ScaffoldMessenger.of(context).showSnackBar(
-          avisoSnack(content: Text('Te diste de baja de ${i.taller.nombre}')));
+        avisoSnack(content: Text('Te diste de baja de ${i.taller.nombre}')),
+      );
     }
   }
-
 
   @override
   Widget build(BuildContext context) {
@@ -49,9 +52,14 @@ class PantallaMisActividades extends StatelessWidget {
       child: ListView(
         padding: const EdgeInsets.all(20),
         children: [
-          const Text('Mis actividades',
-              style: TextStyle(
-                  fontSize: 26, fontWeight: FontWeight.w800, color: ColoresApp.navy)),
+          const Text(
+            'Mis actividades',
+            style: TextStyle(
+              fontSize: 26,
+              fontWeight: FontWeight.w800,
+              color: ColoresApp.navy,
+            ),
+          ),
           const SizedBox(height: 14),
           TarjetaApp(
             child: Column(
@@ -59,10 +67,15 @@ class PantallaMisActividades extends StatelessWidget {
                 Row(
                   children: [
                     const Expanded(
-                        child: Text('Horas acumuladas',
-                            style: TextStyle(fontWeight: FontWeight.bold))),
-                    Text('$h / $metaHoras',
-                        style: const TextStyle(fontWeight: FontWeight.bold)),
+                      child: Text(
+                        'Horas acumuladas',
+                        style: TextStyle(fontWeight: FontWeight.bold),
+                      ),
+                    ),
+                    Text(
+                      '$h / $metaHoras',
+                      style: const TextStyle(fontWeight: FontWeight.bold),
+                    ),
                   ],
                 ),
                 const SizedBox(height: 10),
@@ -105,15 +118,27 @@ class PantallaMisActividades extends StatelessWidget {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text(i.taller.nombre,
-                              style: const TextStyle(
-                                  fontWeight: FontWeight.bold, fontSize: 16)),
-                          Text(i.taller.horarioTexto.replaceAll(' | ', ' · '),
-                              style: const TextStyle(
-                                  color: Colors.black54, fontSize: 12)),
-                          Text('Folio ${i.folio}',
-                              style: const TextStyle(
-                                  color: Colors.black45, fontSize: 11)),
+                          Text(
+                            i.taller.nombre,
+                            style: const TextStyle(
+                              fontWeight: FontWeight.bold,
+                              fontSize: 16,
+                            ),
+                          ),
+                          Text(
+                            i.taller.horarioTexto.replaceAll(' | ', ' · '),
+                            style: const TextStyle(
+                              color: Colors.black54,
+                              fontSize: 12,
+                            ),
+                          ),
+                          Text(
+                            'Folio ${i.folio}',
+                            style: const TextStyle(
+                              color: Colors.black45,
+                              fontSize: 11,
+                            ),
+                          ),
                         ],
                       ),
                     ),
@@ -122,8 +147,14 @@ class PantallaMisActividades extends StatelessWidget {
                           ? context.push('/inscripcion/${i.folio}')
                           : _baja(context, i),
                       itemBuilder: (_) => const [
-                        PopupMenuItem(value: 'ver', child: Text('Ver comprobante')),
-                        PopupMenuItem(value: 'baja', child: Text('Darme de baja')),
+                        PopupMenuItem(
+                          value: 'ver',
+                          child: Text('Ver comprobante'),
+                        ),
+                        PopupMenuItem(
+                          value: 'baja',
+                          child: Text('Darme de baja'),
+                        ),
                       ],
                     ),
                   ],

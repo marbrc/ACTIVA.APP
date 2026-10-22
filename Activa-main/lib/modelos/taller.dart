@@ -51,7 +51,7 @@ class Taller {
     required this.inscritos,
   });
 
-   Taller copyWith({
+  Taller copyWith({
     String? nombre,
     String? descripcion,
     Categoria? categoria,
@@ -63,21 +63,20 @@ class Taller {
     List<Horario>? horarios,
     List<String>? aprendizajes,
     int? inscritos,
-  }) =>
-      Taller(
-        id: id,
-        nombre: nombre ?? this.nombre,
-        descripcion: descripcion ?? this.descripcion,
-        categoria: categoria ?? this.categoria,
-        lugar: lugar ?? this.lugar,
-        cupoMaximo: cupoMaximo ?? this.cupoMaximo,
-        horasOtorga: horasOtorga ?? this.horasOtorga,
-        activo: activo ?? this.activo,
-        instructor: instructor ?? this.instructor,
-        horarios: horarios ?? this.horarios,
-        aprendizajes: aprendizajes ?? this.aprendizajes,
-        inscritos: inscritos ?? this.inscritos,
-      );
+  }) => Taller(
+    id: id,
+    nombre: nombre ?? this.nombre,
+    descripcion: descripcion ?? this.descripcion,
+    categoria: categoria ?? this.categoria,
+    lugar: lugar ?? this.lugar,
+    cupoMaximo: cupoMaximo ?? this.cupoMaximo,
+    horasOtorga: horasOtorga ?? this.horasOtorga,
+    activo: activo ?? this.activo,
+    instructor: instructor ?? this.instructor,
+    horarios: horarios ?? this.horarios,
+    aprendizajes: aprendizajes ?? this.aprendizajes,
+    inscritos: inscritos ?? this.inscritos,
+  );
 
   int get cuposDisponibles => cupoMaximo - inscritos;
   bool get hayCupo => cuposDisponibles > 0;
@@ -88,13 +87,14 @@ class Taller {
     final h = horarios.first;
     return '$dias | ${h.horaInicio} – ${h.horaFin}';
   }
-    // Horas que suma una sesión (el modelo guarda horas enteras: 1.5 h -> 2)
+
+  // Horas que suma una sesión (el modelo guarda horas enteras: 1.5 h -> 2)
   int get horasPorSesion => (horarios.first.minutos / 60).round();
 
   Horario horarioDe(DateTime d) => horarios.firstWhere(
-        (h) => h.dia.weekday == d.weekday,
-        orElse: () => horarios.first,
-      );
+    (h) => h.dia.weekday == d.weekday,
+    orElse: () => horarios.first,
+  );
 
   // Fecha de la sesión más reciente (hoy o hacia atrás, máx. 7 días)
   DateTime sesionReciente([DateTime? desde]) {

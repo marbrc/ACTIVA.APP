@@ -1,6 +1,7 @@
 import 'package:activa/modelos/taller.dart';
 import 'package:flutter/foundation.dart';
-import '../modelos/enums.dart' ;
+
+import '../modelos/enums.dart';
 import '../modelos/inscripcion.dart';
 import 'simulados/datos_simulados.dart';
 import '../modelos/categoria.dart';
@@ -19,7 +20,8 @@ class EstadoApp extends ChangeNotifier {
   Taller tallerPorId(int id) => _talleres.firstWhere((t) => t.id == id);
 
   bool estaInscrito(int tallerId) => _inscripciones.any(
-      (i) => i.taller.id == tallerId && i.estado == EstadoInscripcion.activa);
+    (i) => i.taller.id == tallerId && i.estado == EstadoInscripcion.activa,
+  );
 
   Inscripcion? inscripcionPorFolio(String folio) {
     for (final i in _inscripciones) {
@@ -54,7 +56,14 @@ class EstadoApp extends ChangeNotifier {
     return ins;
   }
 
-  static const _acentos = {'á': 'a', 'é': 'e', 'í': 'i', 'ó': 'o', 'ú': 'u', 'ñ': 'n'};
+  static const _acentos = {
+    'á': 'a',
+    'é': 'e',
+    'í': 'i',
+    'ó': 'o',
+    'ú': 'u',
+    'ñ': 'n',
+  };
 
   String _folio(Taller t) {
     final limpio = t.nombre
@@ -66,16 +75,17 @@ class EstadoApp extends ChangeNotifier {
     final prefijo = limpio.substring(0, 3).toUpperCase(); // VOL, FUT, DAN...
     return '$prefijo-2026-${(_seq++).toString().padLeft(4, '0')}';
   }
-  
+
   final List<Categoria> _categorias = List.of(categoriasSimulado);
 
-List<Categoria> get categorias =>
-    List.unmodifiable(_categorias.where((c) => c.activa));
+  List<Categoria> get categorias =>
+      List.unmodifiable(_categorias.where((c) => c.activa));
 
-void agregarCategoria(Categoria c) {
-  _categorias.add(c);
-  notifyListeners();
-}
+  void agregarCategoria(Categoria c) {
+    _categorias.add(c);
+    notifyListeners();
+  }
+
   Alumno alumno = alumnoSimulado;
   final Map<String, int> _horas = Map.of(horasPorFolioSimulado);
   final List<Aviso> _avisos = List.of(avisosSimulado);
@@ -95,8 +105,9 @@ void agregarCategoria(Categoria c) {
     final ins = _inscripciones[idx];
     _inscripciones[idx] = ins.copyWith(estado: EstadoInscripcion.cancelada);
     final ti = _talleres.indexWhere((t) => t.id == ins.taller.id);
-    _talleres[ti] =
-        _talleres[ti].copyWith(inscritos: _talleres[ti].inscritos - 1);
+    _talleres[ti] = _talleres[ti].copyWith(
+      inscritos: _talleres[ti].inscritos - 1,
+    );
     notifyListeners(); // se libera el lugar en Explorar
   }
 
@@ -108,18 +119,25 @@ void agregarCategoria(Categoria c) {
             nombre: p.sublist(0, p.length - 2).join(' '),
             apellidoPaterno: p[p.length - 2],
             apellidoMaterno: p.last,
-            telefono: telefono.trim())
+            telefono: telefono.trim(),
+          )
         : alumno.copyWith(
             nombre: p.first,
             apellidoPaterno: p.length > 1 ? p[1] : '',
             apellidoMaterno: '',
-            telefono: telefono.trim());
+            telefono: telefono.trim(),
+          );
     notifyListeners();
   }
-    Instructor instructor = instructorSimulado;
+
+  Instructor instructor = instructorSimulado;
   final Map<int, List<Alumno>> _roster = {1: List.of(companerosSimulado)};
   // clave "tallerId|yyyy-mm-dd" -> {numControl: presente}
   final Map<String, Map<String, bool>> _asistencias = {};
+
+  // para el historial de asistencia del instructor
+  Map<String, Map<String, bool>> get asistencias =>
+      Map.unmodifiable(_asistencias);
 
   List<Taller> get misGrupos =>
       _talleres.where((t) => t.instructor.id == instructor.id).toList();
@@ -139,7 +157,9 @@ void agregarCategoria(Categoria c) {
     final k = _key(t.id, f);
     final antes = _asistencias[k] ?? {};
     final ins = _inscripciones
-        .where((i) => i.taller.id == t.id && i.estado == EstadoInscripcion.activa)
+        .where(
+          (i) => i.taller.id == t.id && i.estado == EstadoInscripcion.activa,
+        )
         .firstOrNull;
     if (ins != null) {
       final nc = alumno.numeroControl;
@@ -180,13 +200,14 @@ void agregarCategoria(Categoria c) {
     );
     notifyListeners();
   }
-    Administrador admin = adminSimulado;
+
+  Administrador admin = adminSimulado;
   int _tallerSeq = 7;
   int _instSeq = 20;
   final Map<String, int> _horasOtros = Map.of(horasAlumnosSimulado);
   final List<({String tipo, String formato, DateTime fecha})> _reportes = [];
   late final List<Instructor> _instructores = {
-    for (final t in talleresSimulado) t.instructor.id: t.instructor
+    for (final t in talleresSimulado) t.instructor.id: t.instructor,
   }.values.toList();
 
   List<Instructor> get instructores => List.unmodifiable(_instructores);
@@ -253,14 +274,16 @@ void agregarCategoria(Categoria c) {
     required String correo,
     required String especialidad,
   }) {
-    _instructores.add(Instructor(
-      id: _instSeq++,
-      nombre: nombre.trim(),
-      apellidoPaterno: paterno.trim(),
-      apellidoMaterno: materno.trim(),
-      correo: correo.trim().toLowerCase(),
-      especialidad: especialidad.trim(),
-    ));
+    _instructores.add(
+      Instructor(
+        id: _instSeq++,
+        nombre: nombre.trim(),
+        apellidoPaterno: paterno.trim(),
+        apellidoMaterno: materno.trim(),
+        correo: correo.trim().toLowerCase(),
+        especialidad: especialidad.trim(),
+      ),
+    );
     notifyListeners();
   }
 

@@ -5,7 +5,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import '../tema/tema_app.dart';
+
 import 'aparicion_suave.dart';
 import 'fondo_olas.dart';
 import 'logo_app.dart';
@@ -43,7 +43,8 @@ class EstructuraAutenticacion extends StatelessWidget {
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         _BotonAtrasCristal(
-                          onTap: onBack ??
+                          onTap:
+                              onBack ??
                               () => context.canPop()
                                   ? context.pop()
                                   : context.go('/bienvenida'),
@@ -104,19 +105,22 @@ class _BotonAtrasCristal extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => Material(
-        color: Colors.white.withValues(alpha: 0.14),
-        shape: CircleBorder(
-          side: BorderSide(color: Colors.white.withValues(alpha: 0.28)),
+    color: Colors.white.withValues(alpha: 0.14),
+    shape: CircleBorder(
+      side: BorderSide(color: Colors.white.withValues(alpha: 0.28)),
+    ),
+    child: InkWell(
+      customBorder: const CircleBorder(),
+      onTap: onTap,
+      child: const SizedBox(
+        width: 44,
+        height: 44,
+        child: Icon(
+          Icons.arrow_back_ios_new_rounded,
+          size: 18,
+          color: Colors.white,
         ),
-        child: InkWell(
-          customBorder: const CircleBorder(),
-          onTap: onTap,
-          child: const SizedBox(
-            width: 44,
-            height: 44,
-            child: Icon(Icons.arrow_back_ios_new_rounded,
-                size: 18, color: Colors.white),
-          ),
-        ),
-      );
+      ),
+    ),
+  );
 }

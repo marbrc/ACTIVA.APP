@@ -1,6 +1,10 @@
+import '../../../nucleo/componentes/avatar_activa.dart';
+import '../../../modelos/enums.dart';
+
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
+
 import '../../../nucleo/tema/tema_app.dart';
 import '../../../nucleo/utilidades/formateadores.dart';
 import '../../../nucleo/componentes/tarjeta_app.dart';
@@ -29,22 +33,28 @@ class PantallaInicioInstructor extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text('¡Hola, ${i.nombre.split(' ').first}!',
-                        style: const TextStyle(
-                            fontSize: 26,
-                            fontWeight: FontWeight.w800,
-                            color: ColoresApp.navy)),
-                    Text('Instructor de ${i.especialidad}',
-                        style: const TextStyle(color: Colors.black54, fontSize: 13)),
+                    Text(
+                      '¡Hola, ${i.nombre.split(' ').first}!',
+                      style: const TextStyle(
+                        fontSize: 26,
+                        fontWeight: FontWeight.w800,
+                        color: ColoresApp.navy,
+                      ),
+                    ),
+                    Text(
+                      'Instructor de ${i.especialidad}',
+                      style: const TextStyle(
+                        color: Colors.black54,
+                        fontSize: 13,
+                      ),
+                    ),
                   ],
                 ),
               ),
-              CircleAvatar(
-                radius: 24,
-                backgroundColor: ColoresApp.navy,
-                child: Text(iniciales(i.nombre, i.apellidoPaterno),
-                    style: const TextStyle(
-                        color: Colors.white, fontWeight: FontWeight.bold)),
+              AvatarActiva(
+                rol: Rol.instructor,
+                iniciales: iniciales(i.nombre, i.apellidoPaterno),
+                radio: 24,
               ),
             ],
           ),
@@ -58,7 +68,11 @@ class PantallaInicioInstructor extends StatelessWidget {
             children: [
               _Estadistica(Icons.groups, '$alumnos', 'Alumnos'),
               const SizedBox(width: 10),
-              const _Estadistica(Icons.check_circle, '$asistenciaInstructorSimulado %', 'Asistencia'),
+              const _Estadistica(
+                Icons.check_circle,
+                '$asistenciaInstructorSimulado %',
+                'Asistencia',
+              ),
               const SizedBox(width: 10),
               _Estadistica(Icons.apps, '${grupos.length}', 'Grupos'),
             ],
@@ -67,13 +81,19 @@ class PantallaInicioInstructor extends StatelessWidget {
           Row(
             children: [
               const Expanded(
-                child: Text('Mis grupos',
-                    style: TextStyle(
-                        fontSize: 16, fontWeight: FontWeight.bold, color: ColoresApp.navy)),
+                child: Text(
+                  'Mis grupos',
+                  style: TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                    color: ColoresApp.navy,
+                  ),
+                ),
               ),
               TextButton(
-                  onPressed: () => context.go('/instructor/grupos'),
-                  child: const Text('Ver todos ›')),
+                onPressed: () => context.go('/instructor/grupos'),
+                child: const Text('Ver todos ›'),
+              ),
             ],
           ),
           for (final g in grupos)
@@ -89,16 +109,24 @@ class PantallaInicioInstructor extends StatelessWidget {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text(g.nombre,
-                              style: const TextStyle(fontWeight: FontWeight.bold)),
-                          Text(g.horarioTexto,
-                              style: const TextStyle(
-                                  color: Colors.black54, fontSize: 12)),
+                          Text(
+                            g.nombre,
+                            style: const TextStyle(fontWeight: FontWeight.bold),
+                          ),
+                          Text(
+                            g.horarioTexto,
+                            style: const TextStyle(
+                              color: Colors.black54,
+                              fontSize: 12,
+                            ),
+                          ),
                         ],
                       ),
                     ),
-                    Text('${g.inscritos} / ${g.cupoMaximo}',
-                        style: const TextStyle(fontWeight: FontWeight.bold)),
+                    Text(
+                      '${g.inscritos} / ${g.cupoMaximo}',
+                      style: const TextStyle(fontWeight: FontWeight.bold),
+                    ),
                     const Icon(Icons.chevron_right, color: Colors.black38),
                   ],
                 ),
@@ -126,20 +154,28 @@ class _TarjetaSesion extends StatelessWidget {
         children: [
           Row(
             children: [
-              Text(hoy ? 'Sesión de hoy' : 'Última sesión',
-                  style: const TextStyle(color: Colors.black54, fontSize: 12)),
+              Text(
+                hoy ? 'Sesión de hoy' : 'Última sesión',
+                style: const TextStyle(color: Colors.black54, fontSize: 12),
+              ),
               const Spacer(),
               Container(
-                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 3),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 10,
+                  vertical: 3,
+                ),
                 decoration: BoxDecoration(
                   color: ColoresApp.primary.withValues(alpha: 0.12),
                   borderRadius: BorderRadius.circular(10),
                 ),
-                child: Text(hoy ? 'Hoy · ${h.horaInicio}' : fechaConDia(f),
-                    style: const TextStyle(
-                        fontSize: 11,
-                        fontWeight: FontWeight.bold,
-                        color: ColoresApp.primary)),
+                child: Text(
+                  hoy ? 'Hoy · ${h.horaInicio}' : fechaConDia(f),
+                  style: const TextStyle(
+                    fontSize: 11,
+                    fontWeight: FontWeight.bold,
+                    color: ColoresApp.primary,
+                  ),
+                ),
               ),
             ],
           ),
@@ -152,13 +188,27 @@ class _TarjetaSesion extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(t.nombre as String,
-                        style: const TextStyle(
-                            fontWeight: FontWeight.w800, fontSize: 16)),
-                    Text('${h.horaInicio} – ${h.horaFin}',
-                        style: const TextStyle(color: Colors.black54, fontSize: 12)),
-                    Text(t.lugar as String,
-                        style: const TextStyle(color: Colors.black54, fontSize: 12)),
+                    Text(
+                      t.nombre as String,
+                      style: const TextStyle(
+                        fontWeight: FontWeight.w800,
+                        fontSize: 16,
+                      ),
+                    ),
+                    Text(
+                      '${h.horaInicio} – ${h.horaFin}',
+                      style: const TextStyle(
+                        color: Colors.black54,
+                        fontSize: 12,
+                      ),
+                    ),
+                    Text(
+                      t.lugar as String,
+                      style: const TextStyle(
+                        color: Colors.black54,
+                        fontSize: 12,
+                      ),
+                    ),
                   ],
                 ),
               ),
@@ -170,7 +220,8 @@ class _TarjetaSesion extends StatelessWidget {
               Expanded(
                 child: FilledButton.icon(
                   onPressed: () => context.push(
-                      '/instructor/pasar-lista/${t.id}?fecha=${fechaIso(f)}'),
+                    '/instructor/pasar-lista/${t.id}?fecha=${fechaIso(f)}',
+                  ),
                   icon: const Icon(Icons.check_circle, size: 18),
                   label: const Text('Pasar lista'),
                 ),
@@ -203,19 +254,26 @@ class _Estadistica extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => Expanded(
-        child: TarjetaApp(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Icon(icon, color: ColoresApp.primary),
-              const SizedBox(height: 8),
-              Text(value,
-                  style: const TextStyle(
-                      fontSize: 22, fontWeight: FontWeight.w800, color: ColoresApp.navy)),
-              Text(label,
-                  style: const TextStyle(color: Colors.black54, fontSize: 11)),
-            ],
+    child: TarjetaApp(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Icon(icon, color: ColoresApp.primary),
+          const SizedBox(height: 8),
+          Text(
+            value,
+            style: const TextStyle(
+              fontSize: 22,
+              fontWeight: FontWeight.w800,
+              color: ColoresApp.navy,
+            ),
           ),
-        ),
-      );
+          Text(
+            label,
+            style: const TextStyle(color: Colors.black54, fontSize: 11),
+          ),
+        ],
+      ),
+    ),
+  );
 }

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
+
 import '../../../nucleo/tema/tema_app.dart';
 import '../../../nucleo/utilidades/formateadores.dart';
 import '../../../nucleo/componentes/tarjeta_app.dart';
@@ -19,11 +20,18 @@ class PantallaGrupos extends StatelessWidget {
       child: ListView(
         padding: const EdgeInsets.all(20),
         children: [
-          const Text('Mis grupos',
-              style: TextStyle(
-                  fontSize: 26, fontWeight: FontWeight.w800, color: ColoresApp.navy)),
-          Text('${grupos.length} ${grupos.length == 1 ? 'grupo activo' : 'grupos activos'} este cuatrimestre',
-              style: const TextStyle(color: Colors.black54, fontSize: 12)),
+          const Text(
+            'Mis grupos',
+            style: TextStyle(
+              fontSize: 26,
+              fontWeight: FontWeight.w800,
+              color: ColoresApp.navy,
+            ),
+          ),
+          Text(
+            '${grupos.length} ${grupos.length == 1 ? 'grupo activo' : 'grupos activos'} este cuatrimestre',
+            style: const TextStyle(color: Colors.black54, fontSize: 12),
+          ),
           const SizedBox(height: 14),
           for (final t in grupos)
             Padding(
@@ -37,26 +45,47 @@ class PantallaGrupos extends StatelessWidget {
                         MiniaturaTaller(t, size: 52),
                         const SizedBox(width: 12),
                         Expanded(
-                          child: Text(t.nombre,
-                              style: const TextStyle(
-                                  fontWeight: FontWeight.w800, fontSize: 18)),
+                          child: Text(
+                            t.nombre,
+                            style: const TextStyle(
+                              fontWeight: FontWeight.w800,
+                              fontSize: 18,
+                            ),
+                          ),
                         ),
-                        Text('${t.inscritos} / ${t.cupoMaximo}',
-                            style: const TextStyle(fontWeight: FontWeight.bold)),
+                        Text(
+                          '${t.inscritos} / ${t.cupoMaximo}',
+                          style: const TextStyle(fontWeight: FontWeight.bold),
+                        ),
                       ],
                     ),
                     const SizedBox(height: 10),
-                    Row(children: [
-                      const Icon(Icons.access_time, size: 16, color: Colors.black45),
-                      const SizedBox(width: 6),
-                      Text(t.horarioTexto, style: const TextStyle(fontSize: 12)),
-                    ]),
+                    Row(
+                      children: [
+                        const Icon(
+                          Icons.access_time,
+                          size: 16,
+                          color: Colors.black45,
+                        ),
+                        const SizedBox(width: 6),
+                        Text(
+                          t.horarioTexto,
+                          style: const TextStyle(fontSize: 12),
+                        ),
+                      ],
+                    ),
                     const SizedBox(height: 4),
-                    Row(children: [
-                      const Icon(Icons.location_on, size: 16, color: Colors.black45),
-                      const SizedBox(width: 6),
-                      Text(t.lugar, style: const TextStyle(fontSize: 12)),
-                    ]),
+                    Row(
+                      children: [
+                        const Icon(
+                          Icons.location_on,
+                          size: 16,
+                          color: Colors.black45,
+                        ),
+                        const SizedBox(width: 6),
+                        Text(t.lugar, style: const TextStyle(fontSize: 12)),
+                      ],
+                    ),
                     const SizedBox(height: 10),
                     ClipRRect(
                       borderRadius: BorderRadius.circular(8),
@@ -64,7 +93,9 @@ class PantallaGrupos extends StatelessWidget {
                         value: t.inscritos / t.cupoMaximo,
                         minHeight: 8,
                         backgroundColor: ColoresApp.background,
-                        color: t.hayCupo ? ColoresApp.primary : ColoresApp.danger,
+                        color: t.hayCupo
+                            ? ColoresApp.primary
+                            : ColoresApp.danger,
                       ),
                     ),
                     const SizedBox(height: 14),
@@ -76,7 +107,8 @@ class PantallaGrupos extends StatelessWidget {
                               minimumSize: const Size.fromHeight(48),
                               shape: const StadiumBorder(),
                             ),
-                            onPressed: () => context.push('/instructor/grupo/${t.id}'),
+                            onPressed: () =>
+                                context.push('/instructor/grupo/${t.id}'),
                             icon: const Icon(Icons.groups, size: 18),
                             label: const Text('Ver alumnos'),
                           ),
@@ -85,9 +117,11 @@ class PantallaGrupos extends StatelessWidget {
                         Expanded(
                           child: FilledButton.icon(
                             style: FilledButton.styleFrom(
-                                minimumSize: const Size.fromHeight(48)),
+                              minimumSize: const Size.fromHeight(48),
+                            ),
                             onPressed: () => context.push(
-                                '/instructor/pasar-lista/${t.id}?fecha=${fechaIso(t.sesionReciente())}'),
+                              '/instructor/pasar-lista/${t.id}?fecha=${fechaIso(t.sesionReciente())}',
+                            ),
                             icon: const Icon(Icons.check_circle, size: 18),
                             label: const Text('Pasar lista'),
                           ),
@@ -127,9 +161,11 @@ class _EstadoPantallaAlumnosGrupo extends State<PantallaAlumnosGrupo> {
     final q = _search.text.trim().toLowerCase();
     final lista = s
         .alumnosDe(t.id)
-        .where((a) =>
-            a.nombreCompleto.toLowerCase().contains(q) ||
-            a.numeroControl.contains(q))
+        .where(
+          (a) =>
+              a.nombreCompleto.toLowerCase().contains(q) ||
+              a.numeroControl.contains(q),
+        )
         .toList();
 
     return EstructuraSubpantalla(
@@ -157,9 +193,15 @@ class _EstadoPantallaAlumnosGrupo extends State<PantallaAlumnosGrupo> {
           const SizedBox(height: 8),
           const Row(
             children: [
-              Text('Alumno', style: TextStyle(color: Colors.black45, fontSize: 12)),
+              Text(
+                'Alumno',
+                style: TextStyle(color: Colors.black45, fontSize: 12),
+              ),
               Spacer(),
-              Text('Asistencias', style: TextStyle(color: Colors.black45, fontSize: 12)),
+              Text(
+                'Asistencias',
+                style: TextStyle(color: Colors.black45, fontSize: 12),
+              ),
             ],
           ),
           const SizedBox(height: 8),
@@ -176,20 +218,30 @@ class _EstadoPantallaAlumnosGrupo extends State<PantallaAlumnosGrupo> {
                   children: [
                     CircleAvatar(
                       backgroundColor: ColoresApp.background,
-                      child: Text(iniciales(a.nombre, a.apellidoPaterno),
-                          style: const TextStyle(
-                              color: ColoresApp.navy, fontWeight: FontWeight.bold)),
+                      child: Text(
+                        iniciales(a.nombre, a.apellidoPaterno),
+                        style: const TextStyle(
+                          color: ColoresApp.navy,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
                     ),
                     const SizedBox(width: 12),
                     Expanded(
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text(a.nombreCompleto,
-                              style: const TextStyle(fontWeight: FontWeight.bold)),
-                          Text(a.numeroControl,
-                              style: const TextStyle(
-                                  color: Colors.black45, fontSize: 11)),
+                          Text(
+                            a.nombreCompleto,
+                            style: const TextStyle(fontWeight: FontWeight.bold),
+                          ),
+                          Text(
+                            a.numeroControl,
+                            style: const TextStyle(
+                              color: Colors.black45,
+                              fontSize: 11,
+                            ),
+                          ),
                         ],
                       ),
                     ),

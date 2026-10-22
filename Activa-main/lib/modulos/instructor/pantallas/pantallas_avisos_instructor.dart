@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
+
 import '../../../nucleo/tema/tema_app.dart';
 import '../../../nucleo/utilidades/estilo_aviso.dart';
 import '../../../nucleo/utilidades/formateadores.dart';
@@ -21,9 +22,14 @@ class PantallaAvisosInstructor extends StatelessWidget {
       child: ListView(
         padding: const EdgeInsets.all(20),
         children: [
-          const Text('Mis avisos',
-              style: TextStyle(
-                  fontSize: 26, fontWeight: FontWeight.w800, color: ColoresApp.navy)),
+          const Text(
+            'Mis avisos',
+            style: TextStyle(
+              fontSize: 26,
+              fontWeight: FontWeight.w800,
+              color: ColoresApp.navy,
+            ),
+          ),
           const SizedBox(height: 14),
           FilledButton.icon(
             onPressed: () => context.push('/instructor/nuevo-aviso'),
@@ -44,8 +50,12 @@ class PantallaAvisosInstructor extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     CircleAvatar(
-                      backgroundColor: estiloAviso(a.tipo).$1.withValues(alpha: 0.18),
-                      child: Icon(estiloAviso(a.tipo).$2, color: estiloAviso(a.tipo).$1),
+                      backgroundColor: estiloAviso(a.tipo).$1
+                          .withValues(alpha: 0.18),
+                      child: Icon(
+                        estiloAviso(a.tipo).$2,
+                        color: estiloAviso(a.tipo).$1,
+                      ),
                     ),
                     const SizedBox(width: 12),
                     Expanded(
@@ -55,21 +65,37 @@ class PantallaAvisosInstructor extends StatelessWidget {
                           Row(
                             children: [
                               Expanded(
-                                child: Text(a.titulo,
-                                    style: const TextStyle(fontWeight: FontWeight.bold)),
-                              ),
-                              Text(tiempoRelativo(a.fecha),
+                                child: Text(
+                                  a.titulo,
                                   style: const TextStyle(
-                                      color: Colors.black45, fontSize: 11)),
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                              ),
+                              Text(
+                                tiempoRelativo(a.fecha),
+                                style: const TextStyle(
+                                  color: Colors.black45,
+                                  fontSize: 11,
+                                ),
+                              ),
                             ],
                           ),
-                          Text('${s.tallerPorId(a.tallerId).nombre} · ${a.tipo.etiqueta}',
-                              style: const TextStyle(
-                                  color: ColoresApp.primary, fontSize: 11)),
+                          Text(
+                            '${s.tallerPorId(a.tallerId).nombre} · ${a.tipo.etiqueta}',
+                            style: const TextStyle(
+                              color: ColoresApp.primary,
+                              fontSize: 11,
+                            ),
+                          ),
                           const SizedBox(height: 2),
-                          Text(a.mensaje,
-                              style: const TextStyle(
-                                  color: Colors.black54, fontSize: 12)),
+                          Text(
+                            a.mensaje,
+                            style: const TextStyle(
+                              color: Colors.black54,
+                              fontSize: 12,
+                            ),
+                          ),
                         ],
                       ),
                     ),
@@ -105,19 +131,19 @@ class _EstadoPantallaNuevoAviso extends State<PantallaNuevoAviso> {
   }
 
   Widget _label(String t) => Padding(
-        padding: const EdgeInsets.only(top: 16, bottom: 8),
-        child: Text(t, style: const TextStyle(fontWeight: FontWeight.bold)),
-      );
+    padding: const EdgeInsets.only(top: 16, bottom: 8),
+    child: Text(t, style: const TextStyle(fontWeight: FontWeight.bold)),
+  );
 
   void _publish(int tallerId) {
     if (!_form.currentState!.validate()) return;
     final msg = ScaffoldMessenger.of(context);
     context.read<EstadoApp>().publicarAviso(
-          tallerId: tallerId,
-          tipo: _tipo,
-          titulo: _titulo.text,
-          mensaje: _mensaje.text,
-        );
+      tallerId: tallerId,
+      tipo: _tipo,
+      titulo: _titulo.text,
+      mensaje: _mensaje.text,
+    );
     context.pop();
     msg.showSnackBar(avisoSnack(content: Text('Aviso publicado')));
   }
@@ -141,9 +167,11 @@ class _EstadoPantallaNuevoAviso extends State<PantallaNuevoAviso> {
                 children: [
                   _label('Grupo'),
                   DropdownButtonFormField<int>(
-                    value: id,
+                    initialValue: id,
                     isExpanded: true,
-                    decoration: const InputDecoration(prefixIcon: Icon(Icons.groups)),
+                    decoration: const InputDecoration(
+                      prefixIcon: Icon(Icons.groups),
+                    ),
                     items: [
                       for (final g in grupos)
                         DropdownMenuItem(value: g.id, child: Text(g.nombre)),
@@ -166,9 +194,12 @@ class _EstadoPantallaNuevoAviso extends State<PantallaNuevoAviso> {
                   TextFormField(
                     controller: _titulo,
                     maxLength: 100,
-                    decoration: const InputDecoration(prefixIcon: Icon(Icons.title)),
-                    validator: (v) =>
-                        (v == null || v.trim().isEmpty) ? 'Campo requerido' : null,
+                    decoration: const InputDecoration(
+                      prefixIcon: Icon(Icons.title),
+                    ),
+                    validator: (v) => (v == null || v.trim().isEmpty)
+                        ? 'Campo requerido'
+                        : null,
                   ),
                   _label('Mensaje'),
                   TextFormField(
@@ -176,8 +207,9 @@ class _EstadoPantallaNuevoAviso extends State<PantallaNuevoAviso> {
                     maxLength: 250,
                     maxLines: 5,
                     decoration: const InputDecoration(),
-                    validator: (v) =>
-                        (v == null || v.trim().isEmpty) ? 'Campo requerido' : null,
+                    validator: (v) => (v == null || v.trim().isEmpty)
+                        ? 'Campo requerido'
+                        : null,
                   ),
                   SwitchListTile(
                     contentPadding: EdgeInsets.zero,

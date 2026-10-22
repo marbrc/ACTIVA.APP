@@ -6,6 +6,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+
 import '../../../nucleo/tema/tema_app.dart';
 import '../../../nucleo/componentes/aparicion_suave.dart';
 import '../../../nucleo/componentes/boton_activa.dart';
@@ -79,20 +80,32 @@ class PantallaBienvenida extends StatelessWidget {
                         child: const Row(
                           children: [
                             Expanded(
-                                child: _Beneficio(
-                                    Icons.timer_outlined, 'Suma horas')),
+                              child: _Beneficio(
+                                Icons.timer_outlined,
+                                'Suma horas',
+                              ),
+                            ),
                             SizedBox(width: 10),
                             Expanded(
-                                child: _Beneficio(
-                                    Icons.groups_rounded, 'Haz amigos')),
+                              child: _Beneficio(
+                                Icons.groups_rounded,
+                                'Haz amigos',
+                              ),
+                            ),
                             SizedBox(width: 10),
                             Expanded(
-                                child: _Beneficio(Icons.auto_awesome_rounded,
-                                    'Vive experiencias')),
+                              child: _Beneficio(
+                                Icons.auto_awesome_rounded,
+                                'Vive experiencias',
+                              ),
+                            ),
                             SizedBox(width: 10),
                             Expanded(
-                                child: _Beneficio(
-                                    Icons.trending_up_rounded, 'Crece')),
+                              child: _Beneficio(
+                                Icons.trending_up_rounded,
+                                'Crece',
+                              ),
+                            ),
                           ],
                         ),
                       ),
@@ -103,7 +116,7 @@ class PantallaBienvenida extends StatelessWidget {
                           children: [
                             BotonActiva(
                               etiqueta: 'Iniciar sesión',
-                
+
                               variante: VarianteBoton.claro,
                               alPresionar: () => context.push('/inicio-sesion'),
                             ),
@@ -159,13 +172,13 @@ class _EstadoLogoFlotante extends State<_LogoFlotante>
 
   @override
   Widget build(BuildContext context) => AnimatedBuilder(
-        animation: _c,
-        child: const LogoApp(size: 128, glow: true, hero: true),
-        builder: (_, child) => Transform.translate(
-          offset: Offset(0, -10 * Curves.easeInOut.transform(_c.value)),
-          child: child,
-        ),
-      );
+    animation: _c,
+    child: const LogoApp(size: 128, glow: true, hero: true),
+    builder: (_, child) => Transform.translate(
+      offset: Offset(0, -10 * Curves.easeInOut.transform(_c.value)),
+      child: child,
+    ),
+  );
 }
 
 class _Beneficio extends StatelessWidget {
@@ -175,28 +188,28 @@ class _Beneficio extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => Container(
-        padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 4),
-        decoration: BoxDecoration(
-          color: Colors.white.withValues(alpha: 0.08),
-          borderRadius: BorderRadius.circular(18),
-          border: Border.all(color: Colors.white.withValues(alpha: 0.16)),
+    padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 4),
+    decoration: BoxDecoration(
+      color: Colors.white.withValues(alpha: 0.08),
+      borderRadius: BorderRadius.circular(18),
+      border: Border.all(color: Colors.white.withValues(alpha: 0.16)),
+    ),
+    child: Column(
+      children: [
+        Icon(icon, color: ColoresApp.sky, size: 24),
+        const SizedBox(height: 8),
+        Text(
+          label,
+          textAlign: TextAlign.center,
+          maxLines: 2,
+          style: const TextStyle(
+            color: Colors.white,
+            fontSize: 11,
+            fontWeight: FontWeight.w500,
+            height: 1.2,
+          ),
         ),
-        child: Column(
-          children: [
-            Icon(icon, color: ColoresApp.sky, size: 24),
-            const SizedBox(height: 8),
-            Text(
-              label,
-              textAlign: TextAlign.center,
-              maxLines: 2,
-              style: const TextStyle(
-                color: Colors.white,
-                fontSize: 11,
-                fontWeight: FontWeight.w500,
-                height: 1.2,
-              ),
-            ),
-          ],
-        ),
-      );
+      ],
+    ),
+  );
 }

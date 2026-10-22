@@ -1,3 +1,5 @@
+import '../../../nucleo/componentes/avatar_activa.dart';
+import '../../../modelos/enums.dart';
 // ===================================================================
 // Pantalla de INICIO del alumno (primera pestaña de la barra de abajo)
 // ===================================================================
@@ -6,6 +8,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
+
 import '../../../nucleo/tema/tema_app.dart';
 import '../../../nucleo/componentes/tarjeta_app.dart';
 import '../../../nucleo/componentes/aparicion_suave.dart';
@@ -24,9 +27,9 @@ class PantallaInicioAlumno extends StatelessWidget {
   Widget build(BuildContext context) {
     // watch hace que la pantalla se redibuje si EstadoApp cambia
     final state = context.watch<EstadoApp>();
-    // toma solo el primer nombre del alumno 
+    // toma solo el primer nombre del alumno
     final nombre = state.alumno.nombre.split(' ').first;
-    // saca las iniciales para el avatar 
+    // saca las iniciales para el avatar
     final iniciales = inicialesDe(nombre);
     // horas paraescolares o clubs que lleva el alumno
     final horas = state.horasRealizadas;
@@ -77,7 +80,8 @@ class PantallaInicioAlumno extends StatelessWidget {
                               // Saludo con el nombre
                               Text(
                                 '¡Hola, $nombre!',
-                                style: TextStyle(fontFamily: FuentesApp.century, 
+                                style: TextStyle(
+                                  fontFamily: FuentesApp.century,
                                   color: Colors.white,
                                   fontSize: 26,
                                   fontWeight: FontWeight.w700,
@@ -95,28 +99,11 @@ class PantallaInicioAlumno extends StatelessWidget {
                           ),
                         ),
                         // Avatar con borde clarito
-                        Container(
-                          padding: const EdgeInsets.all(3),
-                          decoration: BoxDecoration(
-                            shape: BoxShape.circle,
-                            border: Border.all(
-                              color: ColoresApp.sky.withValues(alpha: 0.7),
-                              width: 2,
-                            ),
-                          ),
-                          child: CircleAvatar(
-                            radius: 22,
-                            backgroundColor: ColoresApp.wave,
-                            // Iniciales dentro del avatar
-                            child: Text(
-                              iniciales,
-                              style: const TextStyle(
-                                color: Colors.white,
-                                fontWeight: FontWeight.bold,
-                                fontSize: 14,
-                              ),
-                            ),
-                          ),
+                        AvatarActiva(
+                          rol: Rol.alumno,
+                          iniciales: iniciales,
+                          radio: 25,
+                          borde: true,
                         ),
                       ],
                     ),
@@ -148,7 +135,7 @@ class PantallaInicioAlumno extends StatelessWidget {
                             // Empieza rápido y termina suave
                             curve: Curves.easeOutCubic,
                             // v es el valor actual de la animación
-                            builder: (_, v, __) => SizedBox(
+                            builder: (_, v, _) => SizedBox(
                               width: 78,
                               height: 78,
                               // Stack pone el porcentaje encima del círculo
@@ -161,8 +148,9 @@ class PantallaInicioAlumno extends StatelessWidget {
                                       value: v,
                                       strokeWidth: 7,
                                       // Parte del círculo que falta
-                                      backgroundColor:
-                                          Colors.white.withValues(alpha: 0.18),
+                                      backgroundColor: Colors.white.withValues(
+                                        alpha: 0.18,
+                                      ),
                                       // Parte del círculo que ya llevas
                                       color: ColoresApp.sky,
                                       // Puntas redondeadas
@@ -172,7 +160,8 @@ class PantallaInicioAlumno extends StatelessWidget {
                                   // Porcentaje en el centro
                                   Text(
                                     '${(v * 100).round()}%',
-                                    style: TextStyle(fontFamily: FuentesApp.century, 
+                                    style: TextStyle(
+                                      fontFamily: FuentesApp.century,
                                       color: Colors.white,
                                       fontWeight: FontWeight.w700,
                                       fontSize: 16,
@@ -199,7 +188,8 @@ class PantallaInicioAlumno extends StatelessWidget {
                                 // Ejemplo: "20 / 60 horas"
                                 Text(
                                   '$horas / $metaHoras horas',
-                                  style: TextStyle(fontFamily: FuentesApp.century, 
+                                  style: TextStyle(
+                                    fontFamily: FuentesApp.century,
                                     color: Colors.white,
                                     fontSize: 22,
                                     fontWeight: FontWeight.w700,
@@ -249,14 +239,26 @@ class PantallaInicioAlumno extends StatelessWidget {
                   // Los reparte con el mismo espacio entre ellos
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    _ChipCategoria(Icons.apps_rounded, 'Todas',
-                        () => context.go('/alumno/explorar')),
-                    _ChipCategoria(Icons.sports_soccer, 'Deportes',
-                        () => context.go('/alumno/explorar')),
-                    _ChipCategoria(Icons.theater_comedy, 'Cultura',
-                        () => context.go('/alumno/explorar')),
-                    _ChipCategoria(Icons.star_rounded, 'Otros',
-                        () => context.go('/alumno/explorar')),
+                    _ChipCategoria(
+                      Icons.apps_rounded,
+                      'Todas',
+                      () => context.go('/alumno/explorar'),
+                    ),
+                    _ChipCategoria(
+                      Icons.sports_soccer,
+                      'Deportes',
+                      () => context.go('/alumno/explorar'),
+                    ),
+                    _ChipCategoria(
+                      Icons.theater_comedy,
+                      'Cultura',
+                      () => context.go('/alumno/explorar'),
+                    ),
+                    _ChipCategoria(
+                      Icons.star_rounded,
+                      'Otros',
+                      () => context.go('/alumno/explorar'),
+                    ),
                   ],
                 ),
               ),
@@ -265,7 +267,8 @@ class PantallaInicioAlumno extends StatelessWidget {
               // Título de la actividad sugerida
               Text(
                 'Actividad sugerida',
-                style: TextStyle(fontFamily: FuentesApp.century, 
+                style: TextStyle(
+                  fontFamily: FuentesApp.century,
                   fontSize: 16,
                   fontWeight: FontWeight.w700,
                   color: ColoresApp.navy,
@@ -290,7 +293,8 @@ class PantallaInicioAlumno extends StatelessWidget {
                             // Nombre de la actividad
                             Text(
                               sugerido.nombre,
-                              style: TextStyle(fontFamily: FuentesApp.century, 
+                              style: TextStyle(
+                                fontFamily: FuentesApp.century,
                                 fontWeight: FontWeight.w600,
                                 fontSize: 15,
                               ),
@@ -299,13 +303,17 @@ class PantallaInicioAlumno extends StatelessWidget {
                             Text(
                               sugerido.horarioTexto,
                               style: const TextStyle(
-                                  color: ColoresApp.muted, fontSize: 12),
+                                color: ColoresApp.muted,
+                                fontSize: 12,
+                              ),
                             ),
                             // Lugar donde se da
                             Text(
                               sugerido.lugar,
                               style: const TextStyle(
-                                  color: ColoresApp.muted, fontSize: 12),
+                                color: ColoresApp.muted,
+                                fontSize: 12,
+                              ),
                             ),
                             const SizedBox(height: 4),
                             // Lugares disponibles
@@ -314,8 +322,10 @@ class PantallaInicioAlumno extends StatelessWidget {
                         ),
                       ),
                       // Flechita de la derecha
-                      const Icon(Icons.chevron_right_rounded,
-                          color: ColoresApp.muted),
+                      const Icon(
+                        Icons.chevron_right_rounded,
+                        color: ColoresApp.muted,
+                      ),
                     ],
                   ),
                 ),
@@ -342,8 +352,10 @@ class PantallaInicioAlumno extends StatelessWidget {
                           color: ColoresApp.warning.withValues(alpha: 0.15),
                           shape: BoxShape.circle,
                         ),
-                        child: const Icon(Icons.notifications_rounded,
-                            color: ColoresApp.warning),
+                        child: const Icon(
+                          Icons.notifications_rounded,
+                          color: ColoresApp.warning,
+                        ),
                       ),
                       const SizedBox(width: 14),
                       Expanded(
@@ -353,8 +365,11 @@ class PantallaInicioAlumno extends StatelessWidget {
                             // Título del aviso
                             Text(
                               aviso.titulo,
-                              style: TextStyle(fontFamily: FuentesApp.century, 
-                                  fontWeight: FontWeight.w600, fontSize: 14),
+                              style: TextStyle(
+                                fontFamily: FuentesApp.century,
+                                fontWeight: FontWeight.w600,
+                                fontSize: 14,
+                              ),
                             ),
                             // Mensaje, máximo 2 renglones
                             Text(
@@ -362,7 +377,9 @@ class PantallaInicioAlumno extends StatelessWidget {
                               maxLines: 2,
                               overflow: TextOverflow.ellipsis,
                               style: const TextStyle(
-                                  color: ColoresApp.muted, fontSize: 12),
+                                color: ColoresApp.muted,
+                                fontSize: 12,
+                              ),
                             ),
                           ],
                         ),
@@ -389,22 +406,23 @@ class _EncabezadoSeccion extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => Row(
-        children: [
-          // el título ocupa todo el espacio que sobre
-          Expanded(
-            child: Text(
-              title,
-              style: TextStyle(fontFamily: FuentesApp.century, 
-                fontSize: 16,
-                fontWeight: FontWeight.w700,
-                color: ColoresApp.navy,
-              ),
-            ),
+    children: [
+      // el título ocupa todo el espacio que sobre
+      Expanded(
+        child: Text(
+          title,
+          style: TextStyle(
+            fontFamily: FuentesApp.century,
+            fontSize: 16,
+            fontWeight: FontWeight.w700,
+            color: ColoresApp.navy,
           ),
-          // btn de texto, toma el color del tema
-          TextButton(onPressed: onSeeAll, child: const Text('Ver todos ›')),
-        ],
-      );
+        ),
+      ),
+      // btn de texto, toma el color del tema
+      TextButton(onPressed: onSeeAll, child: const Text('Ver todos ›')),
+    ],
+  );
 }
 
 // btn de categoría cuadro blanco con ícono y nombre abajo
@@ -419,33 +437,33 @@ class _ChipCategoria extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => InkWell(
-        onTap: onTap,
-        borderRadius: BorderRadius.circular(20),
-        child: Column(
-          children: [
-            // Cuadro blanco redondeado con sombra suave
-            Container(
-              width: 64,
-              height: 64,
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(20),
-                border: Border.all(color: ColoresApp.line),
-                boxShadow: ColoresApp.softShadow,
-              ),
-              child: Icon(icon, color: ColoresApp.primary, size: 28),
-            ),
-            const SizedBox(height: 8),
-            // Nombre de la categoría
-            Text(
-              label,
-              style: const TextStyle(
-                fontSize: 12,
-                fontWeight: FontWeight.w500,
-                color: ColoresApp.navy,
-              ),
-            ),
-          ],
+    onTap: onTap,
+    borderRadius: BorderRadius.circular(20),
+    child: Column(
+      children: [
+        // Cuadro blanco redondeado con sombra suave
+        Container(
+          width: 64,
+          height: 64,
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(20),
+            border: Border.all(color: ColoresApp.line),
+            boxShadow: ColoresApp.softShadow,
+          ),
+          child: Icon(icon, color: ColoresApp.primary, size: 28),
         ),
-      );
+        const SizedBox(height: 8),
+        // Nombre de la categoría
+        Text(
+          label,
+          style: const TextStyle(
+            fontSize: 12,
+            fontWeight: FontWeight.w500,
+            color: ColoresApp.navy,
+          ),
+        ),
+      ],
+    ),
+  );
 }

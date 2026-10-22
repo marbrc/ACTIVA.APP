@@ -43,7 +43,7 @@ class _TarjetaActividadState extends State<TarjetaActividad> {
           borderRadius: radio,
           clipBehavior: Clip.antiAlias,
           child: InkWell(
-            onTap: widget.onTap ?? () => context.push('/activity/${t.id}'),
+            onTap: widget.onTap ?? () => context.push('/actividad/${t.id}'),
             onHighlightChanged: (v) => setState(() => _presionada = v),
             child: Padding(
               padding: const EdgeInsets.fromLTRB(12, 12, 10, 12),
@@ -144,7 +144,7 @@ class _Dato extends StatelessWidget {
 }
 
 /// Dibujo de la actividad: si existe una imagen con el nombre de la actividad
-/// en assets/images/actividades/ la usa; si no, muestra un ícono.
+/// en assets/images/talleres/ la usa; si no, muestra un ícono.
 class _Ilustracion extends StatelessWidget {
   const _Ilustracion(this.taller, this.color);
   final Taller taller;
@@ -165,7 +165,7 @@ class _Ilustracion extends StatelessWidget {
       child: Padding(
         padding: const EdgeInsets.all(8),
         child: Image.asset(
-          'assets/images/actividades/$slug.png',
+          'assets/images/talleres/$slug.png',
           fit: BoxFit.contain,
           errorBuilder: (_, __, ___) => Center(
             child: Icon(_iconoPara(taller), color: color, size: 28),

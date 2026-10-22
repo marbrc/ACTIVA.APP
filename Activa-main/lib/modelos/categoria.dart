@@ -2,11 +2,11 @@ import 'package:flutter/material.dart';
 
 class Categoria {
   final int id;
-  final String clave;     // slug para URLs y filtros: "deportes"
-  final String nombre;    // chip de filtro: "Deportes"
-  final String etiqueta;  // badge en tarjetas: "Deportiva"
-  final int colorValue;   // 0xFFE08A3C
-  final String icono;     // clave del ícono, ver kIconos
+  final String clave; // slug para URLs y filtros: "deportes"
+  final String nombre; // chip de filtro: "Deportes"
+  final String etiqueta; // badge en tarjetas: "Deportiva"
+  final int colorValue; // 0xFFE08A3C
+  final String icono; // clave del ícono, ver kIconos
   final bool activa;
 
   const Categoria({

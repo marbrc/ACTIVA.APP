@@ -2,10 +2,10 @@
 // Colores del logo y tema general de toda la app
 // ===================================================================
 
-
 import 'package:flutter/material.dart';
 
 import '../servicios/sonidos.dart';
+
 // Transición entre pantallas: entra con fundido y un deslizamiento corto,
 // mientras la pantalla anterior se desvanece
 class TransicionActiva extends PageTransitionsBuilder {
@@ -20,20 +20,27 @@ class TransicionActiva extends PageTransitionsBuilder {
     Widget child,
   ) {
     final entra = CurvedAnimation(
-        parent: animation,
-        curve: Curves.easeOutCubic,
-        reverseCurve: Curves.easeInCubic);
+      parent: animation,
+      curve: Curves.easeOutCubic,
+      reverseCurve: Curves.easeInCubic,
+    );
     final sale = CurvedAnimation(
-        parent: secondaryAnimation,
-        curve: const Interval(0, 0.5, curve: Curves.easeOut));
+      parent: secondaryAnimation,
+      curve: const Interval(0, 0.5, curve: Curves.easeOut),
+    );
     return FadeTransition(
       opacity: Tween<double>(begin: 0, end: 1).animate(entra),
       child: SlideTransition(
-        position: Tween<Offset>(begin: const Offset(0.06, 0), end: Offset.zero)
-            .animate(entra),
-        child: FadeTransition(
-          opacity: Tween<double>(begin: 1, end: 0).animate(sale),
-          child: child,
+        position: Tween<Offset>(
+          begin: const Offset(0.08, 0),
+          end: Offset.zero,
+        ).animate(entra),
+        child: ScaleTransition(
+          scale: Tween<double>(begin: 0.96, end: 1.0).animate(entra),
+          child: FadeTransition(
+            opacity: Tween<double>(begin: 1, end: 0).animate(sale),
+            child: child,
+          ),
         ),
       ),
     );
@@ -152,16 +159,15 @@ class TemaApp {
     );
 
     // Letra Century con el color de texto de la app
-    final textTheme = ThemeData.light()
-        .textTheme
+    final textTheme = ThemeData.light().textTheme
         .apply(fontFamily: FuentesApp.century)
         .apply(bodyColor: ColoresApp.ink, displayColor: ColoresApp.ink);
 
     // Función para crear bordes redondos de los campos de texto
     OutlineInputBorder border(Color c, [double w = 1]) => OutlineInputBorder(
-          borderRadius: BorderRadius.circular(16),
-          borderSide: BorderSide(color: c, width: w),
-        );
+      borderRadius: BorderRadius.circular(16),
+      borderSide: BorderSide(color: c, width: w),
+    );
 
     // Transición tipo iPhone: la pantalla nueva se desliza suave
     const slide = TransicionActiva();
@@ -177,14 +183,16 @@ class TemaApp {
       splashFactory: const SplashSonoro(),
 
       // Misma transición en todas las plataformas
-      pageTransitionsTheme: const PageTransitionsTheme(builders: {
-        TargetPlatform.android: slide,
-        TargetPlatform.iOS: slide,
-        TargetPlatform.windows: slide,
-        TargetPlatform.macOS: slide,
-        TargetPlatform.linux: slide,
-        TargetPlatform.fuchsia: slide,
-      }),
+      pageTransitionsTheme: const PageTransitionsTheme(
+        builders: {
+          TargetPlatform.android: slide,
+          TargetPlatform.iOS: slide,
+          TargetPlatform.windows: slide,
+          TargetPlatform.macOS: slide,
+          TargetPlatform.linux: slide,
+          TargetPlatform.fuchsia: slide,
+        },
+      ),
 
       // Barra de arriba de las pantallas
       appBarTheme: AppBarTheme(
@@ -194,7 +202,8 @@ class TemaApp {
         scrolledUnderElevation: 0,
         centerTitle: false,
         iconTheme: const IconThemeData(color: ColoresApp.navy),
-        titleTextStyle: TextStyle(fontFamily: FuentesApp.century, 
+        titleTextStyle: TextStyle(
+          fontFamily: FuentesApp.century,
           fontSize: 18,
           fontWeight: FontWeight.w700,
           color: ColoresApp.navy,
@@ -205,36 +214,47 @@ class TemaApp {
       filledButtonTheme: FilledButtonThemeData(
         style: FilledButton.styleFrom(
           // Alto de 54 y ancho completo
-          minimumSize: const Size.fromHeight(54),
+          minimumSize: const Size.fromHeight(58),
           backgroundColor: ColoresApp.primary,
           foregroundColor: Colors.white,
           elevation: 0,
           // Duración de la transición de color al presionar
           animationDuration: const Duration(milliseconds: 250),
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-          textStyle:
-              TextStyle(fontFamily: FuentesApp.century, fontSize: 15, fontWeight: FontWeight.w600),
+          shape: const StadiumBorder(),
+          textStyle: TextStyle(
+            fontFamily: FuentesApp.century,
+            fontSize: 16,
+            fontWeight: FontWeight.w700,
+          ),
         ),
       ),
       // Botones con solo borde (OutlinedButton)
       outlinedButtonTheme: OutlinedButtonThemeData(
         style: OutlinedButton.styleFrom(
-          minimumSize: const Size.fromHeight(54),
+          minimumSize: const Size.fromHeight(58),
           foregroundColor: ColoresApp.primary,
           side: BorderSide(
-              color: ColoresApp.primary.withValues(alpha: 0.5), width: 1.4),
+            color: ColoresApp.primary.withValues(alpha: 0.5),
+            width: 1.4,
+          ),
           animationDuration: const Duration(milliseconds: 250),
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-          textStyle:
-              TextStyle(fontFamily: FuentesApp.century, fontSize: 15, fontWeight: FontWeight.w600),
+          shape: const StadiumBorder(),
+          textStyle: TextStyle(
+            fontFamily: FuentesApp.century,
+            fontSize: 16,
+            fontWeight: FontWeight.w700,
+          ),
         ),
       ),
       // Botones de solo texto (TextButton)
       textButtonTheme: TextButtonThemeData(
         style: TextButton.styleFrom(
           foregroundColor: ColoresApp.primary,
-          textStyle:
-              TextStyle(fontFamily: FuentesApp.century, fontSize: 13, fontWeight: FontWeight.w600),
+          textStyle: TextStyle(
+            fontFamily: FuentesApp.century,
+            fontSize: 13,
+            fontWeight: FontWeight.w600,
+          ),
         ),
       ),
 
@@ -243,14 +263,17 @@ class TemaApp {
         // Fondo blanco
         filled: true,
         fillColor: Colors.white,
-        contentPadding:
-            const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+        contentPadding: const EdgeInsets.symmetric(
+          horizontal: 16,
+          vertical: 16,
+        ),
         hintStyle: const TextStyle(color: Color(0xFF9AA8C0), fontSize: 14),
         // El ícono de la izquierda se pone azul cuando escribes
-        prefixIconColor: WidgetStateColor.resolveWith((s) =>
-            s.contains(WidgetState.focused)
-                ? ColoresApp.primary
-                : ColoresApp.muted),
+        prefixIconColor: WidgetStateColor.resolveWith(
+          (s) => s.contains(WidgetState.focused)
+              ? ColoresApp.primary
+              : ColoresApp.muted,
+        ),
         suffixIconColor: ColoresApp.muted,
         // Bordes en cada estado
         border: border(ColoresApp.line),
@@ -272,16 +295,19 @@ class TemaApp {
         // Solo muestra el nombre de la pestaña elegida
         labelBehavior: NavigationDestinationLabelBehavior.onlyShowSelected,
         // Ícono azul si está elegido, gris si no
-        iconTheme: WidgetStateProperty.resolveWith((s) => IconThemeData(
-              size: 26,
-              color: s.contains(WidgetState.selected)
-                  ? ColoresApp.primary
-                  : ColoresApp.muted,
-            )),
+        iconTheme: WidgetStateProperty.resolveWith(
+          (s) => IconThemeData(
+            size: 26,
+            color: s.contains(WidgetState.selected)
+                ? ColoresApp.primary
+                : ColoresApp.muted,
+          ),
+        ),
         // Letra de cada pestaña
         labelTextStyle: WidgetStateProperty.resolveWith((s) {
           final sel = s.contains(WidgetState.selected);
-          return TextStyle(fontFamily: FuentesApp.century, 
+          return TextStyle(
+            fontFamily: FuentesApp.century,
             fontSize: 11.5,
             fontWeight: sel ? FontWeight.w600 : FontWeight.w500,
             color: sel ? ColoresApp.primary : ColoresApp.muted,
@@ -293,8 +319,11 @@ class TemaApp {
       snackBarTheme: SnackBarThemeData(
         behavior: SnackBarBehavior.floating,
         backgroundColor: ColoresApp.navy,
-        contentTextStyle:
-            TextStyle(fontFamily: FuentesApp.century, color: Colors.white, fontSize: 13.5),
+        contentTextStyle: TextStyle(
+          fontFamily: FuentesApp.century,
+          color: Colors.white,
+          fontSize: 13.5,
+        ),
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
       ),
 
@@ -303,8 +332,12 @@ class TemaApp {
         backgroundColor: ColoresApp.mist,
         side: BorderSide.none,
         shape: const StadiumBorder(),
-        labelStyle: TextStyle(fontFamily: FuentesApp.century, 
-            fontSize: 12, fontWeight: FontWeight.w600, color: ColoresApp.navy),
+        labelStyle: TextStyle(
+          fontFamily: FuentesApp.century,
+          fontSize: 12,
+          fontWeight: FontWeight.w600,
+          color: ColoresApp.navy,
+        ),
       ),
 
       // Barras y círculos de progreso
@@ -317,8 +350,9 @@ class TemaApp {
       // Casillas de verificación
       checkboxTheme: CheckboxThemeData(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(6)),
-        fillColor: WidgetStateProperty.resolveWith((s) =>
-            s.contains(WidgetState.selected) ? ColoresApp.primary : null),
+        fillColor: WidgetStateProperty.resolveWith(
+          (s) => s.contains(WidgetState.selected) ? ColoresApp.primary : null,
+        ),
       ),
 
       // Líneas divisorias

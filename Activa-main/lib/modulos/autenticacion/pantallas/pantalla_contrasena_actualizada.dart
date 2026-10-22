@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+
 import '../../../nucleo/tema/tema_app.dart';
 
 class PantallaContrasenaActualizada extends StatelessWidget {
@@ -17,13 +18,15 @@ class PantallaContrasenaActualizada extends StatelessWidget {
               Container(
                 padding: const EdgeInsets.all(20),
                 decoration: BoxDecoration(
-                    color: ColoresApp.teal.withOpacity(0.2),
-                    shape: BoxShape.circle),
+                  color: ColoresApp.teal.withValues(alpha: 0.2),
+                  shape: BoxShape.circle,
+                ),
                 child: Container(
                   padding: const EdgeInsets.all(14),
                   decoration: BoxDecoration(
-                      color: ColoresApp.teal.withOpacity(0.3),
-                      shape: BoxShape.circle),
+                    color: ColoresApp.teal.withValues(alpha: 0.3),
+                    shape: BoxShape.circle,
+                  ),
                   child: const CircleAvatar(
                     radius: 38,
                     backgroundColor: ColoresApp.teal,
@@ -32,20 +35,25 @@ class PantallaContrasenaActualizada extends StatelessWidget {
                 ),
               ),
               const SizedBox(height: 24),
-              const Text('¡Contraseña actualizada!',
-                  style: TextStyle(
-                      fontSize: 24,
-                      fontWeight: FontWeight.w800,
-                      color: ColoresApp.navy)),
+              const Text(
+                '¡Contraseña actualizada!',
+                style: TextStyle(
+                  fontSize: 24,
+                  fontWeight: FontWeight.w800,
+                  color: ColoresApp.navy,
+                ),
+              ),
               const SizedBox(height: 6),
-              const Text('Ya puedes iniciar sesión con tu nueva contraseña.',
-                  textAlign: TextAlign.center,
-                  style: TextStyle(color: Colors.black54)),
+              const Text(
+                'Ya puedes iniciar sesión con tu nueva contraseña.',
+                textAlign: TextAlign.center,
+                style: TextStyle(color: Colors.black54),
+              ),
               const SizedBox(height: 20),
               Container(
                 padding: const EdgeInsets.all(12),
                 decoration: BoxDecoration(
-                  color: ColoresApp.teal.withOpacity(0.15),
+                  color: ColoresApp.teal.withValues(alpha: 0.15),
                   borderRadius: BorderRadius.circular(14),
                 ),
                 child: const Row(

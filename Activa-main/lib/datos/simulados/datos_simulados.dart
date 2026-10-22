@@ -4,7 +4,6 @@ import '../../modelos/inscripcion.dart';
 import '../../modelos/taller.dart';
 import '../../modelos/usuario.dart';
 
-
 Instructor _ins(int id, String nom, String pat, String mat, String esp) =>
     Instructor(
       id: id,
@@ -14,18 +13,6 @@ Instructor _ins(int id, String nom, String pat, String mat, String esp) =>
       correo: 'instructor$id@utng.edu.mx',
       especialidad: esp,
     );
-
-final alumnaSimulado = Alumno(
-  id: 2,
-  nombre: 'MARIA GUADALUPE',
-  apellidoPaterno: 'RODRIGUEZ',
-  apellidoMaterno: 'BARCENAS',
-  correo: '1225100380.mgrd@gmail.com',
-  telefono: '419 115 4531',
-  numeroControl: '1225100380',
-  grupo: 'GTID243',
-  carrera: 'Desarrollo de Software',
-);
 
 final alumnoSimulado = Alumno(
   id: 1,
@@ -39,6 +26,17 @@ final alumnoSimulado = Alumno(
   carrera: 'Ingeniería en Desarrollo de Software',
 );
 
+final alumnaSimulado = Alumno(
+  id: 1,
+  nombre: 'María Guadalupe',
+  apellidoPaterno: 'Rodríguez',
+  apellidoMaterno: 'Bárcenas',
+  correo: '1225100380@utng.edu.mx',
+  telefono: '418 123 4567',
+  numeroControl: '1225100380',
+  grupo: 'GTID235',
+  carrera: 'Ingeniería en Desarrollo de Software',
+);
 
 const adminSimulado = Administrador(
   id: 100,
@@ -48,22 +46,48 @@ const adminSimulado = Administrador(
   cargo: 'Coordinador',
 );
 
-const catDeportes = Categoria(id: 1, clave: 'deportes', nombre: 'Deportes', etiqueta: 'Deportiva', colorValue: 0xFFE08A3C, icono: 'deportes');
-const catCultura = Categoria(id: 2, clave: 'cultura', nombre: 'Cultura', etiqueta: 'Cultural', colorValue: 0xFFD1457B, icono: 'cultura');
-const catRecreativa = Categoria(id: 3, clave: 'recreativa', nombre: 'Recreativa', etiqueta: 'Recreativa', colorValue: 0xFF6C4FD1, icono: 'recreativa');
-const catOtros = Categoria(id: 4, clave: 'otros', nombre: 'Otros', etiqueta: 'Otra', colorValue: 0xFF3C8DE0, icono: 'otros');
+const catDeportes = Categoria(
+  id: 1,
+  clave: 'deportes',
+  nombre: 'Deportes',
+  etiqueta: 'Deportiva',
+  colorValue: 0xFFE08A3C,
+  icono: 'deportes',
+);
+const catCultura = Categoria(
+  id: 2,
+  clave: 'cultura',
+  nombre: 'Cultura',
+  etiqueta: 'Cultural',
+  colorValue: 0xFFD1457B,
+  icono: 'cultura',
+);
+const catRecreativa = Categoria(
+  id: 3,
+  clave: 'recreativa',
+  nombre: 'Recreativa',
+  etiqueta: 'Recreativa',
+  colorValue: 0xFF6C4FD1,
+  icono: 'recreativa',
+);
+const catOtros = Categoria(
+  id: 4,
+  clave: 'otros',
+  nombre: 'Otros',
+  etiqueta: 'Otra',
+  colorValue: 0xFF3C8DE0,
+  icono: 'otros',
+);
 
 const categoriasSimulado = [catDeportes, catCultura, catRecreativa, catOtros];
 
 final talleresSimulado = <Taller>[
-  
   Taller(
     id: 1,
     nombre: 'Voleibol',
-    descripcion:
-        'El voleibol fomenta el trabajo en equipo, la comunicación y la superación personal.',
-    categoria:catDeportes,
-    lugar: 'Gimnasio-Auditorio',  
+    descripcion: 'El voleibol fomenta el trabajo en equipo, la comunicación y la superación personal.',
+    categoria: catDeportes,
+    lugar: 'Gimnasio-Auditorio',
     cupoMaximo: 24,
     inscritos: 18,
     instructor: instructorSimulado,
@@ -71,7 +95,12 @@ final talleresSimulado = <Taller>[
       Horario(Dia.lunes, '17:00', '18:30'),
       Horario(Dia.jueves, '17:00', '18:30'),
     ],
-    aprendizajes: const ['Trabajo en equipo', 'Disciplina', 'Condición física', 'Diversión'],
+    aprendizajes: const [
+      'Trabajo en equipo',
+      'Disciplina',
+      'Condición física',
+      'Diversión',
+    ],
   ),
   Taller(
     id: 2,
@@ -86,12 +115,18 @@ final talleresSimulado = <Taller>[
       Horario(Dia.martes, '17:00', '18:30'),
       Horario(Dia.jueves, '17:00', '18:30'),
     ],
-    aprendizajes: const ['Resistencia', 'Táctica', 'Trabajo en equipo', 'Diversión'],
+    aprendizajes: const [
+      'Resistencia',
+      'Táctica',
+      'Trabajo en equipo',
+      'Diversión',
+    ],
   ),
   Taller(
     id: 3,
     nombre: 'Danza folclórica',
-    descripcion: 'Explora las raíces culturales a través del movimiento y la tradición.',
+    descripcion:
+        'Explora las raíces culturales a través del movimiento y la tradición.',
     categoria: catCultura,
     lugar: 'Aula de Danza',
     cupoMaximo: 20,
@@ -101,7 +136,12 @@ final talleresSimulado = <Taller>[
       Horario(Dia.martes, '16:00', '18:00'),
       Horario(Dia.jueves, '16:00', '18:00'),
     ],
-    aprendizajes: const ['Tradición', 'Expresión artística', 'Coordinación', 'Diversión'],
+    aprendizajes: const [
+      'Tradición',
+      'Expresión artística',
+      'Coordinación',
+      'Diversión',
+    ],
   ),
   Taller(
     id: 4,
@@ -116,13 +156,18 @@ final talleresSimulado = <Taller>[
       Horario(Dia.martes, '15:00', '16:30'),
       Horario(Dia.viernes, '15:00', '16:30'),
     ],
-    aprendizajes: const ['Estrategia', 'Concentración', 'Paciencia', 'Pensamiento crítico'],
+    aprendizajes: const [
+      'Estrategia',
+      'Concentración',
+      'Paciencia',
+      'Pensamiento crítico',
+    ],
   ),
   Taller(
     id: 5,
     nombre: 'Teatro',
     descripcion: 'Expresión escénica, improvisación y montaje de obras breves durante el cuatrimestre.',
-    categoria:catRecreativa,
+    categoria: catRecreativa,
     lugar: 'Auditorio',
     cupoMaximo: 20,
     inscritos: 14,
@@ -131,13 +176,18 @@ final talleresSimulado = <Taller>[
       Horario(Dia.lunes, '16:00', '18:00'),
       Horario(Dia.miercoles, '16:00', '18:00'),
     ],
-    aprendizajes: const ['Expresión', 'Creatividad', 'Trabajo en equipo', 'Confianza'],
+    aprendizajes: const [
+      'Expresión',
+      'Creatividad',
+      'Trabajo en equipo',
+      'Confianza',
+    ],
   ),
   Taller(
     id: 6,
     nombre: 'Zumba',
     descripcion: 'Actividad cardiovascular en formato de baile, ideal para mantenerse activo.',
-    categoria:catRecreativa,
+    categoria: catRecreativa,
     lugar: 'Gimnasio-Auditorio',
     cupoMaximo: 25,
     inscritos: 12,
@@ -176,41 +226,55 @@ const horasPorFolioSimulado = {'VOL-2026-0381': 22, 'DAN-2026-0382': 16};
 
 final avisosSimulado = <Aviso>[
   Aviso(
-    id: 1, tallerId: 1, tipo: TipoAviso.cambioHorario,
+    id: 1,
+    tallerId: 1,
+    tipo: TipoAviso.cambioHorario,
     titulo: 'Cambio de horario',
     mensaje: 'La actividad de Voleibol ahora será de 17:30 a 19:00 los lunes y jueves.',
     fecha: DateTime.now().subtract(const Duration(hours: 1)),
   ),
   Aviso(
-    id: 2, tallerId: 1, tipo: TipoAviso.informativo,
+    id: 2,
+    tallerId: 1,
+    tipo: TipoAviso.informativo,
     titulo: 'Aviso del instructor',
     mensaje: 'Marco A. López publicó un nuevo aviso para el grupo de Voleibol.',
     fecha: DateTime.now().subtract(const Duration(hours: 3)),
   ),
   Aviso(
-    id: 3, tallerId: 4, tipo: TipoAviso.recordatorio,
+    id: 3,
+    tallerId: 4,
+    tipo: TipoAviso.recordatorio,
     titulo: 'Cupo disponible',
     mensaje: 'Se liberó un cupo en la actividad de Ajedrez.',
     fecha: DateTime.now().subtract(const Duration(hours: 26)),
   ),
   Aviso(
-    id: 4, tallerId: 3, tipo: TipoAviso.informativo,
+    id: 4,
+    tallerId: 3,
+    tipo: TipoAviso.informativo,
     titulo: 'Inscripción confirmada',
     mensaje: 'Tu inscripción a Danza folclórica ha sido confirmada.',
     fecha: DateTime.now().subtract(const Duration(hours: 27)),
   ),
 ];
-final instructorSimulado = _ins(2, 'Marco Antonio', 'López', 'Guerra', 'Voleibol');
+final instructorSimulado = _ins(
+  2,
+  'Marco Antonio',
+  'López',
+  'Guerra',
+  'Voleibol',
+);
 
 Alumno _al(int id, String nom, String pat, String ctrl) => Alumno(
-      id: id,
-      nombre: nom,
-      apellidoPaterno: pat,
-      correo: '$ctrl@utng.edu.mx',
-      numeroControl: ctrl,
-      grupo: 'GTID235',
-      carrera: 'Ingeniería en Desarrollo de Software',
-    );
+  id: id,
+  nombre: nom,
+  apellidoPaterno: pat,
+  correo: '$ctrl@utng.edu.mx',
+  numeroControl: ctrl,
+  grupo: 'GTID235',
+  carrera: 'Ingeniería en Desarrollo de Software',
+);
 
 final companerosSimulado = <Alumno>[
   _al(11, 'Ana Sofía', 'Ramírez', '1225100412'),
