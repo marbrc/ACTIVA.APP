@@ -10,13 +10,16 @@ import '../componentes/tarjeta_taller.dart';
 import '../componentes/miniatura_taller.dart';
 import '../../../nucleo/componentes/avisos.dart';
 
+import '../../../nucleo/servicios/sonidos.dart';
+
 class PantallaDetalleActividad extends StatelessWidget {
   const PantallaDetalleActividad({super.key, required this.tallerId});
   final int tallerId;
 
-  void _snack(BuildContext context, String msg) =>
-      ScaffoldMessenger.of(context)
-          .showSnackBar(avisoSnack(content: Text(msg)));
+    void _snack(BuildContext context, String msg) =>
+      ScaffoldMessenger.of(context).showSnackBar(
+        avisoSnack(content: Text(msg), tipo: TipoToast.error),
+      );
 
   Future<void> _confirm(BuildContext context, Taller t) async {
     final ok = await showModalBottomSheet<bool>(
@@ -81,6 +84,7 @@ class PantallaDetalleActividad extends StatelessWidget {
       _snack(context, 'No fue posible inscribirte');
       return;
     }
+    Sonidos.reproducir(Sonido.exito);
     context.pushReplacement('/inscripcion/${ins.folio}');
   }
 

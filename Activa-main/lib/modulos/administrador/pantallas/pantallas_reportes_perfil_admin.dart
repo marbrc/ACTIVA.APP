@@ -13,8 +13,17 @@ import '../../../datos/estado_app.dart';
 import '../../../datos/simulados/datos_simulados.dart';
 import '../../../nucleo/componentes/avisos.dart';
 
-class PantallaReportes extends StatelessWidget {
+import '../../../nucleo/componentes/dialogo_confirmar.dart';
+import 'pantallas_seguimiento_admin.dart';
+class PantallaReportes extends StatefulWidget {
   const PantallaReportes({super.key});
+
+  @override
+  State<PantallaReportes> createState() => _EstadoReportes();
+}
+
+class _EstadoReportes extends State<PantallaReportes> {
+  int _vista = 0; // 0 resumen, 1 alumnos, 2 instructores, 3 encuestas
 
   void _export(BuildContext context, String formato) {
     // TODO: generar el archivo real (paquetes pdf / excel o desde el backend)
@@ -55,7 +64,52 @@ class PantallaReportes extends StatelessWidget {
             'Resumen del ciclo $periodoSimulado',
             style: TextStyle(color: Colors.black54, fontSize: 12),
           ),
+                    const SizedBox(height: 12),
+          SingleChildScrollView(
+            scrollDirection: Axis.horizontal,
+            child: Row(
+              children: [
+                for (final (i, nombre) in const [
+                  'Resumen',
+                  'Alumnos',
+                  'Instructores',
+                  'Encuestas',
+                ].indexed)
+                  Padding(
+                    padding: const EdgeInsets.only(right: 8),
+                    child: ChoiceChip(
+                      label: Text(nombre),
+                      selected: _vista == i,
+                      onSelected: (_) => setState(() => _vista = i),
+                    ),
+                  ),
+              ],
+            ),
+          ),
+          if (s.solicitudesPendientes > 0) ...[
+            const SizedBox(height: 12),
+            TarjetaApp(
+              onTap: () => context.push('/admin/solicitudes'),
+              child: Row(
+                children: [
+                  const Icon(
+                    Icons.mark_email_unread_rounded,
+                    color: ColoresApp.warning,
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: Text(
+                      '${s.solicitudesPendientes} solicitud(es) de instructores pendientes',
+                      style: const TextStyle(fontWeight: FontWeight.bold),
+                    ),
+                  ),
+                  const Icon(Icons.chevron_right, color: Colors.black38),
+                ],
+              ),
+            ),
+          ],
           const SizedBox(height: 14),
+          if (_vista == 0) ...[
           TarjetaApp(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -183,7 +237,7 @@ class PantallaReportes extends StatelessWidget {
               ),
             ],
           ),
-          if (s.reportes.isNotEmpty) ...[
+                   if (s.reportes.isNotEmpty) ...[
             const SizedBox(height: 20),
             const Text(
               'Reportes generados',
@@ -220,6 +274,10 @@ class PantallaReportes extends StatelessWidget {
                 ),
               ),
           ],
+          ], // <- cierra el  if (_vista == 0) ...[
+          if (_vista == 1) const VistaAlumnosAdmin(),
+          if (_vista == 2) const VistaInstructoresAdmin(),
+          if (_vista == 3) const VistaEncuestasAdmin(),
         ],
       ),
     );
@@ -284,12 +342,23 @@ class PantallaPerfilAdmin extends StatelessWidget {
             child: Column(
               children: ListTile.divideTiles(
                 context: context,
-                tiles: [
-                  _item(
-                    Icons.person,
-                    'Instructores',
-                    () => context.push('/admin/instructores'),
-                  ),
+                                  tiles: [
+                    _item(
+                      Icons.mark_email_unread_rounded,
+                      'Solicitudes de instructores',
+                      () => context.push('/admin/solicitudes'),
+                    ),
+                    _item(
+                      Icons.forum_rounded,
+                      'Chats grupales',
+                      () => context.push('/chats'),
+                    ),
+                    _item(
+                      Icons.person,
+                      'Instructores',
+                      () => context.push('/admin/instructores'),
+                    ),
+                
                   _item(
                     Icons.calendar_today,
                     'Periodo escolar',
@@ -320,10 +389,7 @@ class PantallaPerfilAdmin extends StatelessWidget {
             ),
           ),
           TextButton(
-            onPressed: () {
-              context.read<EstadoSesion>().cerrarSesion();
-              context.go('/bienvenida');
-            },
+            onPressed: () => cerrarSesionConfirmando(context),
             child: const Text(
               'Cerrar sesión',
               style: TextStyle(color: ColoresApp.danger),

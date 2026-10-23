@@ -11,6 +11,8 @@ import '../../../datos/estado_app.dart';
 import '../../../modelos/taller.dart';
 import '../../../nucleo/componentes/avisos.dart';
 
+import '../../../nucleo/componentes/dialogo_confirmar.dart';
+
 class PantallaAsistenciaPestana extends StatelessWidget {
   const PantallaAsistenciaPestana({super.key});
 
@@ -139,9 +141,17 @@ class _EstadoPantallaPasarLista extends State<PantallaPasarLista> {
     }
   });
 
-  void _save() {
+  Future<void> _save() async {
     final s = context.read<EstadoApp>();
     final t = s.tallerPorId(widget.tallerId);
+    final ok = await confirmarAccion(
+      context,
+      titulo: '¿Guardar asistencia?',
+      mensaje: 'Se registrará la lista de ${t.nombre} y se sumarán las horas.',
+      textoConfirmar: 'Guardar',
+      icono: Icons.fact_check_rounded,
+    );
+    if (!ok || !mounted) return;
     final msg = ScaffoldMessenger.of(context);
     s.guardarAsistencia(t, widget.fecha, _m);
     context.pop();

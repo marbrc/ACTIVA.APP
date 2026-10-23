@@ -4,7 +4,6 @@
 
 import 'package:flutter/material.dart';
 
-import '../servicios/sonidos.dart';
 
 // Transición entre pantallas: entra con fundido y un deslizamiento corto,
 // mientras la pantalla anterior se desvanece
@@ -47,40 +46,7 @@ class TransicionActiva extends PageTransitionsBuilder {
   }
 }
 
-// Efecto de ondita que además reproduce un sonidito al tocar cualquier botón
-class SplashSonoro extends InteractiveInkFeatureFactory {
-  const SplashSonoro();
 
-  @override
-  InteractiveInkFeature create({
-    required MaterialInkController controller,
-    required RenderBox referenceBox,
-    required Offset position,
-    required Color color,
-    required TextDirection textDirection,
-    bool containedInkWell = false,
-    RectCallback? rectCallback,
-    BorderRadius? borderRadius,
-    ShapeBorder? customBorder,
-    double? radius,
-    VoidCallback? onRemoved,
-  }) {
-    Sonidos.reproducir(Sonido.toque);
-    return InkRipple.splashFactory.create(
-      controller: controller,
-      referenceBox: referenceBox,
-      position: position,
-      color: color,
-      textDirection: textDirection,
-      containedInkWell: containedInkWell,
-      rectCallback: rectCallback,
-      borderRadius: borderRadius,
-      customBorder: customBorder,
-      radius: radius,
-      onRemoved: onRemoved,
-    );
-  }
-}
 
 // Aquí van todos los colores de la app, sacados del logo
 // Nombre de la tipografía (registrada en pubspec.yaml)
@@ -180,8 +146,7 @@ class TemaApp {
       scaffoldBackgroundColor: ColoresApp.background,
       textTheme: textTheme,
       // Efecto de ondita al tocar
-      splashFactory: const SplashSonoro(),
-
+      splashFactory: InkRipple.splashFactory,
       // Misma transición en todas las plataformas
       pageTransitionsTheme: const PageTransitionsTheme(
         builders: {

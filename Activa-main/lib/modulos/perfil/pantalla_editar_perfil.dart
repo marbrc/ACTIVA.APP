@@ -18,6 +18,8 @@ import '../../nucleo/componentes/estructura_subpantalla.dart';
 import '../../nucleo/tema/tema_app.dart';
 import '../../nucleo/utilidades/formateadores.dart';
 
+import '../../nucleo/componentes/dialogo_confirmar.dart';
+
 class PantallaEditarPerfilGeneral extends StatefulWidget {
   const PantallaEditarPerfilGeneral({super.key});
   @override
@@ -43,8 +45,16 @@ class _EstadoEditarPerfilGeneral extends State<PantallaEditarPerfilGeneral> {
   }
 
   // guarda nombre y telefono (solo la alumna puede cambiarlos)
-  void _guardar() {
+   Future<void> _guardar() async {
     if (!_form.currentState!.validate()) return;
+    final ok = await confirmarAccion(
+      context,
+      titulo: '¿Guardar cambios?',
+      mensaje: 'Se actualizarán tus datos de perfil.',
+      textoConfirmar: 'Guardar',
+      icono: Icons.save_rounded,
+    );
+    if (!ok || !mounted) return;
     context.read<EstadoApp>().actualizarPerfil(_nombre.text, _tel.text);
     final m = ScaffoldMessenger.of(context);
     context.pop();

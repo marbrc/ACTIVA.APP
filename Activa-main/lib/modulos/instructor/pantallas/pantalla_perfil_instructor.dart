@@ -12,6 +12,8 @@ import '../../../nucleo/componentes/tarjeta_app.dart';
 import '../../../datos/estado_app.dart';
 import '../../../nucleo/componentes/avisos.dart';
 
+import '../../../nucleo/componentes/dialogo_confirmar.dart';
+
 class PantallaPerfilInstructor extends StatelessWidget {
   const PantallaPerfilInstructor({super.key});
 
@@ -96,6 +98,18 @@ class PantallaPerfilInstructor extends StatelessWidget {
                   ),
                   _item(
                     context,
+                    Icons.forum_rounded,
+                    'Chats grupales',
+                    () => context.push('/chats'),
+                  ),
+                  _item(
+                    context,
+                    Icons.mark_email_unread_rounded,
+                    'Solicitudes al administrador',
+                    () => context.push('/instructor/solicitudes'),
+                  ),
+                  _item(
+                    context,
                     Icons.edit,
                     'Editar perfil',
                     () => context.push('/perfil/editar'),
@@ -111,10 +125,7 @@ class PantallaPerfilInstructor extends StatelessWidget {
             ),
           ),
           TextButton(
-            onPressed: () {
-              context.read<EstadoSesion>().cerrarSesion();
-              context.go('/bienvenida');
-            },
+            onPressed: () => cerrarSesionConfirmando(context),
             child: const Text(
               'Cerrar sesión',
               style: TextStyle(color: ColoresApp.danger),

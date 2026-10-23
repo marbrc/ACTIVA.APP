@@ -1,7 +1,6 @@
 import 'package:flutter/widgets.dart';
 import 'package:go_router/go_router.dart';
 
-import '../servicios/sonidos.dart';
 import '../../modulos/autenticacion/pantallas/pantalla_carga.dart';
 import '../../modulos/alumno/pantallas/pantallas_ayuda.dart';
 import '../../modulos/autenticacion/pantallas/pantalla_olvide_contrasena.dart';
@@ -32,18 +31,14 @@ import '../../modulos/administrador/pantallas/pantalla_inicio_admin.dart';
 import '../../modulos/administrador/pantallas/pantallas_personas_admin.dart';
 import '../../modulos/administrador/pantallas/pantallas_reportes_perfil_admin.dart';
 import '../../modulos/administrador/pantallas/estructura_admin.dart';
+import '../../modulos/chat/pantallas_chat.dart';
+import '../../modulos/alumno/pantallas/pantallas_encuestas.dart';
+import '../../modulos/instructor/pantallas/pantalla_solicitudes_instructor.dart';
+import '../../modulos/administrador/pantallas/pantalla_solicitudes_admin.dart';
 
-// Suena cada vez que se abre una pantalla nueva
-class ObservadorSonoro extends NavigatorObserver {
-  @override
-  void didPush(Route<dynamic> route, Route<dynamic>? previousRoute) {
-    if (previousRoute != null) Sonidos.reproducir(Sonido.navegar);
-  }
-}
 
 final enrutadorApp = GoRouter(
   initialLocation: '/carga',
-  observers: [ObservadorSonoro()],
   routes: [
     GoRoute(path: '/carga', builder: (_, _) => const PantallaCarga()),
     GoRoute(path: '/bienvenida', builder: (_, _) => const PantallaBienvenida()),
@@ -59,6 +54,34 @@ final enrutadorApp = GoRouter(
     GoRoute(
       path: '/contrasena-actualizada',
       builder: (_, _) => const PantallaContrasenaActualizada(),
+    ),
+
+
+        // Chats grupales (los 3 roles)
+    GoRoute(path: '/chats', builder: (_, _) => const PantallaListaChats()),
+    GoRoute(
+      path: '/chat/:id',
+      builder: (_, s) =>
+          PantallaChatGrupal(tallerId: int.parse(s.pathParameters['id']!)),
+    ),
+    // Encuestas del alumno
+    GoRoute(
+      path: '/encuestas',
+      builder: (_, _) => const PantallaEncuestasAlumno(),
+    ),
+    GoRoute(
+      path: '/encuesta/:id',
+      builder: (_, s) =>
+          PantallaEncuesta(tallerId: int.parse(s.pathParameters['id']!)),
+    ),
+    // Solicitudes instructor -> admin
+    GoRoute(
+      path: '/instructor/solicitudes',
+      builder: (_, _) => const PantallaSolicitudesInstructor(),
+    ),
+    GoRoute(
+      path: '/admin/solicitudes',
+      builder: (_, _) => const PantallaSolicitudesAdmin(),
     ),
 
     // Alumno: 5 pestañas

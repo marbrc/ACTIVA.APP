@@ -15,7 +15,15 @@ enum TipoToast { exito, error, advertencia, info }
 // Adivina el tipo de aviso a partir del texto
 TipoToast _tipoDe(String texto) {
   final t = texto.toLowerCase();
-  const error = ['incorrect', 'error', 'no se pudo', 'inválid', 'invalid'];
+  const error = [
+    'incorrect',
+    'error',
+    'no se pudo',
+    'no fue posible',
+    'traslape',
+    'inválid',
+    'invalid',
+  ];
   const exito = [
     'creada',
     'creado',
@@ -26,6 +34,9 @@ TipoToast _tipoDe(String texto) {
     'generad',
     'cambios',
     'te diste de baja',
+    'enviad',
+    'atendida',
+    'eliminada',
   ];
   const advertencia = [
     'acepta',
@@ -43,16 +54,21 @@ TipoToast _tipoDe(String texto) {
 SnackBar avisoSnack({
   required Widget content,
   Duration duration = const Duration(seconds: 3),
+  TipoToast? tipo,
 }) {
   final texto = content is Text ? (content.data ?? '') : '';
-  final tipo = _tipoDe(texto);
+  final tipoFinal = tipo ?? _tipoDe(texto);
 
-  // Sonido según el tipo de aviso
-  Sonidos.reproducir(switch (tipo) {
-    TipoToast.exito => Sonido.exito,
-    TipoToast.error => Sonido.error,
-    _ => Sonido.aviso,
-  });
+  // Sonido: solo éxito y error
+  switch (tipoFinal) {
+    case TipoToast.exito:
+      Sonidos.reproducir(Sonido.exito);
+    case TipoToast.error:
+      Sonidos.reproducir(Sonido.error);
+    case TipoToast.advertencia:
+    case TipoToast.info:
+      break;
+  }
 
   return SnackBar(
     behavior: SnackBarBehavior.floating,
@@ -61,7 +77,7 @@ SnackBar avisoSnack({
     padding: EdgeInsets.zero,
     margin: const EdgeInsets.fromLTRB(16, 0, 16, 16),
     duration: duration,
-    content: _CuerpoAviso(texto: texto, tipo: tipo),
+    content: _CuerpoAviso(texto: texto, tipo: tipoFinal),
   );
 }
 

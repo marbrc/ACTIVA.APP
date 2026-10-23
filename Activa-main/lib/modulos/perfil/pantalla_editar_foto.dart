@@ -23,6 +23,8 @@ import '../../nucleo/componentes/boton_activa.dart';
 import '../../nucleo/componentes/estructura_subpantalla.dart';
 import '../../nucleo/tema/tema_app.dart';
 
+import '../../nucleo/componentes/dialogo_confirmar.dart';
+
 // un filtro = nombre + matriz de color (20 numeros)
 class _Filtro {
   final String nombre;
@@ -270,7 +272,15 @@ class _EstadoPantallaEditarFoto extends State<PantallaEditarFoto> {
   }
 
   // toma la captura del cuadro (con filtro y brillo) y la guarda
-  Future<void> _guardar() async {
+   Future<void> _guardar() async {
+    final ok = await confirmarAccion(
+      context,
+      titulo: '¿Guardar nueva foto?',
+      mensaje: 'Tu foto de perfil se actualizará en toda la app.',
+      textoConfirmar: 'Guardar',
+      icono: Icons.photo_camera_rounded,
+    );
+    if (!ok || !mounted) return;
     setState(() => _guardando = true);
     try {
       final caja =
@@ -353,7 +363,16 @@ class _EstadoPantallaEditarFoto extends State<PantallaEditarFoto> {
             etiqueta: 'Quitar foto actual',
             icono: Icons.delete_outline_rounded,
             variante: VarianteBoton.contorno,
-            alPresionar: () {
+            alPresionar: () async {
+              final ok = await confirmarAccion(
+                context,
+                titulo: '¿Quitar tu foto?',
+                mensaje: 'Se mostrarán tus iniciales en lugar de la foto.',
+                textoConfirmar: 'Quitar',
+                icono: Icons.delete_outline_rounded,
+                peligro: true,
+              );
+              if (!ok || !context.mounted) return;
               context.read<EstadoSesion>().quitarFoto(_rol);
               ScaffoldMessenger.of(context).showSnackBar(
                 avisoSnack(

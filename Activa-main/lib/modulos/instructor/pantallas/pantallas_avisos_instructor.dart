@@ -11,6 +11,8 @@ import '../../../datos/estado_app.dart';
 import '../../../modelos/enums.dart';
 import '../../../nucleo/componentes/avisos.dart';
 
+import '../../../nucleo/componentes/dialogo_confirmar.dart';
+
 class PantallaAvisosInstructor extends StatelessWidget {
   const PantallaAvisosInstructor({super.key});
 
@@ -135,8 +137,16 @@ class _EstadoPantallaNuevoAviso extends State<PantallaNuevoAviso> {
     child: Text(t, style: const TextStyle(fontWeight: FontWeight.bold)),
   );
 
-  void _publish(int tallerId) {
+  Future<void> _publish(int tallerId) async {
     if (!_form.currentState!.validate()) return;
+    final ok = await confirmarAccion(
+      context,
+      titulo: '¿Publicar aviso?',
+      mensaje: 'Los alumnos del grupo lo verán de inmediato.',
+      textoConfirmar: 'Publicar',
+      icono: Icons.campaign_rounded,
+    );
+    if (!ok || !mounted) return;
     final msg = ScaffoldMessenger.of(context);
     context.read<EstadoApp>().publicarAviso(
       tallerId: tallerId,

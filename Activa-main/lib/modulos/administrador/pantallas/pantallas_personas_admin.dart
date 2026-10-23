@@ -10,6 +10,8 @@ import '../../../datos/estado_app.dart';
 import '../../../datos/simulados/datos_simulados.dart';
 import '../../../nucleo/componentes/avisos.dart';
 
+import '../../../nucleo/componentes/dialogo_confirmar.dart';
+
 class PantallaAlumnosAdmin extends StatefulWidget {
   const PantallaAlumnosAdmin({super.key});
   @override
@@ -278,8 +280,16 @@ class _EstadoPantallaNuevoInstructor extends State<PantallaNuevoInstructor> {
     child: Text(t, style: const TextStyle(fontWeight: FontWeight.bold)),
   );
 
-  void _save() {
+  Future<void> _save() async {
     if (!_form.currentState!.validate()) return;
+    final ok = await confirmarAccion(
+      context,
+      titulo: '¿Agregar instructor?',
+      mensaje: 'Se dará de alta a ${_nombre.text.trim()} ${_pat.text.trim()}.',
+      textoConfirmar: 'Agregar',
+      icono: Icons.person_add_alt_1_rounded,
+    );
+    if (!ok || !mounted) return;
     final msg = ScaffoldMessenger.of(context);
     context.read<EstadoApp>().agregarInstructor(
       nombre: _nombre.text,

@@ -11,6 +11,8 @@ import '../../../modelos/taller.dart';
 import '../../alumno/componentes/miniatura_taller.dart';
 import '../../../nucleo/componentes/avisos.dart';
 
+import '../../../nucleo/componentes/dialogo_confirmar.dart';
+
 class _Etiqueta extends StatelessWidget {
   const _Etiqueta(this.text, this.color);
   final String text;
@@ -278,11 +280,15 @@ class _EstadoPantallaFormularioActividad
     if (_form1.currentState!.validate()) setState(() => _step = 1);
   }
 
-  void _save() {
+   Future<void> _save() async {
     if (!_form2.currentState!.validate()) return;
-    if (_dias.isEmpty) return _snack('Selecciona al menos un día');
+    if (_dias.isEmpty) {
+      _snack('Selecciona al menos un día');
+      return;
+    }
     if (_fin.hour * 60 + _fin.minute <= _ini.hour * 60 + _ini.minute) {
-      return _snack('La hora de fin debe ser mayor a la de inicio');
+      _snack('La hora de fin debe ser mayor a la de inicio');
+      return;
     }
     final s = context.read<EstadoApp>();
     final inst = s.instructores.firstWhere((i) => i.id == _instId);
@@ -294,7 +300,6 @@ class _EstadoPantallaFormularioActividad
     final base = _edit;
     final cupo = int.parse(_cupo.text);
     final horas = int.parse(_horas.text);
-
     final t = base == null
         ? Taller(
             id: s.siguienteTallerId,
@@ -329,8 +334,22 @@ class _EstadoPantallaFormularioActividad
         !_mismos(base.horarios, horarios);
     if (cambio && _activo) {
       final c = s.conflictoHorario(t);
-      if (c != null) return _snack('Traslape: $c');
+      if (c != null) {
+        _snack('Traslape: $c');
+        return;
+      }
     }
+
+    final ok = await confirmarAccion(
+      context,
+      titulo: base == null ? '¿Crear actividad?' : '¿Guardar cambios?',
+      mensaje: base == null
+          ? 'Se publicará ${t.nombre} para que los alumnos puedan inscribirse.'
+          : 'Se actualizará ${t.nombre}.',
+      textoConfirmar: base == null ? 'Crear' : 'Guardar',
+      icono: Icons.event_available_rounded,
+    );
+    if (!ok || !mounted) return;
 
     s.guardarTaller(t);
     final msg = ScaffoldMessenger.of(context);
@@ -529,4 +548,6 @@ class _EstadoPantallaFormularioActividad
       ),
     );
   }
+  
 }
+    

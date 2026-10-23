@@ -15,6 +15,8 @@ import '../componentes/miniatura_taller.dart';
 import '../../../nucleo/servicios/sonidos.dart';
 import '../../../nucleo/componentes/avisos.dart';
 
+import '../../../nucleo/componentes/dialogo_confirmar.dart';
+
 void _soon(BuildContext c) =>
     ScaffoldMessenger.of(c)
         .showSnackBar(avisoSnack(content: Text('Próximamente')));
@@ -176,6 +178,16 @@ class PantallaPerfil extends StatelessWidget {
                     () => context.push('/perfil/progreso'),
                   ),
                   _item(
+                    Icons.forum_rounded,
+                    'Chats grupales',
+                    () => context.push('/chats'),
+                  ),
+                  _item(
+                    Icons.rate_review_rounded,
+                    'Encuestas de mis clubes',
+                    () => context.push('/encuestas'),
+                  ),
+                  _item(
                     Icons.edit,
                     'Editar perfil',
                     () => context.push('/perfil/editar'),
@@ -199,10 +211,7 @@ class PantallaPerfil extends StatelessWidget {
             child: const Text('Ver panel de coordinador (demo)'),
           ),
           TextButton(
-            onPressed: () {
-              context.read<EstadoSesion>().cerrarSesion();
-              context.go('/bienvenida');
-            },
+            onPressed: () => cerrarSesionConfirmando(context),
             child: const Text('Cerrar sesión'),
           ),
         ],
@@ -867,10 +876,7 @@ class _EstadoPantallaConfiguracion extends State<PantallaConfiguracion> {
           ),
           const SizedBox(height: 16),
           TextButton(
-            onPressed: () {
-              context.read<EstadoSesion>().cerrarSesion();
-              context.go('/bienvenida');
-            },
+            onPressed: () => cerrarSesionConfirmando(context),
             child: const Text(
               'Cerrar sesión',
               style: TextStyle(color: ColoresApp.danger),

@@ -7,6 +7,10 @@ import 'simulados/datos_simulados.dart';
 import '../modelos/categoria.dart';
 import '../nucleo/utilidades/formateadores.dart';
 import '../modelos/usuario.dart';
+import '../modelos/comunicacion.dart';
+import 'simulados/datos_comunicacion.dart';
+
+import '../../../nucleo/componentes/dialogo_confirmar.dart';
 
 class EstadoApp extends ChangeNotifier {
   final List<Taller> _talleres = List.of(talleresSimulado);
@@ -290,5 +294,167 @@ class EstadoApp extends ChangeNotifier {
   void registrarReporte(String tipo, String formato) {
     _reportes.insert(0, (tipo: tipo, formato: formato, fecha: DateTime.now()));
     notifyListeners();
+  }
+
+    // ================= CHATS GRUPALES =================
+  final Map<int, List<MensajeChat>> _chats = {
+    for (final e in chatsSimulado.entries) e.key: List.of(e.value),
+  };
+  int _msgSeq = 100;
+
+  List<MensajeChat> mensajesDe(int tallerId) =>
+      List.unmodifiable(_chats[tallerId] ?? const []);
+
+  MensajeChat? ultimoMensaje(int tallerId) {
+    final l = _chats[tallerId];
+    return (l == null || l.isEmpty) ? null : l.last;
+  }
+
+  List<Taller> chatsDe(Rol rol) => switch (rol) {
+    Rol.alumno =>
+      misInscripciones.map((i) => tallerPorId(i.taller.id)).toList(),
+    Rol.instructor => misGrupos,
+    Rol.admin => _talleres.where((t) => t.activo).toList(),
+  };
+
+  String nombreChat(Rol rol) => switch (rol) {
+    Rol.alumno => alumno.nombreCompleto,
+    Rol.instructor => instructor.nombreCompleto,
+    Rol.admin => 'Coordinación',
+  };
+
+  void enviarMensaje({
+    required int tallerId,
+    required Rol rol,
+    required String texto,
+  }) {
+    final t = texto.trim();
+    if (t.isEmpty) return;
+    _chats.putIfAbsent(tallerId, () => []).add(
+      MensajeChat(
+        id: _msgSeq++,
+        tallerId: tallerId,
+        rol: rol,
+        autor: nombreChat(rol),
+        texto: t,
+        fecha: DateTime.now(),
+      ),
+    );
+    notifyListeners();
+  }
+
+  // ================= ENCUESTAS =================
+  final List<RespuestaEncuesta> _encuestas = List.of(encuestasSimulado);
+  int _encSeq = 100;
+
+  List<RespuestaEncuesta> get encuestas => List.unmodifiable(_encuestas);
+
+  bool encuestaContestada(int tallerId) => _encuestas.any(
+    (e) => e.tallerId == tallerId && e.numeroControl == alumno.numeroControl,
+  );
+
+  void enviarEncuesta({
+    required int tallerId,
+    required int club,
+    required int instructorCalif,
+    String comentario = '',
+  }) {
+    if (encuestaContestada(tallerId)) return;
+    _encuestas.insert(
+      0,
+      RespuestaEncuesta(
+        id: _encSeq++,
+        tallerId: tallerId,
+        numeroControl: alumno.numeroControl,
+        califClub: club,
+        califInstructor: instructorCalif,
+        comentario: comentario.trim(),
+        fecha: DateTime.now(),
+      ),
+    );
+    notifyListeners();
+  }
+
+  int respuestasDeClub(int tallerId) =>
+      _encuestas.where((e) => e.tallerId == tallerId).length;
+
+  double? promedioClub(int tallerId) {
+    final l = _encuestas.where((e) => e.tallerId == tallerId).toList();
+    if (l.isEmpty) return null;
+    return l.fold<int>(0, (a, e) => a + e.califClub) / l.length;
+  }
+
+  List<RespuestaEncuesta> _encuestasDeInstructor(int instructorId) {
+    final ids = _talleres
+        .where((t) => t.instructor.id == instructorId)
+        .map((t) => t.id)
+        .toSet();
+    return _encuestas.where((e) => ids.contains(e.tallerId)).toList();
+  }
+
+  int respuestasDeInstructor(int instructorId) =>
+      _encuestasDeInstructor(instructorId).length;
+
+  double? promedioInstructor(int instructorId) {
+    final l = _encuestasDeInstructor(instructorId);
+    if (l.isEmpty) return null;
+    return l.fold<int>(0, (a, e) => a + e.califInstructor) / l.length;
+  }
+
+  double? get promedioGeneralClubes {
+    if (_encuestas.isEmpty) return null;
+    return _encuestas.fold<int>(0, (a, e) => a + e.califClub) /
+        _encuestas.length;
+  }
+
+  // ================= SOLICITUDES AL ADMIN =================
+  final List<SolicitudAdmin> _solicitudes = List.of(solicitudesSimulado);
+  int _solSeq = 100;
+
+  List<SolicitudAdmin> get solicitudes => List.unmodifiable(_solicitudes);
+
+  List<SolicitudAdmin> get solicitudesDelInstructor =>
+      _solicitudes.where((s) => s.instructorId == instructor.id).toList();
+
+  int get solicitudesPendientes =>
+      _solicitudes.where((s) => s.estado == EstadoSolicitud.pendiente).length;
+
+  void enviarSolicitud({
+    required Taller taller,
+    required TipoSolicitud tipo,
+    String mensaje = '',
+  }) {
+    _solicitudes.insert(
+      0,
+      SolicitudAdmin(
+        id: _solSeq++,
+        tallerId: taller.id,
+        instructorId: instructor.id,
+        instructorNombre: instructor.nombreCompleto,
+        tipo: tipo,
+        mensaje: mensaje.trim(),
+        fecha: DateTime.now(),
+      ),
+    );
+    notifyListeners();
+  }
+
+  void atenderSolicitud(int id) {
+    final i = _solicitudes.indexWhere((s) => s.id == id);
+    if (i < 0) return;
+    _solicitudes[i] = _solicitudes[i].copyWith(
+      estado: EstadoSolicitud.atendida,
+    );
+    notifyListeners();
+  }
+
+  int listasRegistradasDe(int instructorId) {
+    final ids = _talleres
+        .where((t) => t.instructor.id == instructorId)
+        .map((t) => t.id)
+        .toSet();
+    return _asistencias.keys
+        .where((k) => ids.contains(int.tryParse(k.split('|').first)))
+        .length;
   }
 }
