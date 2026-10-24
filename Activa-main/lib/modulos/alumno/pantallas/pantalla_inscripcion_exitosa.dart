@@ -3,10 +3,10 @@ import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import 'package:qr_flutter/qr_flutter.dart';
 
-import '../../../nucleo/tema/tema_app.dart';
-import '../../../nucleo/componentes/tarjeta_app.dart';
 import '../../../datos/estado_app.dart';
-import '../../../nucleo/componentes/avisos.dart';
+import '../../../nucleo/componentes/tarjeta_app.dart';
+import '../../../nucleo/servicios/documentos.dart';
+import '../../../nucleo/tema/tema_app.dart';
 
 class PantallaInscripcionExitosa extends StatelessWidget {
   const PantallaInscripcionExitosa({super.key, required this.folio});
@@ -28,6 +28,22 @@ class PantallaInscripcionExitosa extends StatelessWidget {
     final t = ins.taller;
 
     return Scaffold(
+      appBar: AppBar(
+        leadingWidth: 64,
+        leading: Padding(
+          padding: const EdgeInsets.only(left: 16),
+          child: IconButton(
+            style: IconButton.styleFrom(
+              backgroundColor: Colors.white,
+              foregroundColor: ColoresApp.navy,
+              side: const BorderSide(color: ColoresApp.line),
+            ),
+            icon: const Icon(Icons.arrow_back_ios_new_rounded, size: 17),
+            onPressed: () => context.go('/alumno/actividades'),
+          ),
+        ),
+        title: const Text('Comprobante'),
+      ),
       body: SafeArea(
         child: ListView(
           padding: const EdgeInsets.all(20),
@@ -140,8 +156,10 @@ class PantallaInscripcionExitosa extends StatelessWidget {
                 minimumSize: const Size.fromHeight(52),
                 shape: const StadiumBorder(),
               ),
-              onPressed: () => ScaffoldMessenger.of(context).showSnackBar(
-                avisoSnack(content: Text('Descarga de PDF: próximamente')),
+              onPressed: () => descargarPdfConfirmando(
+                context,
+                nombreDoc: 'Comprobante ${ins.folio}',
+                generar: () => Documentos.comprobanteInscripcion(ins),
               ),
               icon: const Icon(Icons.download),
               label: const Text('Descargar comprobante'),

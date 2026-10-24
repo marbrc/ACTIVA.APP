@@ -11,12 +11,13 @@ import '../../../datos/simulados/datos_simulados.dart';
 import '../../alumno/componentes/miniatura_taller.dart';
 
 class PantallaGrupos extends StatelessWidget {
-  const PantallaGrupos({super.key});
+  const PantallaGrupos({super.key, this.conAtras = false});
+  final bool conAtras;
 
   @override
   Widget build(BuildContext context) {
     final grupos = context.watch<EstadoApp>().misGrupos;
-    return SafeArea(
+    final cuerpo = SafeArea(
       child: ListView(
         padding: const EdgeInsets.all(20),
         children: [
@@ -62,26 +63,15 @@ class PantallaGrupos extends StatelessWidget {
                     const SizedBox(height: 10),
                     Row(
                       children: [
-                        const Icon(
-                          Icons.access_time,
-                          size: 16,
-                          color: Colors.black45,
-                        ),
+                        const Icon(Icons.access_time, size: 16, color: Colors.black45),
                         const SizedBox(width: 6),
-                        Text(
-                          t.horarioTexto,
-                          style: const TextStyle(fontSize: 12),
-                        ),
+                        Text(t.horarioTexto, style: const TextStyle(fontSize: 12)),
                       ],
                     ),
                     const SizedBox(height: 4),
                     Row(
                       children: [
-                        const Icon(
-                          Icons.location_on,
-                          size: 16,
-                          color: Colors.black45,
-                        ),
+                        const Icon(Icons.location_on, size: 16, color: Colors.black45),
                         const SizedBox(width: 6),
                         Text(t.lugar, style: const TextStyle(fontSize: 12)),
                       ],
@@ -93,9 +83,7 @@ class PantallaGrupos extends StatelessWidget {
                         value: t.inscritos / t.cupoMaximo,
                         minHeight: 8,
                         backgroundColor: ColoresApp.background,
-                        color: t.hayCupo
-                            ? ColoresApp.primary
-                            : ColoresApp.danger,
+                        color: t.hayCupo ? ColoresApp.primary : ColoresApp.danger,
                       ),
                     ),
                     const SizedBox(height: 14),
@@ -107,8 +95,7 @@ class PantallaGrupos extends StatelessWidget {
                               minimumSize: const Size.fromHeight(48),
                               shape: const StadiumBorder(),
                             ),
-                            onPressed: () =>
-                                context.push('/instructor/grupo/${t.id}'),
+                            onPressed: () => context.push('/instructor/grupo/${t.id}'),
                             icon: const Icon(Icons.groups, size: 18),
                             label: const Text('Ver alumnos'),
                           ),
@@ -135,6 +122,14 @@ class PantallaGrupos extends StatelessWidget {
         ],
       ),
     );
+
+    return conAtras
+        ? EstructuraSubpantalla(
+            title: 'Mis grupos',
+            fallback: '/instructor/perfil',
+            child: cuerpo,
+          )
+        : cuerpo;
   }
 }
 

@@ -20,10 +20,9 @@ import '../../modelos/enums.dart';
 import '../../nucleo/componentes/avatar_activa.dart';
 import '../../nucleo/componentes/avisos.dart';
 import '../../nucleo/componentes/boton_activa.dart';
+import '../../nucleo/componentes/dialogo_confirmar.dart';
 import '../../nucleo/componentes/estructura_subpantalla.dart';
 import '../../nucleo/tema/tema_app.dart';
-
-import '../../nucleo/componentes/dialogo_confirmar.dart';
 
 // un filtro = nombre + matriz de color (20 numeros)
 class _Filtro {
@@ -61,143 +60,49 @@ List<double> _saturacion(double s) {
 
 final _filtros = <_Filtro>[
   const _Filtro('Original', [
-    1,
-    0,
-    0,
-    0,
-    0,
-    0,
-    1,
-    0,
-    0,
-    0,
-    0,
-    0,
-    1,
-    0,
-    0,
-    0,
-    0,
-    0,
-    1,
-    0,
+    1, 0, 0, 0, 0,
+    0, 1, 0, 0, 0,
+    0, 0, 1, 0, 0,
+    0, 0, 0, 1, 0,
   ]),
   _Filtro('Vívido', _saturacion(1.6)),
   _Filtro('B y N', _saturacion(0)),
   const _Filtro('Sepia', [
-    0.393,
-    0.769,
-    0.189,
-    0,
-    0,
-    0.349,
-    0.686,
-    0.168,
-    0,
-    0,
-    0.272,
-    0.534,
-    0.131,
-    0,
-    0,
-    0,
-    0,
-    0,
-    1,
-    0,
+    0.393, 0.769, 0.189, 0, 0,
+    0.349, 0.686, 0.168, 0, 0,
+    0.272, 0.534, 0.131, 0, 0,
+    0, 0, 0, 1, 0,
   ]),
   const _Filtro('Frío', [
-    0.9,
-    0,
-    0,
-    0,
-    0,
-    0,
-    1,
-    0,
-    0,
-    0,
-    0,
-    0,
-    1.15,
-    0,
-    10,
-    0,
-    0,
-    0,
-    1,
-    0,
+    0.9, 0, 0, 0, 0,
+    0, 1, 0, 0, 0,
+    0, 0, 1.15, 0, 10,
+    0, 0, 0, 1, 0,
   ]),
   const _Filtro('Cálido', [
-    1.1,
-    0,
-    0,
-    0,
-    10,
-    0,
-    1,
-    0,
-    0,
-    0,
-    0,
-    0,
-    0.88,
-    0,
-    0,
-    0,
-    0,
-    0,
-    1,
-    0,
+    1.1, 0, 0, 0, 10,
+    0, 1, 0, 0, 0,
+    0, 0, 0.88, 0, 0,
+    0, 0, 0, 1, 0,
   ]),
   const _Filtro('Suave', [
-    0.82,
-    0,
-    0,
-    0,
-    28,
-    0,
-    0.82,
-    0,
-    0,
-    28,
-    0,
-    0,
-    0.82,
-    0,
-    28,
-    0,
-    0,
-    0,
-    1,
-    0,
+    0.82, 0, 0, 0, 28,
+    0, 0.82, 0, 0, 28,
+    0, 0, 0.82, 0, 28,
+    0, 0, 0, 1, 0,
   ]),
   const _Filtro('Contraste', [
-    1.3,
-    0,
-    0,
-    0,
-    -38,
-    0,
-    1.3,
-    0,
-    0,
-    -38,
-    0,
-    0,
-    1.3,
-    0,
-    -38,
-    0,
-    0,
-    0,
-    1,
-    0,
+    1.3, 0, 0, 0, -38,
+    0, 1.3, 0, 0, -38,
+    0, 0, 1.3, 0, -38,
+    0, 0, 0, 1, 0,
   ]),
 ];
 
 class PantallaEditarFoto extends StatefulWidget {
-  const PantallaEditarFoto({super.key});
+  const PantallaEditarFoto({super.key, this.fuente});
+  final String? fuente; // 'camara' o 'galeria' → se abre solita
+
   @override
   State<PantallaEditarFoto> createState() => _EstadoPantallaEditarFoto();
 }
@@ -213,10 +118,49 @@ class _EstadoPantallaEditarFoto extends State<PantallaEditarFoto> {
   final _clave = GlobalKey(); // para tomar la "captura" del recorte
 
   @override
+  void initState() {
+    super.initState();
+    // si venimos de "Tomar una foto" o "Galería", se abre directo
+    final f = widget.fuente;
+    if (f != null) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (mounted) {
+          _elegir(f == 'camara' ? ImageSource.camera : ImageSource.gallery);
+        }
+      });
+    }
+  }
+
+  @override
   void dispose() {
     _ctrl.dispose();
     super.dispose();
   }
+
+  // abre galeria o camara
+  Future<void> _elegir(ImageSource fuente) async {
+    try {
+      final x = await ImagePicker().pickImage(
+        source: fuente,
+        preferredCameraDevice: CameraDevice.front,
+        imageQuality: 90,
+        maxWidth: 1600,
+      );
+      if (x == null) return; // cancelo
+      await _cargar(await x.readAsBytes());
+    } catch (_) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        avisoSnack(
+          content: Text(
+            fuente == ImageSource.camera
+                ? 'No se pudo abrir la cámara. Revisa los permisos'
+                : 'No se pudo abrir la foto',
+          ),
+        ),
+      );
+    }
+  } // <-- AQUÍ ESTABA EL ERROR: Había una llave extra justo después de esta línea.
 
   // lado del cuadro de recorte segun el ancho de la pantalla
   double get _lado =>
@@ -226,20 +170,6 @@ class _EstadoPantallaEditarFoto extends State<PantallaEditarFoto> {
   double get _k => _lado / math.min(_ancho, _alto);
 
   Rol get _rol => context.read<EstadoSesion>().rol ?? Rol.alumno;
-
-  // abre galeria o camara
-  Future<void> _elegir(ImageSource fuente) async {
-    try {
-      final x = await ImagePicker().pickImage(source: fuente);
-      if (x == null) return; // cancelo
-      await _cargar(await x.readAsBytes());
-    } catch (_) {
-      if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        avisoSnack(content: const Text('No se pudo abrir la foto')),
-      );
-    }
-  }
 
   // lee el tamaño de la foto y la deja centrada en el recorte
   Future<void> _cargar(Uint8List datos) async {
@@ -259,6 +189,7 @@ class _EstadoPantallaEditarFoto extends State<PantallaEditarFoto> {
 
   // gira la foto 90 grados a la derecha
   Future<void> _girar() async {
+    if (_bytes == null) return;
     final src = await decodeImageFromList(_bytes!);
     final grabador = ui.PictureRecorder();
     final lienzo = Canvas(grabador);
@@ -272,7 +203,7 @@ class _EstadoPantallaEditarFoto extends State<PantallaEditarFoto> {
   }
 
   // toma la captura del cuadro (con filtro y brillo) y la guarda
-   Future<void> _guardar() async {
+  Future<void> _guardar() async {
     final ok = await confirmarAccion(
       context,
       titulo: '¿Guardar nueva foto?',
@@ -289,13 +220,14 @@ class _EstadoPantallaEditarFoto extends State<PantallaEditarFoto> {
       final datos = await img.toByteData(format: ui.ImageByteFormat.png);
       if (datos == null) throw Exception('sin datos');
       if (!mounted) return;
+
+      final messenger = ScaffoldMessenger.of(context);
       context.read<EstadoSesion>().guardarFoto(
         _rol,
         datos.buffer.asUint8List(),
       );
-      final m = ScaffoldMessenger.of(context);
       context.pop();
-      m.showSnackBar(
+      messenger.showSnackBar(
         avisoSnack(content: const Text('Foto de perfil actualizada')),
       );
     } catch (_) {

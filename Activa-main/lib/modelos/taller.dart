@@ -1,3 +1,5 @@
+import 'dart:typed_data';
+
 import 'categoria.dart';
 import 'enums.dart';
 import 'usuario.dart';
@@ -35,6 +37,7 @@ class Taller {
   final List<Horario> horarios;
   final List<String> aprendizajes;
   final int inscritos; // en backend real se calcula contando inscripciones
+  final Uint8List? foto; // foto elegida al crear la actividad
 
   const Taller({
     required this.id,
@@ -48,6 +51,7 @@ class Taller {
     required this.instructor,
     required this.horarios,
     this.aprendizajes = const [],
+    this.foto,
     required this.inscritos,
   });
 
@@ -62,6 +66,7 @@ class Taller {
     Instructor? instructor,
     List<Horario>? horarios,
     List<String>? aprendizajes,
+    Uint8List? foto,
     int? inscritos,
   }) => Taller(
     id: id,
@@ -75,6 +80,7 @@ class Taller {
     instructor: instructor ?? this.instructor,
     horarios: horarios ?? this.horarios,
     aprendizajes: aprendizajes ?? this.aprendizajes,
+    foto: foto ?? this.foto,
     inscritos: inscritos ?? this.inscritos,
   );
 

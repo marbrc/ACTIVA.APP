@@ -82,7 +82,7 @@ class PantallaPerfilInstructor extends StatelessWidget {
                     context,
                     Icons.groups,
                     'Mis grupos',
-                    () => context.go('/instructor/grupos'),
+                    () => context.push('/instructor/mis-grupos'),
                   ),
                   _item(
                     context,
@@ -94,8 +94,7 @@ class PantallaPerfilInstructor extends StatelessWidget {
                     context,
                     Icons.notifications,
                     'Mis avisos publicados',
-                    () => context.go('/instructor/avisos'),
-                  ),
+                    () => context.push('/instructor/mis-avisos'),                  ),
                   _item(
                     context,
                     Icons.forum_rounded,

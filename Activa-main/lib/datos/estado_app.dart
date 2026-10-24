@@ -10,7 +10,6 @@ import '../modelos/usuario.dart';
 import '../modelos/comunicacion.dart';
 import 'simulados/datos_comunicacion.dart';
 
-import '../../../nucleo/componentes/dialogo_confirmar.dart';
 
 class EstadoApp extends ChangeNotifier {
   final List<Taller> _talleres = List.of(talleresSimulado);
@@ -103,10 +102,12 @@ class EstadoApp extends ChangeNotifier {
   int get horasRealizadas => _horas.values.fold(0, (a, b) => a + b);
   int horasDe(String folio) => _horas[folio] ?? 0;
 
-  void cancelar(String folio) {
+   void cancelar(String folio) {
     final idx = _inscripciones.indexWhere((i) => i.folio == folio);
     if (idx < 0) return;
     final ins = _inscripciones[idx];
+    _bajas[ins.taller.id] = (_bajas[ins.taller.id] ?? 0) + 1;
+
     _inscripciones[idx] = ins.copyWith(estado: EstadoInscripcion.cancelada);
     final ti = _talleres.indexWhere((t) => t.id == ins.taller.id);
     _talleres[ti] = _talleres[ti].copyWith(
@@ -194,8 +195,7 @@ class EstadoApp extends ChangeNotifier {
     _avisos.insert(
       0,
       Aviso(
-        id: _avisos.length + 1,
-        tallerId: tallerId,
+        id: _avisoSeq++,        tallerId: tallerId,
         tipo: tipo,
         titulo: titulo.trim(),
         mensaje: mensaje.trim(),
@@ -419,25 +419,7 @@ class EstadoApp extends ChangeNotifier {
   int get solicitudesPendientes =>
       _solicitudes.where((s) => s.estado == EstadoSolicitud.pendiente).length;
 
-  void enviarSolicitud({
-    required Taller taller,
-    required TipoSolicitud tipo,
-    String mensaje = '',
-  }) {
-    _solicitudes.insert(
-      0,
-      SolicitudAdmin(
-        id: _solSeq++,
-        tallerId: taller.id,
-        instructorId: instructor.id,
-        instructorNombre: instructor.nombreCompleto,
-        tipo: tipo,
-        mensaje: mensaje.trim(),
-        fecha: DateTime.now(),
-      ),
-    );
-    notifyListeners();
-  }
+ 
 
   void atenderSolicitud(int id) {
     final i = _solicitudes.indexWhere((s) => s.id == id);
@@ -456,5 +438,152 @@ class EstadoApp extends ChangeNotifier {
     return _asistencias.keys
         .where((k) => ids.contains(int.tryParse(k.split('|').first)))
         .length;
+  }
+
+    // ================= AVISOS: leídos / archivados =================
+  final Set<int> _avisosLeidos = {};
+  final Set<int> _avisosArchivados = {};
+  int _avisoSeq = 1000;
+
+  bool avisoLeido(int id) => _avisosLeidos.contains(id);
+  List<Aviso> get avisosVisibles =>
+      _avisos.where((a) => !_avisosArchivados.contains(a.id)).toList();
+  List<Aviso> get avisosArchivados =>
+      _avisos.where((a) => _avisosArchivados.contains(a.id)).toList();
+  int get avisosSinLeer =>
+      avisosVisibles.where((a) => !_avisosLeidos.contains(a.id)).length;
+
+  void marcarAviso(int id, {bool leido = true}) {
+    leido ? _avisosLeidos.add(id) : _avisosLeidos.remove(id);
+    notifyListeners();
+  }
+
+  void marcarTodosLeidos() {
+    _avisosLeidos.addAll(avisosVisibles.map((a) => a.id));
+    notifyListeners();
+  }
+
+  void archivarAviso(int id, {bool archivar = true}) {
+    archivar ? _avisosArchivados.add(id) : _avisosArchivados.remove(id);
+    notifyListeners();
+  }
+
+  Aviso? eliminarAviso(int id) {
+    final i = _avisos.indexWhere((a) => a.id == id);
+    if (i < 0) return null;
+    final a = _avisos.removeAt(i);
+    notifyListeners();
+    return a;
+  }
+
+  void restaurarAviso(Aviso a) {
+    _avisos.add(a);
+    _avisos.sort((x, y) => y.fecha.compareTo(x.fecha));
+    notifyListeners();
+  }
+
+  // ================= CHATS: anclar y fondo =================
+  final Set<int> _chatsAnclados = {};
+  final Map<int, int> _fondosChat = {};
+
+  bool chatAnclado(int id) => _chatsAnclados.contains(id);
+  int fondoChat(int id) => _fondosChat[id] ?? 0;
+
+  /// false si ya hay 3 anclados
+  bool toggleAnclarChat(int id) {
+    if (_chatsAnclados.contains(id)) {
+      _chatsAnclados.remove(id);
+    } else {
+      if (_chatsAnclados.length >= 3) return false;
+      _chatsAnclados.add(id);
+    }
+    notifyListeners();
+    return true;
+  }
+
+  void ponerFondoChat(int id, int fondo) {
+    _fondosChat[id] = fondo;
+    notifyListeners();
+  }
+
+  List<Taller> chatsOrdenados(Rol rol) {
+    final l = chatsDe(rol);
+    int t(Taller x) => ultimoMensaje(x.id)?.fecha.millisecondsSinceEpoch ?? 0;
+    l.sort((a, b) {
+      final pa = chatAnclado(a.id), pb = chatAnclado(b.id);
+      if (pa != pb) return pa ? -1 : 1;
+      return t(b).compareTo(t(a));
+    });
+    return l;
+  }
+
+  // ================= INSTRUCTORES: duplicados =================
+  bool existeCorreoInstructor(String c) =>
+      _instructores.any((i) => i.correo == c.trim().toLowerCase());
+
+  bool existeInstructor(String n, String p, String m) => _instructores.any(
+    (i) => i.nombreCompleto.toLowerCase() == '$n $p $m'.trim().toLowerCase(),
+  );
+
+  // ================= SOLICITUDES (lógica mejorada) =================
+  final Map<int, int> _bajas = {};
+  int bajasDe(int tallerId) => _bajas[tallerId] ?? 0;
+
+  bool haySolicitudPendiente(int tallerId, TipoSolicitud tipo) => _solicitudes.any(
+    (s) =>
+        s.tallerId == tallerId &&
+        s.tipo == tipo &&
+        s.estado == EstadoSolicitud.pendiente,
+  );
+
+  /// false si ya existe una igual pendiente
+  bool enviarSolicitud({
+    required Taller taller,
+    required TipoSolicitud tipo,
+    String mensaje = '',
+  }) {
+    if (haySolicitudPendiente(taller.id, tipo)) return false;
+    _solicitudes.insert(
+      0,
+      SolicitudAdmin(
+        id: _solSeq++,
+        tallerId: taller.id,
+        instructorId: instructor.id,
+        instructorNombre: instructor.nombreCompleto,
+        tipo: tipo,
+        mensaje: mensaje.trim(),
+        fecha: DateTime.now(),
+      ),
+    );
+    notifyListeners();
+    return true;
+  }
+
+  void cancelarSolicitud(int id) {
+    _solicitudes.removeWhere(
+      (s) => s.id == id && s.estado == EstadoSolicitud.pendiente,
+    );
+    notifyListeners();
+  }
+
+  void responderSolicitud(
+    int id, {
+    required bool aprobar,
+    String respuesta = '',
+    int cupoExtra = 0,
+  }) {
+    final i = _solicitudes.indexWhere((s) => s.id == id);
+    if (i < 0) return;
+    final sol = _solicitudes[i];
+    if (aprobar && cupoExtra > 0) {
+      final t = tallerPorId(sol.tallerId);
+      guardarTaller(t.copyWith(cupoMaximo: t.cupoMaximo + cupoExtra));
+    }
+    _solicitudes[i] = sol.copyWith(
+      estado: aprobar ? EstadoSolicitud.atendida : EstadoSolicitud.rechazada,
+      respuesta: respuesta.trim(),
+      cupoExtra: aprobar ? cupoExtra : 0,
+    );
+    notifyListeners();
   }
 }

@@ -35,6 +35,7 @@ import '../../modulos/chat/pantallas_chat.dart';
 import '../../modulos/alumno/pantallas/pantallas_encuestas.dart';
 import '../../modulos/instructor/pantallas/pantalla_solicitudes_instructor.dart';
 import '../../modulos/administrador/pantallas/pantalla_solicitudes_admin.dart';
+import '../../modulos/alumno/pantallas/pantalla_acerca_de.dart';
 
 
 final enrutadorApp = GoRouter(
@@ -318,6 +319,20 @@ final enrutadorApp = GoRouter(
     GoRoute(
       path: '/admin/avisos',
       builder: (_, _) => const PantallaAvisosGenerales(),
+    ),
+        GoRoute(
+      path: '/perfil/foto',
+      builder: (_, s) => PantallaEditarFoto(fuente: s.uri.queryParameters['fuente']),
+    ),
+    GoRoute(path: '/perfil/acerca', builder: (_, _) => const PantallaAcercaDe()),
+    // Instructor: abiertas desde Perfil, con flecha de regreso a Perfil
+    GoRoute(
+      path: '/instructor/mis-grupos',
+      builder: (_, _) => const PantallaGrupos(conAtras: true),
+    ),
+    GoRoute(
+      path: '/instructor/mis-avisos',
+      builder: (_, _) => const PantallaAvisosInstructor(conAtras: true),
     ),
   ],
 );

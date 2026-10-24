@@ -1,15 +1,8 @@
-// ===================================================================
-// sesion.dart
-// guarda quien inicio sesion (alumna, instructor o admin) y la foto
-// de perfil de cada rol. es un ChangeNotifier igual que EstadoApp
-// ===================================================================
-
 import 'package:flutter/foundation.dart';
 
 import '../modelos/enums.dart';
 import 'simulados/datos_simulados.dart';
 
-// una cuenta de prueba (usuario + contraseña + rol)
 class CuentaDemo {
   final String usuario;
   final String contrasena;
@@ -18,10 +11,8 @@ class CuentaDemo {
   const CuentaDemo(this.usuario, this.contrasena, this.rol, this.etiqueta);
 }
 
-// contraseña unica para las 3 cuentas de prueba
 const contrasenaDemo = 'Activa2026!';
 
-// las 3 cuentas que pidio mar: usuario_rol
 const cuentasDemo = <CuentaDemo>[
   CuentaDemo('mar_alumna', contrasenaDemo, Rol.alumno, 'Alumna'),
   CuentaDemo('mar_instructor', contrasenaDemo, Rol.instructor, 'Instructor'),
@@ -29,17 +20,34 @@ const cuentasDemo = <CuentaDemo>[
 ];
 
 class EstadoSesion extends ChangeNotifier {
-  // rol de la sesion actual (null = nadie ha entrado)
   Rol? rol;
 
-  // una foto por rol, guardada en memoria como bytes png
+  // ---- idioma: 'es', 'en' o 'fr' ----
+  String idioma = 'es';
+  void cambiarIdioma(String codigo) {
+    idioma = codigo;
+    notifyListeners();
+  }
+
+  // ---- nombre de usuario por rol (editable en Editar perfil) ----
+  final Map<Rol, String> _usuarios = {for (final c in cuentasDemo) c.rol: c.usuario};
+  String usuarioDe(Rol r) => _usuarios[r] ?? '';
+  bool usuarioDisponible(String u, Rol r) {
+    final x = u.trim().toLowerCase();
+    return !_usuarios.entries.any((e) => e.key != r && e.value == x);
+  }
+
+  void cambiarUsuario(Rol r, String u) {
+    _usuarios[r] = u.trim().toLowerCase();
+    notifyListeners();
+  }
+
+  // ---- fotos ----
   final Map<Rol, Uint8List> _fotos = {};
-
   Uint8List? fotoDe(Rol r) => _fotos[r];
-
   void guardarFoto(Rol r, Uint8List bytes) {
     _fotos[r] = bytes;
-    notifyListeners(); // avisa a todos los avatares
+    notifyListeners();
   }
 
   void quitarFoto(Rol r) {
@@ -47,20 +55,19 @@ class EstadoSesion extends ChangeNotifier {
     notifyListeners();
   }
 
-  // revisa usuario y contraseña, devuelve el rol o null si estan mal
   Rol? iniciarSesion(String usuario, String contrasena) {
     final u = usuario.trim().toLowerCase();
 
-    // 1) cuentas de prueba usuario_rol
+    // 1) usuario de cada rol (ya con el nombre que haya elegido)
     for (final c in cuentasDemo) {
-      if (c.usuario == u && c.contrasena == contrasena) {
+      if (_usuarios[c.rol] == u && c.contrasena == contrasena) {
         rol = c.rol;
         notifyListeners();
         return rol;
       }
     }
 
-    // 2) tambien entra con numero de control o correo institucional
+    // 2) número de control o correo institucional
     if (contrasena == contrasenaDemo) {
       Rol? encontrado;
       if (u == alumnoSimulado.numeroControl || u == alumnoSimulado.correo) {
@@ -79,7 +86,6 @@ class EstadoSesion extends ChangeNotifier {
     return null;
   }
 
-  // ruta del panel de cada rol
   static String rutaDe(Rol r) => switch (r) {
     Rol.alumno => '/alumno',
     Rol.instructor => '/instructor',

@@ -12,6 +12,8 @@ import '../../../nucleo/componentes/avisos.dart';
 
 import '../../../nucleo/componentes/dialogo_confirmar.dart';
 
+import '../../../nucleo/utilidades/validadores.dart';
+
 class PantallaAlumnosAdmin extends StatefulWidget {
   const PantallaAlumnosAdmin({super.key});
   @override
@@ -272,9 +274,6 @@ class _EstadoPantallaNuevoInstructor extends State<PantallaNuevoInstructor> {
     super.dispose();
   }
 
-  String? _req(String? v) =>
-      (v == null || v.trim().isEmpty) ? 'Campo requerido' : null;
-
   Widget _label(String t) => Padding(
     padding: const EdgeInsets.only(top: 16, bottom: 8),
     child: Text(t, style: const TextStyle(fontWeight: FontWeight.bold)),
@@ -282,24 +281,34 @@ class _EstadoPantallaNuevoInstructor extends State<PantallaNuevoInstructor> {
 
   Future<void> _save() async {
     if (!_form.currentState!.validate()) return;
+    final s = context.read<EstadoApp>();
+    final n = capitalizar(_nombre.text);
+    final p = capitalizar(_pat.text);
+    final m = capitalizar(_mat.text);
+    if (s.existeInstructor(n, p, m)) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        avisoSnack(content: const Text('Error: ya existe un instructor con ese nombre')),
+      );
+      return;
+    }
     final ok = await confirmarAccion(
       context,
       titulo: '¿Agregar instructor?',
-      mensaje: 'Se dará de alta a ${_nombre.text.trim()} ${_pat.text.trim()}.',
+      mensaje: 'Se dará de alta a $n $p.',
       textoConfirmar: 'Agregar',
       icono: Icons.person_add_alt_1_rounded,
     );
     if (!ok || !mounted) return;
     final msg = ScaffoldMessenger.of(context);
-    context.read<EstadoApp>().agregarInstructor(
-      nombre: _nombre.text,
-      paterno: _pat.text,
-      materno: _mat.text,
+    s.agregarInstructor(
+      nombre: n,
+      paterno: p,
+      materno: m,
       correo: _correo.text,
-      especialidad: _esp.text,
+      especialidad: capitalizar(_esp.text),
     );
     context.pop();
-    msg.showSnackBar(avisoSnack(content: Text('Instructor agregado')));
+    msg.showSnackBar(avisoSnack(content: const Text('Instructor agregado')));
   }
 
   @override
@@ -308,6 +317,7 @@ class _EstadoPantallaNuevoInstructor extends State<PantallaNuevoInstructor> {
     fallback: '/admin/instructores',
     child: Form(
       key: _form,
+      autovalidateMode: AutovalidateMode.onUserInteraction,
       child: ListView(
         padding: const EdgeInsets.all(20),
         children: [
@@ -315,47 +325,52 @@ class _EstadoPantallaNuevoInstructor extends State<PantallaNuevoInstructor> {
           TextFormField(
             controller: _nombre,
             textCapitalization: TextCapitalization.words,
+            textInputAction: TextInputAction.next,
+            inputFormatters: formatoNombre(),
             decoration: const InputDecoration(prefixIcon: Icon(Icons.person)),
-            validator: _req,
+            validator: (v) => validarNombre(v, campo: 'El nombre'),
           ),
           _label('Apellido paterno'),
           TextFormField(
             controller: _pat,
             textCapitalization: TextCapitalization.words,
-            decoration: const InputDecoration(
-              prefixIcon: Icon(Icons.person_outline),
-            ),
-            validator: _req,
+            textInputAction: TextInputAction.next,
+            inputFormatters: formatoNombre(),
+            decoration: const InputDecoration(prefixIcon: Icon(Icons.person_outline)),
+            validator: (v) => validarNombre(v, campo: 'El apellido'),
           ),
           _label('Apellido materno (opcional)'),
           TextFormField(
             controller: _mat,
             textCapitalization: TextCapitalization.words,
-            decoration: const InputDecoration(
-              prefixIcon: Icon(Icons.person_outline),
-            ),
+            textInputAction: TextInputAction.next,
+            inputFormatters: formatoNombre(),
+            decoration: const InputDecoration(prefixIcon: Icon(Icons.person_outline)),
+            validator: (v) => validarNombre(v, campo: 'El apellido', obligatorio: false),
           ),
           _label('Correo institucional'),
           TextFormField(
             controller: _correo,
             keyboardType: TextInputType.emailAddress,
+            textInputAction: TextInputAction.next,
+            autocorrect: false,
             decoration: const InputDecoration(prefixIcon: Icon(Icons.email)),
             validator: (v) =>
-                (v ?? '').trim().toLowerCase().endsWith('@utng.edu.mx')
-                ? null
-                : 'Usa un correo @utng.edu.mx',
+                validarCorreoInstitucional(v) ??
+                (context.read<EstadoApp>().existeCorreoInstructor(v!)
+                    ? 'Ese correo ya está registrado'
+                    : null),
           ),
           _label('Especialidad'),
           TextFormField(
             controller: _esp,
+            textCapitalization: TextCapitalization.sentences,
+            inputFormatters: formatoNombre(),
             decoration: const InputDecoration(prefixIcon: Icon(Icons.sports)),
-            validator: _req,
+            validator: (v) => validarNombre(v, campo: 'La especialidad', min: 3),
           ),
           const SizedBox(height: 24),
-          FilledButton(
-            onPressed: _save,
-            child: const Text('Guardar instructor'),
-          ),
+          FilledButton(onPressed: _save, child: const Text('Guardar instructor')),
         ],
       ),
     ),

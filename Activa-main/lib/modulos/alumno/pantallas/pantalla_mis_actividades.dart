@@ -10,6 +10,8 @@ import '../../../modelos/inscripcion.dart';
 import '../componentes/miniatura_taller.dart';
 import '../../../nucleo/componentes/avisos.dart';
 
+import '../../../nucleo/servicios/documentos.dart';
+
 class PantallaMisActividades extends StatelessWidget {
   const PantallaMisActividades({super.key});
 
@@ -39,6 +41,8 @@ class PantallaMisActividades extends StatelessWidget {
             onPressed: () => Navigator.pop(dialogCtx, true),
             child: const Text('Darme de baja'),
           ),
+
+          
         ],
       ),
     );
@@ -281,14 +285,18 @@ class PantallaMisActividades extends StatelessWidget {
                 ],
               ),
             ),
-            PopupMenuButton<String>(
-              shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(18)),
+                        PopupMenuButton<String>(
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(18)),
               onSelected: (v) async {
                 if (v == 'ver') {
                   context.push('/inscripcion/${i.folio}');
-                } else if (await _confirmarBaja(context, i) &&
-                    context.mounted) {
+                } else if (v == 'pdf') {
+                  descargarPdfConfirmando(
+                    context,
+                    nombreDoc: 'Comprobante ${i.folio}',
+                    generar: () => Documentos.comprobanteInscripcion(i),
+                  );
+                } else if (await _confirmarBaja(context, i) && context.mounted) {
                   _cancelar(context, i);
                 }
               },
@@ -302,10 +310,17 @@ class PantallaMisActividades extends StatelessWidget {
                   ]),
                 ),
                 PopupMenuItem(
+                  value: 'pdf',
+                  child: Row(children: [
+                    Icon(Icons.picture_as_pdf_rounded, size: 20),
+                    SizedBox(width: 10),
+                    Text('Descargar comprobante'),
+                  ]),
+                ),
+                PopupMenuItem(
                   value: 'baja',
                   child: Row(children: [
-                    Icon(Icons.exit_to_app_rounded,
-                        size: 20, color: Color(0xFFE5484D)),
+                    Icon(Icons.exit_to_app_rounded, size: 20, color: Color(0xFFE5484D)),
                     SizedBox(width: 10),
                     Text('Darme de baja'),
                   ]),

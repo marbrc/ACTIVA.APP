@@ -12,14 +12,32 @@ import '../../../nucleo/componentes/avisos.dart';
 
 import '../../../nucleo/servicios/sonidos.dart';
 
+import '../../../nucleo/componentes/dialogo_confirmar.dart';
+import '../../../nucleo/servicios/documentos.dart';
+
 class PantallaDetalleActividad extends StatelessWidget {
   const PantallaDetalleActividad({super.key, required this.tallerId});
   final int tallerId;
 
-    void _snack(BuildContext context, String msg) =>
-      ScaffoldMessenger.of(context).showSnackBar(
-        avisoSnack(content: Text(msg), tipo: TipoToast.error),
-      );
+        void _snack(BuildContext context, String msg, {TipoToast tipo = TipoToast.error}) =>
+      ScaffoldMessenger.of(context).showSnackBar(avisoSnack(content: Text(msg), tipo: tipo));
+
+  Future<void> _baja(BuildContext context, Taller t) async {
+    final s = context.read<EstadoApp>();
+    final ins = s.misInscripciones.firstWhere((i) => i.taller.id == t.id);
+    final ok = await confirmarAccion(
+      context,
+      titulo: '¿Darte de baja?',
+      mensaje: 'Dejarás de pertenecer a ${t.nombre} y se liberará tu lugar.',
+      textoConfirmar: 'Darme de baja',
+      icono: Icons.exit_to_app_rounded,
+      peligro: true,
+    );
+    if (!ok || !context.mounted) return;
+    s.cancelar(ins.folio);
+    Sonidos.reproducir(Sonido.exito);
+    _snack(context, 'Te diste de baja de ${t.nombre}', tipo: TipoToast.exito);
+  }
 
   Future<void> _confirm(BuildContext context, Taller t) async {
     final ok = await showModalBottomSheet<bool>(
@@ -229,44 +247,42 @@ class PantallaDetalleActividad extends StatelessWidget {
                     ],
                   ),
                   const SizedBox(height: 20),
-                  FilledButton(
-                    onPressed: (inscrito || !t.hayCupo)
-                        ? null
-                        : () => _confirm(context, t),
-                    child: Text(
-                      inscrito
-                          ? 'Ya estás inscrito'
-                          : t.hayCupo
-                          ? 'Inscribirme'
-                          : 'Sin cupo disponible',
+                  if (inscrito) ...[
+                    const SizedBox(height: 10),
+                    OutlinedButton.icon(
+                      style: OutlinedButton.styleFrom(
+                        foregroundColor: ColoresApp.danger,
+                        side: const BorderSide(color: ColoresApp.danger),
+                        minimumSize: const Size.fromHeight(52),
+                        shape: const StadiumBorder(),
+                      ),
+                      onPressed: () => _baja(context, t),
+                      icon: const Icon(Icons.exit_to_app_rounded),
+                      label: const Text('Darme de baja'),
                     ),
-                  ),
+                  ],
                   const SizedBox(height: 12),
                   Row(
                     children: [
-                      _BotonAccion(
-                        Icons.calendar_today,
-                        'Agregar al calendario',
-                        () => _snack(context, 'Próximamente'),
-                      ),
-                      const SizedBox(width: 8),
-                      _BotonAccion(
-                        Icons.location_on,
-                        'Ver ubicación',
-                        () => _snack(context, 'Próximamente'),
-                      ),
-                      const SizedBox(width: 8),
-                      _BotonAccion(Icons.share, 'Compartir', () async {
-                        await Clipboard.setData(
-                          ClipboardData(
-                            text:
-                                '${t.nombre} · ${t.horarioTexto} · ${t.lugar}',
-                          ),
-                        );
+                                           _BotonAccion(Icons.calendar_today, 'Agregar al calendario', () async {
+                        final ok = await Documentos.agregarAlCalendario(t);
                         if (context.mounted) {
-                          _snack(context, 'Datos copiados para compartir');
+                          _snack(
+                            context,
+                            ok ? 'Abriendo tu calendario' : 'No se pudo abrir el calendario',
+                            tipo: ok ? TipoToast.info : TipoToast.error,
+                          );
                         }
                       }),
+                      const SizedBox(width: 8),
+                      _BotonAccion(Icons.location_on, 'Ver ubicación', () async {
+                        final ok = await Documentos.verUbicacion(t);
+                        if (!ok && context.mounted) {
+                          _snack(context, 'No se pudo abrir el mapa');
+                        }
+                      }),
+                      const SizedBox(width: 8),
+                      _BotonAccion(Icons.share, 'Compartir', () => Documentos.compartir(context, t)),
                     ],
                   ),
                 ],

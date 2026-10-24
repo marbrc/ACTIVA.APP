@@ -1,10 +1,5 @@
-// ===================================================================
 // MiniaturaTaller (cuadrito) y BannerTaller (imagen grande) de cada actividad.
-// Si existe una foto real en assets/images/talleres/<nombre>.jpg la usan;
-// si no, dibujan el degradado con el ícono de la categoría.
-// Ejemplos de nombre de archivo: voleibol.jpg, futbol_soccer.jpg,
-// danza_folclorica.jpg, ajedrez.jpg, teatro.jpg, zumba.jpg
-// ===================================================================
+// Prioridad: foto elegida al crear la actividad > foto en assets > degradado con ícono.
 
 import 'package:flutter/material.dart';
 
@@ -36,6 +31,18 @@ class MiniaturaTaller extends StatelessWidget {
   Widget build(BuildContext context) {
     final c = taller.categoria;
     final radio = BorderRadius.circular(18);
+
+    final respaldo = Container(
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          colors: [c.color, Color.lerp(c.color, Colors.black, 0.25)!],
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+        ),
+      ),
+      child: Icon(iconoDe(c.icono), color: Colors.white, size: size * 0.5),
+    );
+
     return Container(
       width: size,
       height: size,
@@ -51,27 +58,20 @@ class MiniaturaTaller extends StatelessWidget {
       ),
       child: ClipRRect(
         borderRadius: radio,
-        child: Image.asset(
-          rutaFotoTaller(taller),
-          width: size,
-          height: size,
-          fit: BoxFit.cover,
-          // Si no hay foto, usa el degradado con ícono
-          errorBuilder: (_, _, _) => Container(
-            decoration: BoxDecoration(
-              gradient: LinearGradient(
-                colors: [c.color, Color.lerp(c.color, Colors.black, 0.25)!],
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
+        child: taller.foto != null
+            ? Image.memory(
+                taller.foto!,
+                width: size,
+                height: size,
+                fit: BoxFit.cover,
+              )
+            : Image.asset(
+                rutaFotoTaller(taller),
+                width: size,
+                height: size,
+                fit: BoxFit.cover,
+                errorBuilder: (_, _, _) => respaldo,
               ),
-            ),
-            child: Icon(
-              iconoDe(c.icono),
-              color: Colors.white,
-              size: size * 0.5,
-            ),
-          ),
-        ),
       ),
     );
   }
@@ -88,46 +88,52 @@ class BannerTaller extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final c = taller.categoria;
+
+    final respaldo = Container(
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          colors: [c.color, Color.lerp(c.color, Colors.black, 0.3)!],
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+        ),
+      ),
+      child: Stack(
+        children: [
+          Positioned(
+            left: -20,
+            top: -24,
+            child: _Circulo(size: height * 0.9, alpha: 0.10),
+          ),
+          Positioned(
+            right: -14,
+            bottom: -30,
+            child: _Circulo(size: height * 0.8, alpha: 0.12),
+          ),
+          Center(
+            child: Icon(
+              iconoDe(c.icono),
+              size: height * 0.45,
+              color: Colors.white.withValues(alpha: 0.9),
+            ),
+          ),
+        ],
+      ),
+    );
+
     return SizedBox(
       height: height,
       width: double.infinity,
       child: Stack(
         fit: StackFit.expand,
         children: [
-          Image.asset(
-            rutaFotoTaller(taller),
-            fit: BoxFit.cover,
-            errorBuilder: (_, _, _) => Container(
-              decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  colors: [c.color, Color.lerp(c.color, Colors.black, 0.3)!],
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
-                ),
-              ),
-              child: Stack(
-                children: [
-                  Positioned(
-                    left: -20,
-                    top: -24,
-                    child: _Circulo(size: height * 0.9, alpha: 0.10),
-                  ),
-                  Positioned(
-                    right: -14,
-                    bottom: -30,
-                    child: _Circulo(size: height * 0.8, alpha: 0.12),
-                  ),
-                  Center(
-                    child: Icon(
-                      iconoDe(c.icono),
-                      size: height * 0.45,
-                      color: Colors.white.withValues(alpha: 0.9),
-                    ),
-                  ),
-                ],
-              ),
+          if (taller.foto != null)
+            Image.memory(taller.foto!, fit: BoxFit.cover)
+          else
+            Image.asset(
+              rutaFotoTaller(taller),
+              fit: BoxFit.cover,
+              errorBuilder: (_, _, _) => respaldo,
             ),
-          ),
           // Sombrita abajo para que el texto/botones se lean sobre la foto
           Positioned.fill(
             child: DecoratedBox(

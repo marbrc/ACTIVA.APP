@@ -18,6 +18,9 @@ import '../../../datos/simulados/datos_simulados.dart';
 import '../componentes/miniatura_taller.dart';
 import '../componentes/tarjeta_taller.dart';
 
+import '../../../nucleo/componentes/accesos_rapidos.dart';
+import '../../../nucleo/utilidades/textos.dart';
+
 // Pantalla sin estado propio, los datos vienen de EstadoApp
 class PantallaInicioAlumno extends StatelessWidget {
   // Constructor constante de la pantalla
@@ -99,12 +102,24 @@ class PantallaInicioAlumno extends StatelessWidget {
                           ),
                         ),
                         // Avatar con borde clarito
-                        AvatarActiva(
-                          rol: Rol.alumno,
-                          iniciales: iniciales,
-                          radio: 25,
-                          borde: true,
+                        GestureDetector(
+                        onTap: () => context.go('/alumno/perfil'),
+                        child: Stack(
+                          clipBehavior: Clip.none,
+                          children: [
+                            AvatarActiva(rol: Rol.alumno, iniciales: iniciales, radio: 25, borde: true),
+                            Positioned(
+                              right: -2,
+                              bottom: -2,
+                              child: Container(
+                                padding: const EdgeInsets.all(3),
+                                decoration: const BoxDecoration(color: Colors.white, shape: BoxShape.circle),
+                                child: const Icon(Icons.person, size: 12, color: ColoresApp.primary),
+                              ),
+                            ),
+                          ],
                         ),
+                      ),
                       ],
                     ),
                   ),
@@ -178,11 +193,17 @@ class PantallaInicioAlumno extends StatelessWidget {
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                Text(
-                                  'Tu progreso paraescolar',
-                                  style: TextStyle(
-                                    color: Colors.white.withValues(alpha: 0.75),
-                                    fontSize: 12.5,
+                                GestureDetector(
+                                  onTap: () => context.push('/perfil/progreso'),
+                                  child: Row(
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: [
+                                      Text(
+                                        context.tr('inicio.progreso'),
+                                        style: TextStyle(color: Colors.white.withValues(alpha: 0.75), fontSize: 12.5),
+                                      ),
+                                      Icon(Icons.chevron_right_rounded, size: 16, color: Colors.white.withValues(alpha: 0.75)),
+                                    ],
                                   ),
                                 ),
                                 // Ejemplo: "20 / 60 horas"
@@ -226,6 +247,8 @@ class PantallaInicioAlumno extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
+              const AccesoChats(),
+              const SizedBox(height: 26),
               // Título de categorías con botón "Ver todos"
               _EncabezadoSeccion(
                 'Encuentra algo para ti',

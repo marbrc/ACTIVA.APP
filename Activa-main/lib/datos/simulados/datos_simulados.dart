@@ -1,5 +1,5 @@
 import '../../modelos/categoria.dart';
-import '../../modelos/enums.dart' hide Categoria;
+import '../../modelos/enums.dart';
 import '../../modelos/inscripcion.dart';
 import '../../modelos/taller.dart';
 import '../../modelos/usuario.dart';

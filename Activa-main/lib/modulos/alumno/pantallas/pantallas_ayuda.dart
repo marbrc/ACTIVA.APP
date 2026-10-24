@@ -15,6 +15,10 @@ import '../../../nucleo/componentes/tarjeta_app.dart';
 import '../../../nucleo/tema/tema_app.dart';
 import '../componentes/tarjeta_taller.dart';
 
+import '../../../datos/sesion.dart';
+import '../../../nucleo/componentes/avisos.dart';
+import '../../../nucleo/utilidades/textos.dart';
+
 // ───────────────────── Favoritos ─────────────────────
 class PantallaFavoritos extends StatelessWidget {
   const PantallaFavoritos({super.key});
@@ -89,44 +93,56 @@ class PantallaFavoritos extends StatelessWidget {
 class PantallaIdioma extends StatelessWidget {
   const PantallaIdioma({super.key});
 
-  Widget _fila(String nombre, String detalle, bool activo) => ListTile(
-    leading: Icon(
-      Icons.language_rounded,
-      color: activo ? ColoresApp.primary : ColoresApp.muted,
-    ),
-    title: Text(
-      nombre,
-      style: TextStyle(
-        fontWeight: FontWeight.w700,
-        color: activo ? ColoresApp.navy : ColoresApp.muted,
-      ),
-    ),
-    subtitle: Text(detalle, style: const TextStyle(fontSize: 12)),
-    trailing: activo
-        ? const Icon(Icons.check_circle_rounded, color: ColoresApp.teal)
-        : null,
-  );
-
   @override
-  Widget build(BuildContext context) => EstructuraSubpantalla(
-    title: 'Idioma',
-    fallback: '/perfil/configuracion',
-    child: ListView(
-      padding: const EdgeInsets.all(20),
-      children: [
-        TarjetaApp(
-          padding: EdgeInsets.zero,
-          child: Column(
-            children: [
-              _fila('Español (México)', 'Idioma actual de la aplicación', true),
-              const Divider(),
-              _fila('English', 'Próximamente', false),
-            ],
+  Widget build(BuildContext context) {
+    final ses = context.watch<EstadoSesion>();
+    const detalles = {
+      'es': 'Español (México)',
+      'en': 'English',
+      'fr': 'Français',
+    };
+    return EstructuraSubpantalla(
+      title: context.tr('config.idioma'),
+      fallback: '/perfil/configuracion',
+      child: ListView(
+        padding: const EdgeInsets.all(20),
+        children: [
+          TarjetaApp(
+            padding: EdgeInsets.zero,
+            child: Column(
+              children: ListTile.divideTiles(context: context, tiles: [
+                for (final e in detalles.entries)
+                  ListTile(
+                    leading: Icon(Icons.language_rounded,
+                        color: ses.idioma == e.key ? ColoresApp.primary : ColoresApp.muted),
+                    title: Text(e.value,
+                        style: TextStyle(
+                          fontWeight: FontWeight.w700,
+                          color: ses.idioma == e.key ? ColoresApp.navy : ColoresApp.muted,
+                        )),
+                    trailing: ses.idioma == e.key
+                        ? const Icon(Icons.check_circle_rounded, color: ColoresApp.teal)
+                        : null,
+                    onTap: () {
+                      ses.cambiarIdioma(e.key);
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        avisoSnack(content: Text('${e.value} ✓'), tipo: TipoToast.exito),
+                      );
+                    },
+                  ),
+              ]).toList(),
+            ),
           ),
-        ),
-      ],
-    ),
-  );
+          const SizedBox(height: 12),
+          const Text(
+            'Por ahora se traducen el menú, Inicio, Perfil y Configuración; '
+            'las demás pantallas se irán agregando.',
+            style: TextStyle(color: ColoresApp.muted, fontSize: 12),
+          ),
+        ],
+      ),
+    );
+  }
 }
 
 // ───────────────────── Aviso de privacidad ─────────────────────

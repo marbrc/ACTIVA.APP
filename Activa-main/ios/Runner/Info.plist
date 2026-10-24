@@ -2,6 +2,11 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
+
+	<key>NSCameraUsageDescription</key>
+	<string>ACTIVA usa la cámara para tomar tu foto de perfil y fotos de actividades.</string>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>ACTIVA usa tu galería para elegir fotos.</string>
 	<key>CADisableMinimumFrameDurationOnPhone</key>
 	<true/>
 	<key>CFBundleDevelopmentRegion</key>

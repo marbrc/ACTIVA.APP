@@ -1,5 +1,8 @@
+import 'dart:typed_data';
+
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
 
 import '../../../nucleo/tema/tema_app.dart';
@@ -208,6 +211,7 @@ class _EstadoPantallaFormularioActividad
   int? _instId;
   final Set<Dia> _dias = {};
   late TimeOfDay _ini, _fin;
+  Uint8List? _foto; // foto de la actividad (opcional)
   bool _activo = true;
   int _step = 0;
 
@@ -236,6 +240,7 @@ class _EstadoPantallaFormularioActividad
     _ini = _parse(t?.horarios.first.horaInicio ?? '17:00');
     _fin = _parse(t?.horarios.first.horaFin ?? '18:30');
     _activo = t?.activo ?? true;
+    _foto = t?.foto;
   }
 
   @override
@@ -248,6 +253,43 @@ class _EstadoPantallaFormularioActividad
 
   void _snack(String m) =>
       ScaffoldMessenger.of(context).showSnackBar(avisoSnack(content: Text(m)));
+
+  Future<void> _elegirFoto() async {
+    final fuente = await showModalBottomSheet<ImageSource>(
+      context: context,
+      backgroundColor: Colors.white,
+      builder: (c) => SafeArea(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            ListTile(
+              leading: const Icon(Icons.photo_camera_rounded),
+              title: const Text('Tomar una foto'),
+              onTap: () => Navigator.pop(c, ImageSource.camera),
+            ),
+            ListTile(
+              leading: const Icon(Icons.photo_library_rounded),
+              title: const Text('Elegir de la galería'),
+              onTap: () => Navigator.pop(c, ImageSource.gallery),
+            ),
+          ],
+        ),
+      ),
+    );
+    if (fuente == null) return;
+    try {
+      final x = await ImagePicker().pickImage(
+        source: fuente,
+        imageQuality: 85,
+        maxWidth: 1400,
+      );
+      if (x == null) return;
+      final b = await x.readAsBytes();
+      if (mounted) setState(() => _foto = b);
+    } catch (_) {
+      if (mounted) _snack('No se pudo abrir la foto');
+    }
+  }
 
   Future<void> _pick(bool inicio) async {
     final r = await showTimePicker(
@@ -280,7 +322,7 @@ class _EstadoPantallaFormularioActividad
     if (_form1.currentState!.validate()) setState(() => _step = 1);
   }
 
-   Future<void> _save() async {
+  Future<void> _save() async {
     if (!_form2.currentState!.validate()) return;
     if (_dias.isEmpty) {
       _snack('Selecciona al menos un día');
@@ -313,6 +355,7 @@ class _EstadoPantallaFormularioActividad
             instructor: inst,
             horarios: horarios,
             inscritos: 0,
+            foto: _foto,
           )
         : base.copyWith(
             nombre: _nombre.text.trim(),
@@ -324,6 +367,7 @@ class _EstadoPantallaFormularioActividad
             activo: _activo,
             instructor: inst,
             horarios: horarios,
+            foto: _foto,
           );
 
     // Solo validamos traslapes si es nueva o cambió horario, lugar o instructor
@@ -371,6 +415,56 @@ class _EstadoPantallaFormularioActividad
     child: Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
+        _label('Foto de la actividad'),
+        GestureDetector(
+          onTap: _elegirFoto,
+          child: Container(
+            height: 150,
+            width: double.infinity,
+            decoration: BoxDecoration(
+              color: ColoresApp.mist,
+              borderRadius: BorderRadius.circular(20),
+              border: Border.all(color: ColoresApp.line),
+              image: _foto == null
+                  ? null
+                  : DecorationImage(
+                      image: MemoryImage(_foto!),
+                      fit: BoxFit.cover,
+                    ),
+            ),
+            child: _foto == null
+                ? const Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Icon(
+                        Icons.add_a_photo_rounded,
+                        color: ColoresApp.primary,
+                        size: 34,
+                      ),
+                      SizedBox(height: 6),
+                      Text(
+                        'Toca para agregar una foto',
+                        style: TextStyle(color: ColoresApp.muted, fontSize: 12),
+                      ),
+                    ],
+                  )
+                : const Align(
+                    alignment: Alignment.bottomRight,
+                    child: Padding(
+                      padding: EdgeInsets.all(8),
+                      child: CircleAvatar(
+                        radius: 16,
+                        backgroundColor: Colors.white,
+                        child: Icon(
+                          Icons.edit,
+                          size: 16,
+                          color: ColoresApp.primary,
+                        ),
+                      ),
+                    ),
+                  ),
+          ),
+        ),
         _label('Nombre de la actividad'),
         TextFormField(
           controller: _nombre,
@@ -548,6 +642,4 @@ class _EstadoPantallaFormularioActividad
       ),
     );
   }
-  
 }
-    

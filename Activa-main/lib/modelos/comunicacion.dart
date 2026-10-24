@@ -36,17 +36,18 @@ class RespuestaEncuesta {
   });
 }
 
-enum TipoSolicitud { clubLleno, bajaAlumno, otro }
+enum TipoSolicitud { clubLleno, ampliarCupo, bajaAlumno, otro }
 
 extension TipoSolicitudX on TipoSolicitud {
   String get etiqueta => switch (this) {
     TipoSolicitud.clubLleno => 'El club ya se llenó',
+    TipoSolicitud.ampliarCupo => 'Necesito más lugares',
     TipoSolicitud.bajaAlumno => 'Un alumno se dio de baja',
     TipoSolicitud.otro => 'Otro motivo',
   };
 }
 
-enum EstadoSolicitud { pendiente, atendida }
+enum EstadoSolicitud { pendiente, atendida, rechazada }
 
 class SolicitudAdmin {
   final int id;
@@ -57,6 +58,8 @@ class SolicitudAdmin {
   final String mensaje;
   final DateTime fecha;
   final EstadoSolicitud estado;
+  final String respuesta; // lo que contesta el admin
+  final int cupoExtra; // lugares que agregó el admin
   const SolicitudAdmin({
     required this.id,
     required this.tallerId,
@@ -66,16 +69,21 @@ class SolicitudAdmin {
     this.mensaje = '',
     required this.fecha,
     this.estado = EstadoSolicitud.pendiente,
+    this.respuesta = '',
+    this.cupoExtra = 0,
   });
 
-  SolicitudAdmin copyWith({EstadoSolicitud? estado}) => SolicitudAdmin(
-    id: id,
-    tallerId: tallerId,
-    instructorId: instructorId,
-    instructorNombre: instructorNombre,
-    tipo: tipo,
-    mensaje: mensaje,
-    fecha: fecha,
-    estado: estado ?? this.estado,
-  );
+  SolicitudAdmin copyWith({EstadoSolicitud? estado, String? respuesta, int? cupoExtra}) =>
+      SolicitudAdmin(
+        id: id,
+        tallerId: tallerId,
+        instructorId: instructorId,
+        instructorNombre: instructorNombre,
+        tipo: tipo,
+        mensaje: mensaje,
+        fecha: fecha,
+        estado: estado ?? this.estado,
+        respuesta: respuesta ?? this.respuesta,
+        cupoExtra: cupoExtra ?? this.cupoExtra,
+      );
 }

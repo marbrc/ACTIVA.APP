@@ -1,5 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:provider/provider.dart';
+
+import '../../../datos/estado_app.dart';
+import '../../../nucleo/utilidades/textos.dart';
 
 class EstructuraAlumno extends StatelessWidget {
   const EstructuraAlumno({super.key, required this.navigationShell});
@@ -7,36 +11,45 @@ class EstructuraAlumno extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final sinLeer = context.watch<EstadoApp>().avisosSinLeer;
+    Widget campana(IconData i) => Badge(
+      isLabelVisible: sinLeer > 0,
+      label: Text('$sinLeer'),
+      child: Icon(i),
+    );
+
     return Scaffold(
       body: navigationShell,
       bottomNavigationBar: NavigationBar(
         selectedIndex: navigationShell.currentIndex,
         onDestinationSelected: (i) => navigationShell.goBranch(
           i,
-          // tocar la pestaña activa te regresa a su pantalla raíz
           initialLocation: i == navigationShell.currentIndex,
         ),
-        destinations: const [
+        destinations: [
           NavigationDestination(
-            icon: Icon(Icons.home_outlined),
-            selectedIcon: Icon(Icons.home),
-            label: 'Inicio',
-          ),
-          NavigationDestination(icon: Icon(Icons.search), label: 'Explorar'),
-          NavigationDestination(
-            icon: Icon(Icons.calendar_today_outlined),
-            selectedIcon: Icon(Icons.calendar_today),
-            label: 'Mis actividades',
+            icon: const Icon(Icons.home_outlined),
+            selectedIcon: const Icon(Icons.home),
+            label: context.tr('nav.inicio'),
           ),
           NavigationDestination(
-            icon: Icon(Icons.notifications_outlined),
-            selectedIcon: Icon(Icons.notifications),
-            label: 'Avisos',
+            icon: const Icon(Icons.search),
+            label: context.tr('nav.explorar'),
           ),
           NavigationDestination(
-            icon: Icon(Icons.person_outline),
-            selectedIcon: Icon(Icons.person),
-            label: 'Perfil',
+            icon: const Icon(Icons.calendar_today_outlined),
+            selectedIcon: const Icon(Icons.calendar_today),
+            label: context.tr('nav.actividades'),
+          ),
+          NavigationDestination(
+            icon: campana(Icons.notifications_outlined),
+            selectedIcon: campana(Icons.notifications),
+            label: context.tr('nav.avisos'),
+          ),
+          NavigationDestination(
+            icon: const Icon(Icons.person_outline),
+            selectedIcon: const Icon(Icons.person),
+            label: context.tr('nav.perfil'),
           ),
         ],
       ),

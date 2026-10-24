@@ -12,6 +12,8 @@ import '../../../datos/estado_app.dart';
 import '../../../datos/simulados/datos_simulados.dart';
 import '../../alumno/componentes/miniatura_taller.dart';
 
+import '../../../nucleo/componentes/accesos_rapidos.dart';
+
 class PantallaInicioInstructor extends StatelessWidget {
   const PantallaInicioInstructor({super.key});
 
@@ -77,6 +79,7 @@ class PantallaInicioInstructor extends StatelessWidget {
               _Estadistica(Icons.apps, '${grupos.length}', 'Grupos'),
             ],
           ),
+          const AccesoChats(), const SizedBox(height: 14),
           const SizedBox(height: 24),
           Row(
             children: [
