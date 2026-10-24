@@ -13,6 +13,12 @@ class CuentaDemo {
 
 const contrasenaDemo = 'Activa2026!';
 
+// ---- modo pruebas ----
+// true  = el login deja entrar sin usuario ni contraseña (entra como alumna)
+// false = el login vuelve a pedir usuario y contraseña como siempre
+// ojo: ponerlo en false antes de entregar el proyecto
+const bool entrarSinContrasena = true;
+
 const cuentasDemo = <CuentaDemo>[
   CuentaDemo('mar_alumna', contrasenaDemo, Rol.alumno, 'Alumna'),
   CuentaDemo('mar_instructor', contrasenaDemo, Rol.instructor, 'Instructor'),
@@ -82,6 +88,13 @@ class EstadoSesion extends ChangeNotifier {
         notifyListeners();
         return encontrado;
       }
+    }
+
+    // 3) modo pruebas: si no coincidio nada, entra como alumna
+    if (entrarSinContrasena) {
+      rol = Rol.alumno;
+      notifyListeners();
+      return rol;
     }
     return null;
   }

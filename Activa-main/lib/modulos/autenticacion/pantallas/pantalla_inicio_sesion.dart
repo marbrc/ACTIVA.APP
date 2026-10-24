@@ -38,7 +38,8 @@ class _EstadoPantallaInicioSesion extends State<PantallaInicioSesion> {
 
   // revisa los datos y manda a cada rol a su panel
   void _submit() {
-    if (!_formKey.currentState!.validate()) return;
+    // en modo pruebas no se exigen los campos
+    if (!entrarSinContrasena && !_formKey.currentState!.validate()) return;
     final rol = context.read<EstadoSesion>().iniciarSesion(
       _userCtrl.text,
       _passCtrl.text,
@@ -89,8 +90,9 @@ class _EstadoPantallaInicioSesion extends State<PantallaInicioSesion> {
                 prefixIcon: Icon(Icons.person_outline_rounded),
                 hintText: 'mar_alumna',
               ),
-              validator: (v) =>
-                  (v == null || v.trim().isEmpty) ? 'Campo requerido' : null,
+              validator: (v) => entrarSinContrasena
+                  ? null
+                  : ((v == null || v.trim().isEmpty) ? 'Campo requerido' : null),
             ),
             const SizedBox(height: 16),
             const Text(
@@ -112,8 +114,9 @@ class _EstadoPantallaInicioSesion extends State<PantallaInicioSesion> {
                   onPressed: () => setState(() => _obscure = !_obscure),
                 ),
               ),
-              validator: (v) =>
-                  (v == null || v.isEmpty) ? 'Campo requerido' : null,
+              validator: (v) => entrarSinContrasena
+                  ? null
+                  : ((v == null || v.isEmpty) ? 'Campo requerido' : null),
             ),
             Row(
               children: [

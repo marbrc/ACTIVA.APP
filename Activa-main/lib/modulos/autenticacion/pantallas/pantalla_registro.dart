@@ -16,6 +16,8 @@ class _EstadoPantallaRegistro extends State<PantallaRegistro> {
   final _form1 = GlobalKey<FormState>();
   final _form2 = GlobalKey<FormState>();
   final _nombre = TextEditingController();
+  final _apPaterno = TextEditingController();
+  final _apMaterno = TextEditingController();
   final _control = TextEditingController();
   final _grupo = TextEditingController();
   final _correo = TextEditingController();
@@ -34,7 +36,16 @@ class _EstadoPantallaRegistro extends State<PantallaRegistro> {
 
   @override
   void dispose() {
-    for (final c in [_nombre, _control, _grupo, _correo, _pass, _pass2]) {
+    for (final c in [
+      _nombre,
+      _apPaterno,
+      _apMaterno,
+      _control,
+      _grupo,
+      _correo,
+      _pass,
+      _pass2,
+    ]) {
       c.dispose();
     }
     super.dispose();
@@ -105,7 +116,7 @@ class _EstadoPantallaRegistro extends State<PantallaRegistro> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         const Text(
-          'Nombre completo',
+          'Nombre(s)',
           style: TextStyle(fontWeight: FontWeight.bold),
         ),
         const SizedBox(height: 8),
@@ -114,6 +125,34 @@ class _EstadoPantallaRegistro extends State<PantallaRegistro> {
           textCapitalization: TextCapitalization.words,
           decoration: const InputDecoration(prefixIcon: Icon(Icons.person)),
           validator: _required,
+        ),
+        const SizedBox(height: 16),
+        const Text(
+          'Apellido paterno',
+          style: TextStyle(fontWeight: FontWeight.bold),
+        ),
+        const SizedBox(height: 8),
+        TextFormField(
+          controller: _apPaterno,
+          textCapitalization: TextCapitalization.words,
+          decoration: const InputDecoration(
+            prefixIcon: Icon(Icons.person_outline),
+          ),
+          validator: _required,
+        ),
+        const SizedBox(height: 16),
+        const Text(
+          'Apellido materno (opcional)',
+          style: TextStyle(fontWeight: FontWeight.bold),
+        ),
+        const SizedBox(height: 8),
+        TextFormField(
+          controller: _apMaterno,
+          textCapitalization: TextCapitalization.words,
+          decoration: const InputDecoration(
+            prefixIcon: Icon(Icons.person_outline),
+          ),
+          // sin validator: puede ir vacio
         ),
         const SizedBox(height: 16),
         Row(
