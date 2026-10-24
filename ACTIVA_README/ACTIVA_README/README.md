@@ -1,13 +1,12 @@
 # ACTIVA
 
 **Activación de Clubes y Talleres Institucionales para la Vida Académica**
-Universidad Tecnológica del Norte de Guanajuato (UTNG) · Grupo GTID235
 
-## 1. Descripción breve
 
+## Descripción
 ACTIVA es una app móvil para inscribirse y dar seguimiento a las actividades paraescolares (clubes y talleres) de la universidad. Permite explorar actividades con su cupo, horario y lugar, inscribirse y descargar el comprobante en PDF, acumular y validar horas (meta de 60 horas por cuatrimestre), recibir avisos y platicar en chats grupales por actividad. El instructor pasa lista y publica avisos, y la coordinación administra actividades, instructores, alumnos, periodo escolar y reportes.
 
-## 2. Los 3 tipos de usuario y sus dashboards
+##Los 3 tipos de usuario y sus dashboards
 
 | Usuario | Qué ve en su dashboard | Cuenta de prueba |
 |---|---|---|
@@ -15,7 +14,7 @@ ACTIVA es una app móvil para inscribirse y dar seguimiento a las actividades pa
 | **Instructor** | Última sesión con acceso rápido a *Pasar lista* y *Ver alumnos*, estadísticas (alumnos, asistencia, grupos), chats y sus grupos. Menú: Inicio, Grupos, Asistencia, Avisos, Perfil. | `mar_instructor` |
 | **Administrador (Coordinación de Paraescolares)** | Panel con totales (estudiantes, actividades, inscripciones, cupos), accesos a Nueva actividad, Instructores y Reportes, y actividades activas con su ocupación. Menú: Panel, Actividades, Alumnos, Reportes, Perfil. | `mar_admin` |
 
-Contraseña de las cuentas de prueba: `Activa2026!`
+Contraseñaia de las cuentas de prueba: `Activa2026!`
 
 **Funciones por rol**
 - **Alumno:** explorar y filtrar actividades, inscribirse y darse de baja, comprobante con QR y folio (descarga en PDF), Mi progreso, Mis comprobantes, favoritos, encuestas de sus clubes, chats grupales, editar perfil y configuración.
@@ -80,7 +79,4 @@ Requisitos: Flutter SDK instalado y un dispositivo físico o emulador conectado 
 ![Reportes](screenshots/18-reportes.jpg)
 
 ### Evidencia funcional
-<!-- PENDIENTE: foto del equipo con la app corriendo -->
-<!-- ![Foto equipo](screenshots/20-foto-equipo.jpg) -->
-<!-- PENDIENTE: captura del flujo login → dashboard → lista → formulario -->
-<!-- ![Navegación](screenshots/21-navegacion.jpg) -->
+video en drive entregado en la plataforma de classroom
