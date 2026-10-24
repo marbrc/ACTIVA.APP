@@ -9,9 +9,17 @@ import '../nucleo/utilidades/formateadores.dart';
 import '../modelos/usuario.dart';
 import '../modelos/comunicacion.dart';
 import 'simulados/datos_comunicacion.dart';
+import 'almacen_cuentas.dart';
 
 
 class EstadoApp extends ChangeNotifier {
+  EstadoApp([this._almacen]) {
+    _cargarInstructoresGuardados();
+  }
+
+  /// Archivo JSON con las cuentas (alumnos registrados e instructores del admin)
+  final AlmacenCuentas? _almacen;
+
   final List<Taller> _talleres = List.of(talleresSimulado);
   final List<Inscripcion> _inscripciones = List.of(inscripcionesSimulado);
   final Set<int> _favoritos = {};
@@ -23,7 +31,10 @@ class EstadoApp extends ChangeNotifier {
   Taller tallerPorId(int id) => _talleres.firstWhere((t) => t.id == id);
 
   bool estaInscrito(int tallerId) => _inscripciones.any(
-    (i) => i.taller.id == tallerId && i.estado == EstadoInscripcion.activa,
+    (i) =>
+        i.taller.id == tallerId &&
+        i.estado == EstadoInscripcion.activa &&
+        i.alumno.numeroControl == alumno.numeroControl,
   );
 
   Inscripcion? inscripcionPorFolio(String folio) {
@@ -96,10 +107,16 @@ class EstadoApp extends ChangeNotifier {
   List<Aviso> get avisos => List.unmodifiable(_avisos);
 
   List<Inscripcion> get misInscripciones => _inscripciones
-      .where((i) => i.estado == EstadoInscripcion.activa)
+      .where(
+        (i) =>
+            i.estado == EstadoInscripcion.activa &&
+            i.alumno.numeroControl == alumno.numeroControl,
+      )
       .toList();
 
-  int get horasRealizadas => _horas.values.fold(0, (a, b) => a + b);
+  int get horasRealizadas => _inscripciones
+      .where((i) => i.alumno.numeroControl == alumno.numeroControl)
+      .fold(0, (a, i) => a + (_horas[i.folio] ?? 0));
   int horasDe(String folio) => _horas[folio] ?? 0;
 
    void cancelar(String folio) {
@@ -132,6 +149,15 @@ class EstadoApp extends ChangeNotifier {
             apellidoMaterno: '',
             telefono: telefono.trim(),
           );
+    // si la alumna entró con una cuenta guardada, el cambio también va al JSON
+    final c = _almacen?.porId(alumno.id);
+    if (c != null && c.rol == Rol.alumno) {
+      c.nombre = alumno.nombre;
+      c.apellidoPaterno = alumno.apellidoPaterno;
+      c.apellidoMaterno = alumno.apellidoMaterno;
+      c.telefono = alumno.telefono ?? '';
+      _almacen!.guardar();
+    }
     notifyListeners();
   }
 
@@ -215,7 +241,19 @@ class EstadoApp extends ChangeNotifier {
   }.values.toList();
 
   List<Instructor> get instructores => List.unmodifiable(_instructores);
-  List<Alumno> get todosAlumnos => [alumno, ...companerosSimulado];
+  List<Alumno> get todosAlumnos {
+    final vistos = {
+      alumno.numeroControl,
+      for (final a in companerosSimulado) a.numeroControl,
+    };
+    return [
+      alumno,
+      ...companerosSimulado,
+      // alumnos que se registraron con "Crear cuenta"
+      for (final c in _almacen?.alumnos ?? const <CuentaGuardada>[])
+        if (vistos.add(c.numeroControl)) c.aAlumno(),
+    ];
+  }
   List<({String tipo, String formato, DateTime fecha})> get reportes =>
       List.unmodifiable(_reportes);
 
@@ -585,5 +623,210 @@ class EstadoApp extends ChangeNotifier {
       cupoExtra: aprobar ? cupoExtra : 0,
     );
     notifyListeners();
+  }
+
+  // ================= CUENTAS GUARDADAS (JSON) =================
+  Alumno _alumnoDemo = alumnoSimulado;
+  Instructor _instructorDemo = instructorSimulado;
+  bool _alumnoEsDemo = true;
+  bool _instructorEsDemo = true;
+
+  /// Pone como "persona actual" a la cuenta guardada con la que se entró.
+  /// Con null vuelve a las cuentas de prueba.
+  void usarCuenta(CuentaGuardada? c) {
+    if (_alumnoEsDemo) _alumnoDemo = alumno;
+    if (_instructorEsDemo) _instructorDemo = instructor;
+
+    if (c != null && c.rol == Rol.alumno) {
+      alumno = c.aAlumno();
+      _alumnoEsDemo = false;
+    } else {
+      alumno = _alumnoDemo;
+      _alumnoEsDemo = true;
+    }
+
+    if (c != null && c.rol == Rol.instructor) {
+      final id = c.id;
+      instructor = _instructores.firstWhere(
+        (i) => i.id == id,
+        orElse: () => c.aInstructor(),
+      );
+      _instructorEsDemo = false;
+    } else {
+      instructor = _instructorDemo;
+      _instructorEsDemo = true;
+    }
+    notifyListeners();
+  }
+
+  // al abrir la app: mete a los instructores del JSON y les regresa sus talleres
+  void _cargarInstructoresGuardados() {
+    final a = _almacen;
+    if (a == null) return;
+    for (final c in a.instructores) {
+      final inst = c.aInstructor();
+      _instructores.add(inst);
+      for (final id in c.tallerIds) {
+        final i = _talleres.indexWhere((t) => t.id == id);
+        if (i >= 0) guardarTaller(_talleres[i].copyWith(instructor: inst));
+      }
+    }
+  }
+
+  // ================= ADMIN: instructores con cuenta =================
+  bool tieneCuentaInstructor(int id) => _almacen?.porId(id) != null;
+
+  Instructor? instructorPorId(int id) {
+    for (final i in _instructores) {
+      if (i.id == id) return i;
+    }
+    return null;
+  }
+
+  List<Taller> talleresDeInstructor(int id) =>
+      _talleres.where((t) => t.instructor.id == id).toList();
+
+  // los talleres guardan una copia del instructor: hay que actualizarla
+  void _reemplazarInstructor(Instructor n) {
+    final i = _instructores.indexWhere((x) => x.id == n.id);
+    if (i >= 0) _instructores[i] = n;
+    for (final t in List.of(_talleres)) {
+      if (t.instructor.id == n.id) guardarTaller(t.copyWith(instructor: n));
+    }
+    if (instructor.id == n.id) instructor = n;
+    notifyListeners();
+  }
+
+  /// Da de alta al instructor con su cuenta de acceso. La contraseña se
+  /// guarda con hash y queda como temporal (la tiene que cambiar al entrar).
+  Future<({Instructor? instructor, String? error})> crearInstructor({
+    required String nombre,
+    required String paterno,
+    String materno = '',
+    required String correo,
+    required String especialidad,
+    required String contrasenaTemporal,
+  }) async {
+    final a = _almacen;
+    if (a == null) {
+      return (instructor: null, error: 'Error: no se pudo abrir el almacenamiento');
+    }
+    final mail = correo.trim().toLowerCase();
+    if (existeCorreoInstructor(mail) || a.correoTomado(mail)) {
+      return (instructor: null, error: 'Error: ese correo ya está registrado');
+    }
+    if (existeInstructor(nombre, paterno, materno)) {
+      return (instructor: null, error: 'Error: ya existe un instructor con ese nombre');
+    }
+    final c = CuentaGuardada(
+      id: a.nuevoId(),
+      rol: Rol.instructor,
+      usuario: a.usuarioLibre(CuentaGuardada.usuarioDesdeCorreo(mail)),
+      correo: mail,
+      nombre: nombre.trim(),
+      apellidoPaterno: paterno.trim(),
+      apellidoMaterno: materno.trim(),
+      especialidad: especialidad.trim(),
+    );
+    a.ponerContrasena(c, contrasenaTemporal, temporal: true);
+    if (!await a.agregar(c)) {
+      return (instructor: null, error: 'Error: no se pudo guardar la cuenta');
+    }
+    final inst = c.aInstructor();
+    _instructores.add(inst);
+    notifyListeners();
+    return (instructor: inst, error: null);
+  }
+
+  /// Devuelve el texto del error, o null si todo salió bien.
+  Future<String?> editarInstructor(
+    int id, {
+    required String nombre,
+    required String paterno,
+    String materno = '',
+    required String correo,
+    required String especialidad,
+  }) async {
+    final actual = instructorPorId(id);
+    if (actual == null) return 'Error: no se encontró al instructor';
+    final mail = correo.trim().toLowerCase();
+    if (_instructores.any((i) => i.id != id && i.correo == mail) ||
+        (_almacen?.correoTomado(mail, excepto: id) ?? false)) {
+      return 'Error: ese correo ya está registrado';
+    }
+    _reemplazarInstructor(
+      actual.copyWith(
+        nombre: nombre.trim(),
+        apellidoPaterno: paterno.trim(),
+        apellidoMaterno: materno.trim(),
+        correo: mail,
+        especialidad: especialidad.trim(),
+      ),
+    );
+    final c = _almacen?.porId(id);
+    if (c != null) {
+      c.nombre = nombre.trim();
+      c.apellidoPaterno = paterno.trim();
+      c.apellidoMaterno = materno.trim();
+      c.correo = mail;
+      c.especialidad = especialidad.trim();
+      if (!await _almacen!.guardar()) {
+        return 'Error: no se pudieron guardar los cambios';
+      }
+    }
+    return null;
+  }
+
+  /// Activa o desactiva al instructor (desactivado no puede iniciar sesión).
+  Future<String?> cambiarActivoInstructor(int id, bool activo) async {
+    final actual = instructorPorId(id);
+    if (actual == null) return 'Error: no se encontró al instructor';
+    if (actual.activo == activo) return null;
+    _reemplazarInstructor(actual.copyWith(activo: activo));
+    final c = _almacen?.porId(id);
+    if (c != null) {
+      c.activo = activo;
+      if (!await _almacen!.guardar()) {
+        return 'Error: no se pudo guardar el cambio';
+      }
+    }
+    return null;
+  }
+
+  /// Pone una contraseña temporal nueva (vuelve a pedir el cambio al entrar).
+  Future<String?> restablecerContrasenaInstructor(
+    int id,
+    String temporal,
+  ) async {
+    final a = _almacen;
+    final c = a?.porId(id);
+    if (a == null || c == null) {
+      return 'Error: este instructor no tiene cuenta de acceso';
+    }
+    a.ponerContrasena(c, temporal, temporal: true);
+    return await a.guardar() ? null : 'Error: no se pudo guardar la contraseña';
+  }
+
+  /// Asigna el taller al instructor (el taller solo tiene un instructor, así
+  /// que si lo tenía otro, se le quita). Devuelve el error o null.
+  Future<String?> asignarTaller(int instructorId, int tallerId) async {
+    final inst = instructorPorId(instructorId);
+    if (inst == null) return 'Error: no se encontró al instructor';
+    if (!inst.activo) return 'Error: el instructor está desactivado';
+    final t = tallerPorId(tallerId);
+    if (t.instructor.id == instructorId) return null;
+    final nuevo = t.copyWith(instructor: inst);
+    final choque = conflictoHorario(nuevo);
+    if (choque != null) return 'Error: traslape de horario. $choque';
+    guardarTaller(nuevo);
+    final a = _almacen;
+    if (a != null) {
+      for (final c in a.instructores) {
+        c.tallerIds.remove(tallerId);
+      }
+      a.porId(instructorId)?.tallerIds.add(tallerId);
+      if (!await a.guardar()) return 'Error: no se pudo guardar la asignación';
+    }
+    return null;
   }
 }

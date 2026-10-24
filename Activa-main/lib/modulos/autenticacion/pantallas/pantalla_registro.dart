@@ -1,8 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:go_router/go_router.dart';
 
+import 'package:provider/provider.dart';
+
+import '../../../datos/sesion.dart';
 import '../../../nucleo/tema/tema_app.dart';
 import '../../../nucleo/utilidades/reglas_contrasena.dart';
+import '../../../nucleo/utilidades/validadores.dart';
 import '../../../nucleo/componentes/estructura_autenticacion.dart';
 import '../../../nucleo/componentes/avisos.dart';
 
@@ -16,8 +21,8 @@ class _EstadoPantallaRegistro extends State<PantallaRegistro> {
   final _form1 = GlobalKey<FormState>();
   final _form2 = GlobalKey<FormState>();
   final _nombre = TextEditingController();
-  final _apPaterno = TextEditingController();
-  final _apMaterno = TextEditingController();
+  final _paterno = TextEditingController();
+  final _materno = TextEditingController();
   final _control = TextEditingController();
   final _grupo = TextEditingController();
   final _correo = TextEditingController();
@@ -38,8 +43,8 @@ class _EstadoPantallaRegistro extends State<PantallaRegistro> {
   void dispose() {
     for (final c in [
       _nombre,
-      _apPaterno,
-      _apMaterno,
+      _paterno,
+      _materno,
       _control,
       _grupo,
       _correo,
@@ -55,23 +60,53 @@ class _EstadoPantallaRegistro extends State<PantallaRegistro> {
     if (_form1.currentState!.validate()) setState(() => _step = 1);
   }
 
-  void _create() {
+  Future<void> _create() async {
+    
     if (!_form2.currentState!.validate()) return;
     if (!_terms) {
       ScaffoldMessenger.of(context).showSnackBar(
-        avisoSnack(content: Text('Acepta los términos para continuar')),
+        avisoSnack(content: const Text('Acepta los términos para continuar')),
       );
       return;
     }
-    // TODO: guardar en usuarios + alumnos (rol = alumno) vía backend
-    ScaffoldMessenger.of(context).showSnackBar(
-      avisoSnack(content: Text('Cuenta creada. Ya puedes iniciar sesión')),
+    // se leen los datos antes de esperar, por si se cierra la pantalla
+    final mensajes = ScaffoldMessenger.of(context);
+    final sesion = context.read<EstadoSesion>();
+
+    // se junta nombre + paterno + materno en el formato que ya usa tu registro
+    final nombreCompleto = [
+      capitalizar(_nombre.text),
+      capitalizar(_paterno.text),
+      capitalizar(_materno.text),
+    ].where((p) => p.isNotEmpty).join(' ');
+
+        final error = await sesion.registrarAlumno(
+      nombreCompleto: nombreCompleto,
+      soloNombre: capitalizar(_nombre.text),
+      apellidoPaterno: capitalizar(_paterno.text),
+      apellidoMaterno: capitalizar(_materno.text),
+      numeroControl: _control.text,
+      grupo: _grupo.text,
+      correo: _correo.text,
+      carrera: _carrera ?? '',
+      contrasena: _pass.text,
+    );
+    if (!mounted) return;
+    if (error != null) {
+      mensajes.showSnackBar(avisoSnack(content: Text(error)));
+      return;
+    }
+    mensajes.showSnackBar(
+      avisoSnack(content: const Text('Cuenta creada. Ya puedes iniciar sesión')),
     );
     context.go('/inicio-sesion');
   }
 
   String? _required(String? v) =>
       (v == null || v.trim().isEmpty) ? 'Campo requerido' : null;
+
+  Widget _etiqueta(String t) =>
+      Text(t, style: const TextStyle(fontWeight: FontWeight.bold));
 
   @override
   Widget build(BuildContext context) {
@@ -112,49 +147,24 @@ class _EstadoPantallaRegistro extends State<PantallaRegistro> {
 
   Widget _stepOne() => Form(
     key: _form1,
+    autovalidateMode: AutovalidateMode.onUserInteraction,
     child: Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Text(
-          'Nombre(s)',
-          style: TextStyle(fontWeight: FontWeight.bold),
-        ),
+        // ---------- Nombre(s) ----------
+        _etiqueta('Nombre(s)'),
         const SizedBox(height: 8),
         TextFormField(
           controller: _nombre,
           textCapitalization: TextCapitalization.words,
+          textInputAction: TextInputAction.next,
+          inputFormatters: formatoNombre(),
           decoration: const InputDecoration(prefixIcon: Icon(Icons.person)),
-          validator: _required,
+          validator: (v) => validarNombre(v, campo: 'El nombre'),
         ),
         const SizedBox(height: 16),
-        const Text(
-          'Apellido paterno',
-          style: TextStyle(fontWeight: FontWeight.bold),
-        ),
-        const SizedBox(height: 8),
-        TextFormField(
-          controller: _apPaterno,
-          textCapitalization: TextCapitalization.words,
-          decoration: const InputDecoration(
-            prefixIcon: Icon(Icons.person_outline),
-          ),
-          validator: _required,
-        ),
-        const SizedBox(height: 16),
-        const Text(
-          'Apellido materno (opcional)',
-          style: TextStyle(fontWeight: FontWeight.bold),
-        ),
-        const SizedBox(height: 8),
-        TextFormField(
-          controller: _apMaterno,
-          textCapitalization: TextCapitalization.words,
-          decoration: const InputDecoration(
-            prefixIcon: Icon(Icons.person_outline),
-          ),
-          // sin validator: puede ir vacio
-        ),
-        const SizedBox(height: 16),
+
+        // ---------- Apellido paterno y materno ----------
         Row(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -162,15 +172,66 @@ class _EstadoPantallaRegistro extends State<PantallaRegistro> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Text(
-                    'Número de control',
-                    style: TextStyle(fontWeight: FontWeight.bold),
+                  _etiqueta('Apellido paterno'),
+                  const SizedBox(height: 8),
+                  TextFormField(
+                    controller: _paterno,
+                    textCapitalization: TextCapitalization.words,
+                    textInputAction: TextInputAction.next,
+                    inputFormatters: formatoNombre(),
+                    decoration: const InputDecoration(
+                      prefixIcon: Icon(Icons.person_outline),
+                    ),
+                    validator: (v) => validarNombre(v, campo: 'El apellido'),
                   ),
+                ],
+              ),
+            ),
+            const SizedBox(width: 12),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  _etiqueta('Apellido materno (opcional)'),
+                  const SizedBox(height: 8),
+                  TextFormField(
+                    controller: _materno,
+                    textCapitalization: TextCapitalization.words,
+                    textInputAction: TextInputAction.next,
+                    inputFormatters: formatoNombre(),
+                    decoration: const InputDecoration(
+                      prefixIcon: Icon(Icons.person_outline),
+                    ),
+                    validator: (v) => validarNombre(
+                      v,
+                      campo: 'El apellido',
+                      obligatorio: false,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+        const SizedBox(height: 16),
+
+        // ---------- Número de control y grupo ----------
+        Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  _etiqueta('Número de control'),
                   const SizedBox(height: 8),
                   TextFormField(
                     controller: _control,
                     keyboardType: TextInputType.number,
-                    maxLength: 10,
+                    inputFormatters: [
+                      FilteringTextInputFormatter.digitsOnly,
+                      LengthLimitingTextInputFormatter(10),
+                    ],
                     decoration: const InputDecoration(
                       prefixIcon: Icon(Icons.school),
                       counterText: '',
@@ -187,14 +248,17 @@ class _EstadoPantallaRegistro extends State<PantallaRegistro> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Text(
-                    'Grupo',
-                    style: TextStyle(fontWeight: FontWeight.bold),
-                  ),
+                  _etiqueta('Grupo'),
                   const SizedBox(height: 8),
                   TextFormField(
                     controller: _grupo,
                     textCapitalization: TextCapitalization.characters,
+                    inputFormatters: [
+                      FilteringTextInputFormatter.allow(
+                        RegExp(r'[A-Za-z0-9\-]'),
+                      ),
+                      LengthLimitingTextInputFormatter(10),
+                    ],
                     decoration: const InputDecoration(
                       prefixIcon: Icon(Icons.groups),
                     ),
@@ -206,25 +270,24 @@ class _EstadoPantallaRegistro extends State<PantallaRegistro> {
           ],
         ),
         const SizedBox(height: 16),
-        const Text(
-          'Correo institucional',
-          style: TextStyle(fontWeight: FontWeight.bold),
-        ),
+
+        // ---------- Correo ----------
+        _etiqueta('Correo institucional'),
         const SizedBox(height: 8),
         TextFormField(
           controller: _correo,
           keyboardType: TextInputType.emailAddress,
+          autocorrect: false,
           decoration: const InputDecoration(
             prefixIcon: Icon(Icons.email),
             hintText: 'tucontrol@utng.edu.mx',
           ),
-          validator: (v) =>
-              (v ?? '').trim().toLowerCase().endsWith('@utng.edu.mx')
-              ? null
-              : 'Usa tu correo @utng.edu.mx',
+          validator: validarCorreoInstitucional,
         ),
         const SizedBox(height: 16),
-        const Text('Carrera', style: TextStyle(fontWeight: FontWeight.bold)),
+
+        // ---------- Carrera ----------
+        _etiqueta('Carrera'),
         const SizedBox(height: 8),
         DropdownButtonFormField<String>(
           initialValue: _carrera,
@@ -261,10 +324,7 @@ class _EstadoPantallaRegistro extends State<PantallaRegistro> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text(
-            'Contraseña',
-            style: TextStyle(fontWeight: FontWeight.bold),
-          ),
+          _etiqueta('Contraseña'),
           const SizedBox(height: 8),
           TextFormField(
             controller: _pass,
@@ -308,10 +368,7 @@ class _EstadoPantallaRegistro extends State<PantallaRegistro> {
               ),
             ),
           const SizedBox(height: 16),
-          const Text(
-            'Confirmar contraseña',
-            style: TextStyle(fontWeight: FontWeight.bold),
-          ),
+          _etiqueta('Confirmar contraseña'),
           const SizedBox(height: 8),
           TextFormField(
             controller: _pass2,
@@ -326,14 +383,17 @@ class _EstadoPantallaRegistro extends State<PantallaRegistro> {
           _Requisito('Mínimo 8 caracteres', rules.minLength),
           _Requisito('Una letra mayúscula y un número', rules.upperAndDigit),
           _Requisito('Un carácter especial (@, #, \$, !)', rules.special),
-          CheckboxListTile(
-            contentPadding: EdgeInsets.zero,
-            controlAffinity: ListTileControlAffinity.leading,
-            value: _terms,
-            onChanged: (v) => setState(() => _terms = v ?? false),
-            title: const Text(
-              'Acepto los términos de uso y el aviso de privacidad de ACTIVA.',
-              style: TextStyle(fontSize: 12),
+               Material(
+            color: Colors.transparent,
+            child: CheckboxListTile(
+              contentPadding: EdgeInsets.zero,
+              controlAffinity: ListTileControlAffinity.leading,
+              value: _terms,
+              onChanged: (v) => setState(() => _terms = v ?? false),
+              title: const Text(
+                'Acepto los términos de uso y el aviso de privacidad de ACTIVA.',
+                style: TextStyle(fontSize: 12),
+              ),
             ),
           ),
           const SizedBox(height: 16),

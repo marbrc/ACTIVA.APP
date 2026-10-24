@@ -52,7 +52,7 @@ class PantallaInicioAdmin extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      'Panel de coordinación',
+                      'Panel de Administración',
                       style: TextStyle(
                         fontSize: 24,
                         fontWeight: FontWeight.w800,
