@@ -1,7 +1,15 @@
 # ACTIVA
 
 **Activación de Clubes y Talleres Institucionales para la Vida Académica**
-Universidad Tecnológica del Norte de Guanajuato (UTNG) · Grupo GTID235
+Universidad Tecnológica del Norte de Guanajuato (UTNG) · Grupo GTID243
+
+DOMINIO
+
+<img width="1626" height="940" alt="DOMINIO_ACTIVA" src="https://github.com/user-attachments/assets/e62d1d5c-692f-4dbf-b889-724f6100988f" />
+
+UML
+<img width="2546" height="1023" alt="UML_ACTIVA" src="https://github.com/user-attachments/assets/22aacabf-11ab-4aad-8c58-e53a897624bd" />
+
 
 ## 1. Descripción breve
 
