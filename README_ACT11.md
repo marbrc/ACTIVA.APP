@@ -4,7 +4,6 @@
 Universidad Tecnológica del Norte de Guanajuato (UTNG) · Grupo GTID243
 
 
-LAS CAPTURAS ESTAN EN ACTIVA_README/ACTIVA_README
 
 DOMINIO
 
