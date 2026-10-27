@@ -492,7 +492,10 @@ class _EstadoPantallaFormularioActividad
           decoration: const InputDecoration(prefixIcon: Icon(Icons.person)),
           hint: const Text('Selecciona un instructor'),
           items: [
-            for (final i in s.instructores)
+                        // los instructores desactivados ya no se pueden elegir
+            for (final i in s.instructores.where(
+              (x) => x.activo || x.id == _instId,
+            ))
               DropdownMenuItem(value: i.id, child: Text(i.nombreCompleto)),
           ],
           onChanged: (v) => setState(() => _instId = v),

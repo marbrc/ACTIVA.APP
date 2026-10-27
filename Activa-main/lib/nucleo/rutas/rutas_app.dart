@@ -1,5 +1,7 @@
 import 'package:flutter/widgets.dart';
 import 'package:go_router/go_router.dart';
+import '../../modulos/autenticacion/pantallas/pantalla_cambiar_contrasena.dart';
+
 
 import '../../modulos/autenticacion/pantallas/pantalla_carga.dart';
 import '../../modulos/alumno/pantallas/pantallas_ayuda.dart';
@@ -37,10 +39,16 @@ import '../../modulos/instructor/pantallas/pantalla_solicitudes_instructor.dart'
 import '../../modulos/administrador/pantallas/pantalla_solicitudes_admin.dart';
 import '../../modulos/alumno/pantallas/pantalla_acerca_de.dart';
 
+import '../../modulos/autenticacion/pantallas/pantalla_cambiar_contrasena.dart';
+import '../../modulos/administrador/pantallas/pantallas_instructores_admin.dart';
 
 final enrutadorApp = GoRouter(
   initialLocation: '/carga',
   routes: [
+    GoRoute(
+  path: '/cambiar-contrasena',
+  builder: (_, _) => const PantallaCambiarContrasena(),
+),
     GoRoute(path: '/carga', builder: (_, _) => const PantallaCarga()),
     GoRoute(path: '/bienvenida', builder: (_, _) => const PantallaBienvenida()),
     GoRoute(
@@ -48,6 +56,13 @@ final enrutadorApp = GoRouter(
       builder: (_, _) => const PantallaInicioSesion(),
     ),
     GoRoute(path: '/registro', builder: (_, _) => const PantallaRegistro()),
+        // primer acceso con contraseña temporal (instructores creados por el admin)
+    GoRoute(
+      path: '/cambiar-contrasena',
+      builder: (_, _) => const PantallaCambiarContrasena(),
+    ),
+
+
     GoRoute(
       path: '/olvide-contrasena',
       builder: (_, _) => const PantallaOlvideContrasena(),
@@ -300,13 +315,19 @@ final enrutadorApp = GoRouter(
         tallerId: int.parse(s.pathParameters['id']!),
       ),
     ),
-    GoRoute(
+      GoRoute(
       path: '/admin/instructores',
-      builder: (_, _) => const PantallaInstructores(),
+      builder: (_, _) => const PantallaInstructoresAdmin(),
     ),
     GoRoute(
       path: '/admin/instructores/nuevo',
-      builder: (_, _) => const PantallaNuevoInstructor(),
+      builder: (_, _) => const PantallaFormularioInstructor(),
+    ),
+    GoRoute(
+      path: '/admin/instructores/:id/editar',
+      builder: (_, s) => PantallaFormularioInstructor(
+        instructorId: int.parse(s.pathParameters['id']!),
+      ),
     ),
     GoRoute(
       path: '/admin/periodo',

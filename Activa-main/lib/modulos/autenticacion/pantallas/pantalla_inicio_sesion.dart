@@ -9,6 +9,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 
+import '../../../datos/estado_app.dart';
 import '../../../datos/sesion.dart';
 import '../../../modelos/enums.dart';
 import '../../../nucleo/tema/tema_app.dart';
@@ -38,18 +39,45 @@ class _EstadoPantallaInicioSesion extends State<PantallaInicioSesion> {
 
   // revisa los datos y manda a cada rol a su panel
   void _submit() {
-    // en modo pruebas no se exigen los campos
-    if (!entrarSinContrasena && !_formKey.currentState!.validate()) return;
-    final rol = context.read<EstadoSesion>().iniciarSesion(
-      _userCtrl.text,
-      _passCtrl.text,
-    );
+    if (!_formKey.currentState!.validate()) return;
+    final sesion = context.read<EstadoSesion>();
+    final app = context.read<EstadoApp>();
+    final mensajes = ScaffoldMessenger.of(context);
+
+    // 1) cuentas guardadas: alumnos registrados e instructores creados por el admin
+    final r = sesion.iniciarSesionGuardada(_userCtrl.text, _passCtrl.text);
+    switch (r.estado) {
+      case EstadoAcceso.ok:
+        app.usarCuenta(r.cuenta);
+        context.go(EstadoSesion.rutaDe(r.cuenta!.rol));
+        return;
+      case EstadoAcceso.cambiarContrasena:
+        // contraseña temporal: primero tiene que crear la suya
+        context.go('/cambiar-contrasena');
+        return;
+      case EstadoAcceso.desactivado:
+        mensajes.showSnackBar(
+          avisoSnack(
+            content: const Text(
+              'Error: tu cuenta está desactivada. Habla con la coordinación',
+            ),
+          ),
+        );
+        return;
+      case EstadoAcceso.incorrecto:
+      case EstadoAcceso.noEncontrado:
+        break; // se prueba con las cuentas de prueba, como antes
+    }
+
+    // 2) cuentas de prueba (mar_alumna, mar_instructor, mar_admin)
+    final rol = sesion.iniciarSesion(_userCtrl.text, _passCtrl.text);
     if (rol == null) {
-      ScaffoldMessenger.of(context).showSnackBar(
+      mensajes.showSnackBar(
         avisoSnack(content: const Text('Usuario o contraseña incorrectos')),
       );
       return;
     }
+    app.usarCuenta(null);
     context.go(EstadoSesion.rutaDe(rol));
   }
 
@@ -90,9 +118,8 @@ class _EstadoPantallaInicioSesion extends State<PantallaInicioSesion> {
                 prefixIcon: Icon(Icons.person_outline_rounded),
                 hintText: 'mar_alumna',
               ),
-              validator: (v) => entrarSinContrasena
-                  ? null
-                  : ((v == null || v.trim().isEmpty) ? 'Campo requerido' : null),
+              validator: (v) =>
+                  (v == null || v.trim().isEmpty) ? 'Campo requerido' : null,
             ),
             const SizedBox(height: 16),
             const Text(
@@ -114,9 +141,8 @@ class _EstadoPantallaInicioSesion extends State<PantallaInicioSesion> {
                   onPressed: () => setState(() => _obscure = !_obscure),
                 ),
               ),
-              validator: (v) => entrarSinContrasena
-                  ? null
-                  : ((v == null || v.isEmpty) ? 'Campo requerido' : null),
+              validator: (v) =>
+                  (v == null || v.isEmpty) ? 'Campo requerido' : null,
             ),
             Row(
               children: [
@@ -139,6 +165,7 @@ class _EstadoPantallaInicioSesion extends State<PantallaInicioSesion> {
               etiqueta: 'Explorar sin cuenta',
               variante: VarianteBoton.contorno,
               alPresionar: () {
+                context.read<EstadoApp>().usarCuenta(null);
                 context.read<EstadoSesion>().rol = Rol.alumno;
                 context.go('/alumno');
               },

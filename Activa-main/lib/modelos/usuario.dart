@@ -75,8 +75,28 @@ class Instructor extends Usuario {
     required super.correo,
     super.telefono,
     super.foto,
+    super.activo,
     required this.especialidad,
   }) : super(rol: Rol.instructor);
+
+  Instructor copyWith({
+    String? nombre,
+    String? apellidoPaterno,
+    String? apellidoMaterno,
+    String? correo,
+    String? especialidad,
+    bool? activo,
+  }) => Instructor(
+    id: id,
+    nombre: nombre ?? this.nombre,
+    apellidoPaterno: apellidoPaterno ?? this.apellidoPaterno,
+    apellidoMaterno: apellidoMaterno ?? this.apellidoMaterno,
+    correo: correo ?? this.correo,
+    telefono: telefono,
+    foto: foto,
+    especialidad: especialidad ?? this.especialidad,
+    activo: activo ?? this.activo,
+  );
 }
 
 class Administrador extends Usuario {

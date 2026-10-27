@@ -47,12 +47,12 @@ class PantallaInicioAdmin extends StatelessWidget {
         children: [
           Row(
             children: [
-              const Expanded(
+              const Expanded(c:\Users\Laura\Downloads\README.md
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      'Panel de coordinación',
+                      'Panel de Administración',
                       style: TextStyle(
                         fontSize: 24,
                         fontWeight: FontWeight.w800,
