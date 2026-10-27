@@ -3,7 +3,7 @@ import 'taller.dart';
 import 'usuario.dart';
 
 class Inscripcion {
-  final String folio; // VOL-2026-0381
+  final String folio; 
   final Alumno alumno;
   final Taller taller;
   final EstadoInscripcion estado;
